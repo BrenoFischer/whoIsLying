@@ -11,7 +11,7 @@ export const colors = {
       950: "#09090B",
     },
   
-    green: {
+    primary: {
       300: "#2DD4BF",
       900: "#042F2E",
     },
