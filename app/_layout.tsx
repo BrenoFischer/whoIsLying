@@ -9,27 +9,11 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function RootLayout() {
- const [loaded, error] = useFonts({
-   'SigmarRegular': require('@/assets/fonts/SigmarRegular.ttf'),
- });
-
- useEffect(() => {
-   if (loaded || error) {
-     SplashScreen.hideAsync();
-   }
- }, [loaded, error]);
-
- if (!loaded && !error) {
-   return null;
- }
-
  return (
    <Stack 
     screenOptions={{
       headerShown: false,
-      contentStyle: {
-        backgroundColor: colors.white[100]
-      }
+      contentStyle: { backgroundColor: colors.white[100] },
     }} 
    />
  )
