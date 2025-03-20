@@ -4,17 +4,34 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen'; 
 import {useEffect} from 'react';
 import { colors } from "@/styles/colors";
+import { PaperProvider } from 'react-native-paper';
 
 SplashScreen.preventAutoHideAsync();
 
 
 export default function RootLayout() {
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
+
  return (
-   <Stack 
-    screenOptions={{
-      headerShown: false,
-      contentStyle: { backgroundColor: colors.white[100] },
-    }} 
-   />
+  <PaperProvider>
+    <Stack 
+     screenOptions={{
+       headerShown: false,
+     }} 
+    />
+  </PaperProvider>
  )
 }
