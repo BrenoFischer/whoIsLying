@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TouchableOpacity, View, TextInput } from "react-native";
-import EvilIcons from '@expo/vector-icons/EvilIcons';
+import uuid from 'react-native-uuid';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from "./styles";
 import { colors } from "@/styles/colors";
@@ -8,20 +9,18 @@ import { Player } from "@/types/Player";
 import ColorPicker from "../colorPicker";
 
 
-interface PlayerInputProps {
-    player: Player
-    editPlayer: (player: Player, newName: string, newColor: string) => void
-    deletePlayer: (id: string) => void
+interface NewPlayerInputProps {
+    setPlayer: ({id, name, color}: Player) => void
+    disabled: boolean
 }
 
-export default function PlayerInput({editPlayer, player, deletePlayer}: PlayerInputProps) {
+export default function NewPlayerInput({setPlayer, disabled}: NewPlayerInputProps) {
     const colorsAvailable = [colors.black[100], colors.purple[100], colors.primary[300]];
     const randomColorNumber = Math.floor(Math.random() * colorsAvailable.length)
 
-    const [newName, setNewName] = useState(player.name);
+    const [newName, setNewName] = useState('');
     const [currentColorIndex, setCurrentColorIndex] = useState(randomColorNumber);
-
-    const [currentColor, setCurrentColor] = useState(player.color);
+    const [currentColor, setCurrentColor] = useState(colorsAvailable[currentColorIndex]);
 
 
     const handleChangeColor = () => {
@@ -30,20 +29,26 @@ export default function PlayerInput({editPlayer, player, deletePlayer}: PlayerIn
         setCurrentColor(colorsAvailable[newIndex])
     }
 
+
     const handleSubmit = () => {
-        editPlayer(player, newName, currentColor);
+        const id = uuid.v4();
+        setPlayer({id, name: newName, color: currentColor});
+        setNewName('');
     }
 
-    const handleDeletePlayer = () => {
-        deletePlayer(player.id)
-    }
+    const borderColor = disabled ? colors.gray[100] : currentColor
 
 
     return(
-        <View style={[styles.container, {borderColor: currentColor}]}>
-            <TouchableOpacity onPress={handleChangeColor}>
-                <ColorPicker color={currentColor} />
-            </TouchableOpacity>
+        <View style={[styles.container, {borderColor}]}>
+            {
+                disabled ?
+                    <ColorPicker color={colors.gray[100]} />
+                :
+                    <TouchableOpacity onPress={handleChangeColor}>
+                        <ColorPicker color={currentColor} />
+                    </TouchableOpacity>
+            }
             <TextInput
                 placeholder="Add a new name"
                 keyboardType="ascii-capable"
@@ -54,9 +59,10 @@ export default function PlayerInput({editPlayer, player, deletePlayer}: PlayerIn
                 onChangeText={text => setNewName(text)}
                 onSubmitEditing={handleSubmit}
                 returnKeyType="done"
+                editable={!disabled}
             />
-            <TouchableOpacity style={styles.iconContainer} onPress={handleDeletePlayer}>
-                <EvilIcons name="trash" size={40} color="red" />
+            <TouchableOpacity style={styles.iconContainer} onPress={handleSubmit}>
+                <Ionicons name="add-circle" size={38} color={borderColor} />
             </TouchableOpacity>
         </View>
     )
