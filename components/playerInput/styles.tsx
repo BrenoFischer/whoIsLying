@@ -19,5 +19,8 @@ export const styles = StyleSheet.create({
     iconContainer: {
         position: "absolute",
         right: 10,
+    },
+    errorContainer: {
+        backgroundColor: "red",
     }
 })

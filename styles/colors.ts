@@ -18,6 +18,8 @@ export const colors = {
 
   gray: {
     100: "#251c13",
+    200: "#E4E4E4",
+    300: "#7c7c7c"
   },
   
   primary: {
@@ -27,5 +29,9 @@ export const colors = {
 
   white: {
       100: "#FFFFFF",
+  },
+
+  red: {
+    100: "#FF0000",
   }
 }

@@ -1,3 +1,4 @@
+import { colors } from "@/styles/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -19,5 +20,9 @@ export const styles = StyleSheet.create({
     iconContainer: {
         position: "absolute",
         right: 10,
+    },
+    error: {
+        color: colors.red[100],
+        marginTop: 10,
     }
 })

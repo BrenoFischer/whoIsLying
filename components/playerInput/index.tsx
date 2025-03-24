@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TouchableOpacity, View, TextInput } from "react-native";
+import { TouchableOpacity, View, TextInput, Text } from "react-native";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 
 import { styles } from "./styles";
@@ -38,7 +38,6 @@ export default function PlayerInput({editPlayer, player, deletePlayer}: PlayerIn
         deletePlayer(player.id)
     }
 
-
     return(
         <View style={[styles.container, {borderColor: currentColor}]}>
             <TouchableOpacity onPress={handleChangeColor}>
@@ -55,7 +54,7 @@ export default function PlayerInput({editPlayer, player, deletePlayer}: PlayerIn
                 onSubmitEditing={handleSubmit}
                 returnKeyType="done"
             />
-            <TouchableOpacity style={styles.iconContainer} onPress={handleDeletePlayer}>
+            <TouchableOpacity style={[styles.iconContainer]} onPress={handleDeletePlayer}>
                 <EvilIcons name="trash" size={40} color="red" />
             </TouchableOpacity>
         </View>

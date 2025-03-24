@@ -2,6 +2,7 @@ import { colors } from '@/styles/colors';
 import React from 'react';
 import { View, Image, StyleSheet, Platform, Text } from 'react-native';
 import Button from "@/components/button";
+import { router } from 'expo-router';
 
 
 export default function SkillUpScreen() {
@@ -9,7 +10,7 @@ export default function SkillUpScreen() {
     <View style={styles.container}>
       <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
       <View style={styles.buttonContainer}>
-        <Button text="New game"/>
+        <Button text="New game" onPress={() => router.navigate("/createGame")}/>
       </View>
       <Image source={require('@/assets/images/logo2.png')} style={styles.bottomImage} resizeMode="cover"/>
     </View>

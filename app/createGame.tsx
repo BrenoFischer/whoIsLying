@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
@@ -6,8 +6,12 @@ import PlayerInput from "@/components/playerInput";
 import { Player } from "@/types/Player";
 import NewPlayerInput from "@/components/newPlayerInput";
 import CustomText from "@/components/text";
+import Button from "@/components/button";
+import { router } from "expo-router";
 
 const MAX_PLAYERS = 10;
+
+const windowHeight = Dimensions.get("screen").height;
 
 export default function CreateGame() {
     const [players, setPlayers] = useState<Player[]>([]);
@@ -53,6 +57,14 @@ export default function CreateGame() {
                         )
                     }
                 </View>
+                <View style={styles.buttonContainer}>
+                    {
+                        players.length < 3 || players.length > MAX_PLAYERS ?
+                            <Button text="Create game" onPress={() => router.navigate("/test")} variants="disabled" />
+                        :
+                            <Button text="Create game" onPress={() => router.navigate("/test")} />
+                    }
+                </View>
             </ScrollView>
         </SafeAreaView>
     )
@@ -63,9 +75,14 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         marginTop: 30,
+        minHeight: windowHeight - 300,
     },
 
     playersAddedContainer: {
         marginTop: 30,
+    },
+    buttonContainer: {
+        flex: 1,
+        alignItems: "center",
     },
 })
