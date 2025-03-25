@@ -1,13 +1,14 @@
 import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PlayerInput from "@/components/playerInput";
 import { Player } from "@/types/Player";
 import NewPlayerInput from "@/components/newPlayerInput";
 import CustomText from "@/components/text";
 import Button from "@/components/button";
 import { router } from "expo-router";
+import { GameContext, GameContextProvider } from "@/context/GameContext";
 
 const MAX_PLAYERS = 10;
 
@@ -15,6 +16,7 @@ const windowHeight = Dimensions.get("screen").height;
 
 export default function CreateGame() {
     const [players, setPlayers] = useState<Player[]>([]);
+    const { createGame } = useContext(GameContext)
 
     function setNewPlayer({id, name, color}: Player) {
         if(players.length >= MAX_PLAYERS) return
@@ -35,6 +37,11 @@ export default function CreateGame() {
         const newPlayers = players.filter(p => p.id !== id);
 
         setPlayers(newPlayers);
+    }
+
+    function handleCreateGame() {
+        createGame(players);
+        router.navigate("/test");
     }
  
     return(
@@ -60,9 +67,9 @@ export default function CreateGame() {
                 <View style={styles.buttonContainer}>
                     {
                         players.length < 3 || players.length > MAX_PLAYERS ?
-                            <Button text="Create game" onPress={() => router.navigate("/test")} variants="disabled" />
+                            <Button text="Create game" onPress={handleCreateGame} variants="disabled" />
                         :
-                            <Button text="Create game" onPress={() => router.navigate("/test")} />
+                            <Button text="Create game" onPress={handleCreateGame} />
                     }
                 </View>
             </ScrollView>

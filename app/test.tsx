@@ -1,12 +1,19 @@
-import React from 'react';
+import { GameContext, GameContextProvider } from '@/context/GameContext';
+import React, { useContext } from 'react';
 import { View, Image, StyleSheet, Platform, Text } from 'react-native';
 
 
 export default function SkillUpScreen() {
+  const {game} = useContext(GameContext);
+
+  console.log(game)
+
   return (
-    <View>
-        <Text>Test</Text>
-    </View>
+    <GameContextProvider>
+      <View>
+          <Text>Test</Text>
+      </View>
+    </GameContextProvider>
   );
 }
 
