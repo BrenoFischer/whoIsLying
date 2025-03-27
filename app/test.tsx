@@ -7,6 +7,9 @@ export default function SkillUpScreen() {
   const {game} = useContext(GameContext);
 
   console.log(game)
+  game.rounds.forEach(r => {
+    console.log("Round:" + r.playerThatAsks.name + " -> " + r.playerThatAnswers.name)
+  })
 
   return (
     <GameContextProvider>
