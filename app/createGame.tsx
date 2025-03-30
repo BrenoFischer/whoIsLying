@@ -41,7 +41,7 @@ export default function CreateGame() {
 
     function handleCreateGame() {
         createGame(players);
-        router.navigate("/test");
+        router.navigate("/round");
     }
  
     return(

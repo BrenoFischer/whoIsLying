@@ -7,12 +7,13 @@ import { createContext, useState } from "react";
 interface GameContextType {
     game: Game
     createGame: (players: Player[]) => void
+    nextRound: () => void
   }
 
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: {children: React.ReactNode}) => {
-    const [game, setGame] = useState<Game>({ players: [], currentRound: 0, rounds: [] });
+    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [] });
 
     const shuffleRounds = (rounds: Round[]) => {
         for (let i = rounds.length - 1; i > 0; i--) {
@@ -74,11 +75,16 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
 
     const createGame = (newPlayers: Player[]) => {
         const rounds = setAllRounds(newPlayers);
-        setGame({ players: newPlayers, currentRound: 0, rounds });
+        setGame({ players: newPlayers, currentRound: 1, rounds });
+    }
+
+    const nextRound = () => {
+        const newRound = game.currentRound + 1
+        setGame({...game, currentRound: newRound})
     }
  
     return(
-        <GameContext.Provider value={{ game, createGame }}>
+        <GameContext.Provider value={{ game, createGame, nextRound }}>
             {children}
         </GameContext.Provider>
     )
