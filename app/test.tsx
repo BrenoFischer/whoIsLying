@@ -8,7 +8,7 @@ export default function SkillUpScreen() {
 
   console.log(game)
   game.rounds.forEach(r => {
-    console.log("Round:" + r.playerThatAsks.name + " -> " + r.playerThatAnswers.name)
+    console.log("Round:" + r.playerThatAsks.name + " -> " + r.playerThatAnswers.name + " - Question: " + r.question)
   })
 
   return (
