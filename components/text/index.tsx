@@ -1,3 +1,4 @@
+import { colors } from '@/styles/colors';
 import React from 'react';
 import { Text, StyleSheet, TextProps, TextStyle } from 'react-native';
 
@@ -18,12 +19,12 @@ export default function CustomText({
     let fontSize = 14;
 
     if(variant === 'title') {
-        fontSize = 18
+        fontSize = 30
     }
 
   return (
-    <Text style={{fontSize, fontFamily: 'Sigmar'}} {...props}>
+    <Text style={{fontSize, fontFamily: 'Raleway', fontWeight: "bold", color: colors.white[100], textAlign: "center"}} {...props}>
       {children}
     </Text>
   );
-};
+}

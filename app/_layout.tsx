@@ -11,6 +11,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
     'Sigmar': require('../assets/fonts/SigmarRegular.ttf'),
+    'Raleway': require('../assets/fonts/Raleway.ttf'),
   });
 
   useEffect(() => {

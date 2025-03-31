@@ -1,0 +1,82 @@
+{
+    "foods": {
+        "image": "foodCategory.png",
+        "content": [
+            "Food 1",
+            "Food 2",
+            "Food 3",
+            "Food 4",
+            "Food 5",
+            "Food 6",
+            "Food 7",
+            "Food 8",
+            "Food 9",
+            "Food 10",
+            "Food 11"
+        ]
+    },
+    "animals": {
+        "image": "foodCategory.png",
+        "content": [
+            "Animal 1",
+            "Animal 2",
+            "Animal 3",
+            "Animal 4",
+            "Animal 5",
+            "Animal 6",
+            "Animal 7",
+            "Animal 8",
+            "Animal 9",
+            "Animal 10",
+            "Animal 11"
+        ] 
+    } ,
+    "car": {
+        "image": "foodCategory.png",
+        "content": [
+            "Animal 1",
+            "Animal 2",
+            "Animal 3",
+            "Animal 4",
+            "Animal 5",
+            "Animal 6",
+            "Animal 7",
+            "Animal 8",
+            "Animal 9",
+            "Animal 10",
+            "Animal 11"
+        ] 
+    } ,
+    "car2": {
+        "image": "foodCategory.png",
+        "content": [
+            "Animal 1",
+            "Animal 2",
+            "Animal 3",
+            "Animal 4",
+            "Animal 5",
+            "Animal 6",
+            "Animal 7",
+            "Animal 8",
+            "Animal 9",
+            "Animal 10",
+            "Animal 11"
+        ] 
+    } ,
+    "car3": {
+        "image": "foodCategory.png",
+        "content": [
+            "Animal 1",
+            "Animal 2",
+            "Animal 3",
+            "Animal 4",
+            "Animal 5",
+            "Animal 6",
+            "Animal 7",
+            "Animal 8",
+            "Animal 9",
+            "Animal 10",
+            "Animal 11"
+        ] 
+    } 
+}

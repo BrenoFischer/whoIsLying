@@ -5,4 +5,6 @@ export interface Game {
     players: Player[]
     rounds: Round[]
     currentRound: number
+    lyingPlayer: Player
+    category: undefined | string
 }

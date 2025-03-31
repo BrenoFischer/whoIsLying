@@ -1,7 +1,7 @@
 import { Game } from "@/types/Game";
 import { Player } from "@/types/Player";
 import { Round } from "@/types/Round";
-import questions from "@/questions.json";
+import questions from "@/data/questions.json";
 import { createContext, useState } from "react";
 
 interface GameContextType {
@@ -13,7 +13,7 @@ interface GameContextType {
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: {children: React.ReactNode}) => {
-    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [] });
+    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', color: ''}, category: undefined });
 
     const shuffleRounds = (rounds: Round[]) => {
         for (let i = rounds.length - 1; i > 0; i--) {
@@ -75,7 +75,8 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
 
     const createGame = (newPlayers: Player[]) => {
         const rounds = setAllRounds(newPlayers);
-        setGame({ players: newPlayers, currentRound: 1, rounds });
+        const lyingPlayer: Player = newPlayers[Math.floor(Math.random() * newPlayers.length)] //get a random player to be out of the round 
+        setGame({ players: newPlayers, currentRound: 1, rounds, lyingPlayer, category: undefined });
     }
 
     const nextRound = () => {

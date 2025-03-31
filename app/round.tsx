@@ -1,6 +1,6 @@
 import { GameContext, GameContextProvider } from '@/context/GameContext';
 import React, { useContext } from 'react';
-import { View, Image, StyleSheet, Platform, Text, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, SafeAreaView } from 'react-native';
 import EndGame from './endGame';
 import Button from '@/components/button';
 import { router } from 'expo-router';
@@ -19,8 +19,6 @@ export default function RoundScreen() {
   const playerThatAsks = round.playerThatAsks
   const playerThatAnswers = round.playerThatAnswers
   const question = round.question
-
-  console.log(round)
 
   const handleNextRound = () => {
     nextRound();

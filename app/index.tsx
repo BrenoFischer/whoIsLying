@@ -10,7 +10,7 @@ export default function SkillUpScreen() {
     <View style={styles.container}>
       <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
       <View style={styles.buttonContainer}>
-        <Button text="New game" onPress={() => router.navigate("/createGame")}/>
+        <Button text="New game" onPress={() => router.navigate("/selectCategory")}/>
       </View>
       <Image source={require('@/assets/images/logo2.png')} style={styles.bottomImage} resizeMode="cover"/>
     </View>
