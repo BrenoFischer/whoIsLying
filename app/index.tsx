@@ -3,12 +3,15 @@ import React from 'react';
 import { View, Image, StyleSheet, Platform, Text } from 'react-native';
 import Button from "@/components/button";
 import { router } from 'expo-router';
+import Logo from '@/components/logo';
 
 
 export default function SkillUpScreen() {
   return (
     <View style={styles.container}>
-      <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
+      <View style={styles.logoContainer}>
+        <Logo />
+      </View>
       <View style={styles.buttonContainer}>
         <Button text="New game" onPress={() => router.navigate("/selectCategory")}/>
       </View>
@@ -25,16 +28,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     position: "relative",
-    backgroundColor: colors.pink[100],
+    backgroundColor: colors.background[100],
   },
 
-  logo: {
+  logoContainer: {
     height: 100,
-    marginTop: 100,
+    marginTop: 140,
   },
 
   buttonContainer: {
-    marginTop: 50,
+    marginTop: 80,
   },
 
   bottomImage: {

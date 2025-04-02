@@ -1,4 +1,8 @@
 export const colors = {
+  background: {
+    100: "#393939"
+  },
+
   pink: {
     100: '#FDE4E4',
   },

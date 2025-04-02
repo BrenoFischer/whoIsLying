@@ -55,7 +55,7 @@ export default function SelectCategory() {
     }
 
     return(
-        <SafeAreaView style={{backgroundColor: "#393939", height: "100%"}}>
+        <SafeAreaView style={{backgroundColor: colors.background[100], height: "100%", overflow: "hidden"}}>
             <View style={styles.elipse} />
             <ScrollView style={styles.container}>
                 <Text style={styles.pageTitle}>Select a category</Text>
