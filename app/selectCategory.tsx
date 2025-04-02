@@ -6,6 +6,7 @@ import categories from "@/data/categories.json";
 import { colors } from "@/styles/colors";
 import Button from "@/components/button";
 import { router } from "expo-router";
+import Elipse from "@/components/elipse";
 
 const images = {
     foods: require("@/assets/images/foodCategory.png"),
@@ -56,7 +57,7 @@ export default function SelectCategory() {
 
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], height: "100%", overflow: "hidden"}}>
-            <View style={styles.elipse} />
+            <Elipse />
             <ScrollView style={styles.container}>
                 <Text style={styles.pageTitle}>Select a category</Text>
                 <View style={styles.categoriesContainer}>
@@ -81,16 +82,6 @@ const styles = StyleSheet.create({
         paddingVertical: 50,
         textAlign: "center",
         maxHeight: "84%",
-    },
-    elipse: {
-        backgroundColor: colors.orange[200],
-        width: 344,
-        height: 377,
-        position: "absolute",
-        bottom: 150,
-        left: -120,
-        transform: [{rotate: "60deg"}],
-        borderRadius: "50%"
     },
     pageTitle: {
         fontSize: 30,
