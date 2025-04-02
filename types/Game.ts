@@ -6,5 +6,5 @@ export interface Game {
     rounds: Round[]
     currentRound: number
     lyingPlayer: Player
-    category: undefined | string
+    word: undefined | string
 }

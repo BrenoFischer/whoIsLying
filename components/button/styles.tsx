@@ -3,24 +3,31 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     buttonStyle: {
-      paddingVertical: 20,
-      paddingHorizontal: 40,
-      borderRadius: 35,
-      marginTop: 50,
-      
+      padding: 16,
+      borderRadius: 4,
+      minWidth: 230,
+      minHeight: 56,
+      justifyContent: "center",
+      alignItems: "center"
     },
     primaryButton: {
-        backgroundColor: colors.purple[300],
-      },
+      backgroundColor: colors.orange[200],
+    },
     primaryButtonText: {
-      fontSize: 20,
-      color: colors.white[100],
+      textAlign: "center",
+      fontSize: 16,
+      color: colors.black[200],
+      fontFamily: "Raleway",
+      fontWeight: "bold",
     },
     disabledButton: {
       backgroundColor: colors.gray[200],
     },
     disabledButtonText: {
+      textAlign: "center",
+      fontSize: 16,
+      fontFamily: "Raleway",
+      fontWeight: "bold",
       color: colors.gray[300],
-      fontSize: 20,
     },
 })

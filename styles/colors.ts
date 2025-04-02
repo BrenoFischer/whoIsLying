@@ -14,7 +14,8 @@ export const colors = {
   },
 
   black : {
-    100: '#1E1E1E'
+    100: '#1E1E1E',
+    200: "191D21",
   },
 
   gray: {
@@ -38,6 +39,6 @@ export const colors = {
 
   orange: {
     100: "#F5D4C1",
-    200: "#FFAC4B"
+    200: "#FFAC4B",
   }
 }

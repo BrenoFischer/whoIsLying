@@ -7,13 +7,14 @@ import { createContext, useState } from "react";
 interface GameContextType {
     game: Game
     createGame: (players: Player[]) => void
+    setGameWord: (word: string) => void 
     nextRound: () => void
   }
 
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: {children: React.ReactNode}) => {
-    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', color: ''}, category: undefined });
+    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', color: ''}, word: undefined });
 
     const shuffleRounds = (rounds: Round[]) => {
         for (let i = rounds.length - 1; i > 0; i--) {
@@ -73,10 +74,14 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         return rounds;
     }
 
+    const setGameWord = (word: string) => {
+        setGame({...game, word})
+    }
+
     const createGame = (newPlayers: Player[]) => {
         const rounds = setAllRounds(newPlayers);
         const lyingPlayer: Player = newPlayers[Math.floor(Math.random() * newPlayers.length)] //get a random player to be out of the round 
-        setGame({ players: newPlayers, currentRound: 1, rounds, lyingPlayer, category: undefined });
+        setGame({ players: newPlayers, currentRound: 1, rounds, lyingPlayer, word: undefined });
     }
 
     const nextRound = () => {
@@ -85,7 +90,7 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
     }
  
     return(
-        <GameContext.Provider value={{ game, createGame, nextRound }}>
+        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound }}>
             {children}
         </GameContext.Provider>
     )

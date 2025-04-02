@@ -5,40 +5,35 @@ import { Text, SafeAreaView, StyleSheet, View, Image, TouchableHighlight, Toucha
 import categories from "@/data/categories.json";
 import { colors } from "@/styles/colors";
 import Button from "@/components/button";
+import { router } from "expo-router";
 
 const images = {
     foods: require("@/assets/images/foodCategory.png"),
     animals: require("@/assets/images/animalCategory.png"),
-    car: require("@/assets/images/animalCategory.png"),
-    car2: require("@/assets/images/animalCategory.png"),
-    car3: require("@/assets/images/animalCategory.png"),
+    soon: require("@/assets/images/animalCategory.png"),
 };
 
 const cardColors = {
     foods: colors.blue[200],
     animals: colors.orange[100],
-    car: colors.orange[100],
-    car2: colors.orange[100],
-    car3: colors.orange[100]
-}
-
-interface Category {
-    image: string
-    content: string[]
+    soon: colors.gray[300],
 }
 
 
 export default function SelectCategory() {
-    const { game } = useContext(GameContext)
+    const { setGameWord } = useContext(GameContext)
     const [selectedCategory, setSelectedCategory] = useState('')
-
-    console.log(selectedCategory)
 
     const handleSelectCategory = (categoryName: string) => {
         setSelectedCategory(categoryName)
     }
 
-    function CategoryCard({categoryName, category}: {categoryName: string, category: Category}) {
+    const handleContinueWithSelectedCategory = () => {
+        setGameWord(selectedCategory)
+        router.navigate("/createGame")
+    }
+
+    function CategoryCard({categoryName}: {categoryName: string}) {
         const isCategorySelected = selectedCategory === categoryName 
 
         return(
@@ -68,14 +63,14 @@ export default function SelectCategory() {
                     {
                         Object.keys(categories).map(category => {
                             return(
-                                <CategoryCard key={category} category={categories[category as keyof typeof categories]} categoryName={category} />
+                                <CategoryCard key={category} categoryName={category} />
                             )
                         })
                     }
                 </View>
             </ScrollView>
-            <View style={styles.buttonContainer}>
-                    <Button text="Select" onPress={() => {}} />
+                <View style={styles.buttonContainer}>
+                    <Button text="Select category" variants={selectedCategory ? "primary" : "disabled" } onPress={handleContinueWithSelectedCategory} />
                 </View>
         </SafeAreaView>
     )
