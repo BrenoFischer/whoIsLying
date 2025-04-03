@@ -49,9 +49,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         borderWidth: 2,
-        borderRadius: 200,
+        borderRadius: 10,
         marginTop: 10,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
+        backgroundColor: colors.background[100]
     },
     textInput: {
         width: 200,

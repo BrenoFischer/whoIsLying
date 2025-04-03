@@ -38,6 +38,7 @@ export default function NewPlayerInput({setPlayer, disabled}: NewPlayerInputProp
             <View style={[styles.container, {borderColor}]}>
                 <TextInput
                     placeholder="Add a new name"
+                    placeholderTextColor={colors.orange[200]}
                     keyboardType="ascii-capable"
                     inputMode="text"
                     maxLength={15}
@@ -68,8 +69,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderWidth: 2,
         borderRadius: 10,
-        marginTop: 10,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
+        backgroundColor: colors.background[100]
     },
     textInput: {
         width: 200,

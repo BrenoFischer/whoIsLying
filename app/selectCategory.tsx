@@ -7,6 +7,8 @@ import { colors } from "@/styles/colors";
 import Button from "@/components/button";
 import { router } from "expo-router";
 import Elipse from "@/components/elipse";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import Character from "@/components/character";
 
 const images = {
     foods: require("@/assets/images/foodCategory.png"),
@@ -18,6 +20,11 @@ const cardColors = {
     foods: colors.blue[200],
     animals: colors.orange[100],
     soon: colors.gray[300],
+}
+
+const characterImages = {
+    normal: require('@/assets/images/character.png'),
+    happy: require('@/assets/images/characterHappy.png')
 }
 
 
@@ -57,9 +64,18 @@ export default function SelectCategory() {
 
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], height: "100%", overflow: "hidden"}}>
-            <Elipse />
+            <Elipse top={-90} />
             <ScrollView style={styles.container}>
-                <Text style={styles.pageTitle}>Select a category</Text>
+                <View style={styles.headerContainer}>
+                    <View>
+                        <TouchableOpacity onPress={() => { router.back() }}>
+                            <Ionicons name="arrow-back" size={24} color="black" />
+                        </TouchableOpacity>
+                        <Text style={styles.pageTitle}>Categories</Text>
+                        <Text style={styles.subtitle}>Questions will be based on the selected category</Text>
+                    </View>
+                    <Character mood={selectedCategory ? "happy" : "normal"} />
+                </View>
                 <View style={styles.categoriesContainer}>
                     {
                         Object.keys(categories).map(category => {
@@ -83,12 +99,21 @@ const styles = StyleSheet.create({
         textAlign: "center",
         maxHeight: "84%",
     },
+    headerContainer: {
+        marginLeft: 30,
+        flexDirection: "row"
+    },
     pageTitle: {
+        fontFamily: "Ralway",
         fontSize: 30,
-        fontFamily: 'Raleway', 
-        fontWeight: "bold", 
-        color: colors.white[100], 
-        textAlign: "center"
+        fontWeight: "bold",
+        maxWidth: 200,
+        marginVertical: 10,
+    },
+    subtitle: {
+        fontSize: 16,
+        fontFamily: "Raleway",
+        maxWidth: 190
     },
     categoriesContainer: {
         rowGap: 40,
@@ -112,7 +137,7 @@ const styles = StyleSheet.create({
     },
     categoryTitle: {
         fontFamily: "Raleway",
-        textTransform: "uppercase",
+        textTransform: "capitalize",
         fontSize: 20,
         fontWeight: "600",
     },

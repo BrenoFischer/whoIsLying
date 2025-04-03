@@ -1,7 +1,8 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useContext, useState } from "react";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import PlayerInput from "@/components/playerInput";
 import { Player } from "@/types/Player";
 import NewPlayerInput from "@/components/newPlayerInput";
@@ -11,6 +12,7 @@ import { router } from "expo-router";
 import { GameContext, GameContextProvider } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import Elipse from "@/components/elipse";
+import Character from "@/components/character";
 
 const MAX_PLAYERS = 10;
 
@@ -18,7 +20,9 @@ const windowHeight = Dimensions.get("screen").height;
 
 export default function CreateGame() {
     const [players, setPlayers] = useState<Player[]>([]);
-    const { createGame } = useContext(GameContext)
+    const { createGame, game } = useContext(GameContext)
+
+    const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS
 
     function setNewPlayer({id, name}: Player) {
         if(players.length >= MAX_PLAYERS) return
@@ -48,12 +52,25 @@ export default function CreateGame() {
  
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-            <Elipse left={0} bottom={500} />
+            <Elipse top={-30} />
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.title}>Add all players of the round (3 to 10)</Text>
+                    <View style={styles.headerContainer}>
+                        <View>
+                            <TouchableOpacity onPress={() => { router.back() }}>
+                                <Ionicons name="arrow-back" size={24} color="black" />
+                            </TouchableOpacity>
+                            <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
+                                <Text style={styles.headerCategoryTitle}>Category</Text>
+                                <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
+                                <Text style={styles.headerCategoryTitle}>{game.word}</Text>
+                            </View>
+                            <Text style={styles.title}>Add players</Text>
+                            <Text style={styles.title}>(3 to 10)</Text>
+                        </View>
+                        <Character mood={notAvailableToContinue ? "normal" : "happy"} />
+                    </View>
                     <View style={{alignItems: "center"}}>
-                        <Image source={require('@/assets/images/character.png')} style={styles.image} resizeMode="cover"/>
                         {
                             players.length >= MAX_PLAYERS ?
                             <NewPlayerInput disabled={true} setPlayer={() => {}} />
@@ -71,7 +88,7 @@ export default function CreateGame() {
                     </View>
                     <View style={styles.buttonContainer}>
                         {
-                            players.length < 3 || players.length > MAX_PLAYERS ?
+                            notAvailableToContinue ?
                                 <Button text="Create game" onPress={handleCreateGame} variants="disabled" />
                             :
                                 <Button text="Create game" onPress={handleCreateGame} />
@@ -88,26 +105,29 @@ const styles = StyleSheet.create({
         marginTop: 30,
     },
 
-    title: {
-        fontFamily: "Ralway",
-        fontSize: 28,
-        fontWeight: "bold",
-        width: 250,
-        marginBottom: 40,
+    headerContainer: {
         marginLeft: 30,
         marginTop: 20,
+        flexDirection: "row"
     },
 
-    image: {
-        height: 200,
-        width: 200
+    headerCategoryTitle: {
+        textTransform: "capitalize",
+        fontSize: 16,
+        fontFamily: "Raleway",
+    },
+
+    title: {
+        fontFamily: "Ralway",
+        fontSize: 30,
+        fontWeight: "bold",
     },
 
     playersAddedContainer: {
-        marginTop: 30,
+        marginTop: 90,
     },
     buttonContainer: {
         alignItems: "center",
-        marginTop: 50
+        marginTop: 50,
     },
 })
