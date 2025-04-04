@@ -13,13 +13,11 @@ import Character from "@/components/character";
 const images = {
     foods: require("@/assets/images/foodCategory.png"),
     animals: require("@/assets/images/animalCategory.png"),
-    soon: require("@/assets/images/animalCategory.png"),
 };
 
 const cardColors = {
     foods: colors.blue[200],
     animals: colors.orange[100],
-    soon: colors.gray[300],
 }
 
 const characterImages = {
@@ -48,8 +46,15 @@ export default function SelectCategory() {
             <TouchableOpacity
                 style={[
                     styles.categoryCardContainer,
-                    isCategorySelected && {transform: [{scale: 1.15}]}, 
-                    {backgroundColor: cardColors[categoryName as keyof typeof cardColors]}
+                    { backgroundColor: cardColors[categoryName as keyof typeof cardColors] },
+                    isCategorySelected && { 
+                        transform: [{scale: 1.15}],
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 10 },
+                        shadowOpacity: 0.8,
+                        shadowRadius: 5,
+                        elevation: 6,   
+                    }         
                 ]}
                 activeOpacity={1}
                 onPress={() => handleSelectCategory(categoryName)}
@@ -131,9 +136,14 @@ const styles = StyleSheet.create({
         height: 200,
         paddingVertical: 22,
         backgroundColor: colors.orange[100],
-        borderRadius: 16,
         justifyContent: "space-between",
         alignItems: "center",
+        borderRadius: 20,
+        borderBottomWidth: 7,
+        borderEndWidth: 7,
+        borderTopWidth: 4,
+        borderLeftWidth: 4,
+        borderColor: 'white',
     },
     categoryTitle: {
         fontFamily: "Raleway",
