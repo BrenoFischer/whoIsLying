@@ -24,10 +24,10 @@ export default function CreateGame() {
     const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS
     const playerImage = playerGender === 'man' ? 'brenoHappy' : 'paolaAngry'
 
-    function setNewPlayer({id, name}: Player) {
+    function setNewPlayer({id, name, gender}: Player) {
         if(players.length >= MAX_PLAYERS) return
 
-        setPlayers([{id, name}, ...players]);
+        setPlayers([{id, name, gender}, ...players]);
     }
 
     function editPlayer(player: Player, newName: string) {

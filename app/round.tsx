@@ -25,6 +25,8 @@ export default function RoundScreen() {
     router.navigate('/round')
   }
 
+  console.log(game.players)
+
   return (
     <SafeAreaView>
       <Text>Round {game.currentRound} of {totalRounds}</Text>
