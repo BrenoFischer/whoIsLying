@@ -2,8 +2,10 @@ import { Image, StyleSheet } from "react-native"
 
 export default function Character({mood}: {mood: string}) {
     const characterImages = {
-        normal: require('@/assets/images/character.png'),
-        happy: require('@/assets/images/characterHappy.png')
+        manNormal: require('@/assets/images/character.png'),
+        manHappy: require('@/assets/images/characterHappy.png'),
+        paolaAngry: require('@/assets/images/paolaAngry.png'),
+        brenoHappy: require('@/assets/images/brenoHappy.png'),
     }
 
     return(

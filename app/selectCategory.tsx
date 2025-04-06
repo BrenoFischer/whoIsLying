@@ -79,7 +79,7 @@ export default function SelectCategory() {
                         <Text style={styles.pageTitle}>Categories</Text>
                         <Text style={styles.subtitle}>Questions will be based on the selected category</Text>
                     </View>
-                    <Character mood={selectedCategory ? "happy" : "normal"} />
+                    <Character mood={selectedCategory ? "brenoHappy" : "paolaAngry"} />
                 </View>
                 <View style={styles.categoriesContainer}>
                     {

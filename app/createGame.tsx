@@ -1,4 +1,4 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useContext, useState } from "react";
@@ -9,20 +9,20 @@ import NewPlayerInput from "@/components/newPlayerInput";
 import CustomText from "@/components/text";
 import Button from "@/components/button";
 import { router } from "expo-router";
-import { GameContext, GameContextProvider } from "@/context/GameContext";
+import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import Elipse from "@/components/elipse";
 import Character from "@/components/character";
 
 const MAX_PLAYERS = 10;
 
-const windowHeight = Dimensions.get("screen").height;
-
 export default function CreateGame() {
     const [players, setPlayers] = useState<Player[]>([]);
+    const [ playerGender, setPlayerGender ] = useState('man')
     const { createGame, game } = useContext(GameContext)
 
     const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS
+    const playerImage = playerGender === 'man' ? 'brenoHappy' : 'paolaAngry'
 
     function setNewPlayer({id, name}: Player) {
         if(players.length >= MAX_PLAYERS) return
@@ -68,14 +68,14 @@ export default function CreateGame() {
                             <Text style={styles.title}>Add players</Text>
                             <Text style={styles.title}>(3 to 10)</Text>
                         </View>
-                        <Character mood={notAvailableToContinue ? "normal" : "happy"} />
+                        <Character mood={playerImage} />
                     </View>
                     <View style={{alignItems: "center"}}>
                         {
                             players.length >= MAX_PLAYERS ?
-                            <NewPlayerInput disabled={true} setPlayer={() => {}} />
+                            <NewPlayerInput disabled={true} setPlayer={() => {}} currentPlayerGender={playerGender} changePlayerGender={setPlayerGender} />
                             :
-                            <NewPlayerInput disabled={false} setPlayer={setNewPlayer} />
+                            <NewPlayerInput disabled={false} setPlayer={setNewPlayer} currentPlayerGender={playerGender} changePlayerGender={setPlayerGender} />
                         }
                         <View style={styles.playersAddedContainer}>
                             <CustomText>Players added - {players.length}</CustomText>
