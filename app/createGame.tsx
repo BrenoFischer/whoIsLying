@@ -1,28 +1,32 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useContext, useState } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import PlayerInput from "@/components/playerInput";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 import { Player } from "@/types/Player";
 import NewPlayerInput from "@/components/newPlayerInput";
 import CustomText from "@/components/text";
 import Button from "@/components/button";
-import { router } from "expo-router";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import Elipse from "@/components/elipse";
+import PlayerInput from "@/components/playerInput";
 import Character from "@/components/character";
 
 const MAX_PLAYERS = 10;
 
 export default function CreateGame() {
-    const [players, setPlayers] = useState<Player[]>([]);
+    const maleImages = ['breno', 'umpa']
+    const femaleImages = ['paola', 'bothCharacter']
+    const [ players, setPlayers ] = useState<Player[]>([]);
     const [ playerGender, setPlayerGender ] = useState('man')
+    const [ currentImage, setCurrentImage ] = useState(maleImages[0])
+    const [ currentImageIndex, setCurrentImageIndex ] = useState(0)
     const { createGame, game } = useContext(GameContext)
 
     const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS
-    const playerImage = playerGender === 'man' ? 'brenoHappy' : 'paolaAngry'
 
     function setNewPlayer({id, name, gender}: Player) {
         if(players.length >= MAX_PLAYERS) return
@@ -49,6 +53,26 @@ export default function CreateGame() {
         createGame(players);
         router.navigate("/round");
     }
+
+    function handleChangeGender() {
+        setCurrentImageIndex(0)
+        if(playerGender === 'man') { 
+            setPlayerGender('woman')
+            setCurrentImage(femaleImages[0]) 
+        }
+        else { 
+            setPlayerGender('man')
+            setCurrentImage(maleImages[0])
+        }
+    }
+
+    function handleChangeImage() {
+        const imagesArray = playerGender === 'man' ? maleImages : femaleImages
+        const newIndex = imagesArray.length - 1 <= currentImageIndex ? 0 : currentImageIndex + 1
+
+        setCurrentImage(imagesArray[newIndex])
+        setCurrentImageIndex(newIndex)
+    }
  
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
@@ -68,14 +92,19 @@ export default function CreateGame() {
                             <Text style={styles.title}>Add players</Text>
                             <Text style={styles.title}>(3 to 10)</Text>
                         </View>
-                        <Character mood={playerImage} />
+                        <View>
+                            <TouchableOpacity onPress={handleChangeImage}>
+                                <MaterialCommunityIcons style={{left: 20}} name="image-edit" size={35} color={colors.black[100]} />
+                            </TouchableOpacity>
+                            <Character mood={currentImage} />
+                        </View>
                     </View>
                     <View style={{alignItems: "center"}}>
                         {
                             players.length >= MAX_PLAYERS ?
-                            <NewPlayerInput disabled={true} setPlayer={() => {}} currentPlayerGender={playerGender} changePlayerGender={setPlayerGender} />
+                            <NewPlayerInput disabled={true} setPlayer={() => {}} currentPlayerGender={playerGender} handleChangeGender={handleChangeGender} />
                             :
-                            <NewPlayerInput disabled={false} setPlayer={setNewPlayer} currentPlayerGender={playerGender} changePlayerGender={setPlayerGender} />
+                            <NewPlayerInput disabled={false} setPlayer={setNewPlayer} currentPlayerGender={playerGender} handleChangeGender={handleChangeGender} />
                         }
                         <View style={styles.playersAddedContainer}>
                             <CustomText>Players added - {players.length}</CustomText>

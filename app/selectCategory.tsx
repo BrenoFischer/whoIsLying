@@ -20,12 +20,6 @@ const cardColors = {
     animals: colors.orange[100],
 }
 
-const characterImages = {
-    normal: require('@/assets/images/character.png'),
-    happy: require('@/assets/images/characterHappy.png')
-}
-
-
 export default function SelectCategory() {
     const { setGameWord } = useContext(GameContext)
     const [selectedCategory, setSelectedCategory] = useState('')
@@ -79,7 +73,7 @@ export default function SelectCategory() {
                         <Text style={styles.pageTitle}>Categories</Text>
                         <Text style={styles.subtitle}>Questions will be based on the selected category</Text>
                     </View>
-                    <Character mood={selectedCategory ? "brenoHappy" : "paolaAngry"} />
+                    <Character mood={"bothCharacter"} />
                 </View>
                 <View style={styles.categoriesContainer}>
                     {

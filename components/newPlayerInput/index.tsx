@@ -12,10 +12,10 @@ interface NewPlayerInputProps {
     setPlayer: ({id, name}: Player) => void
     disabled: boolean
     currentPlayerGender: string
-    changePlayerGender: Dispatch<SetStateAction<string>>
+    handleChangeGender: () => void
 }
 
-export default function NewPlayerInput({setPlayer, disabled, currentPlayerGender, changePlayerGender}: NewPlayerInputProps) {
+export default function NewPlayerInput({setPlayer, disabled, currentPlayerGender, handleChangeGender}: NewPlayerInputProps) {
     const [newName, setNewName] = useState('');
     const [inputError, setInputError] = useState(false);
 
@@ -32,11 +32,6 @@ export default function NewPlayerInput({setPlayer, disabled, currentPlayerGender
 
     const handleOnFocus = () => {
         setInputError(false);
-    }
-
-    const handleChangeGender = () => {
-        if(currentPlayerGender === 'man') { changePlayerGender('woman') }
-        else {changePlayerGender('man') }
     }
 
     const borderColor = disabled ? colors.gray[100] : inputError ? colors.red[100] : colors.orange[200]
