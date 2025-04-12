@@ -18,8 +18,8 @@ import Character from "@/components/character";
 const MAX_PLAYERS = 10;
 
 export default function CreateGame() {
-    const maleImages = ['breno', 'umpa']
-    const femaleImages = ['paola', 'bothCharacter']
+    const maleImages = ['breno', 'umpa', 'risada']
+    const femaleImages = ['paola', 'sara']
     const [ players, setPlayers ] = useState<Player[]>([]);
     const [ playerGender, setPlayerGender ] = useState('man')
     const [ currentImage, setCurrentImage ] = useState(maleImages[0])
@@ -31,7 +31,7 @@ export default function CreateGame() {
     function setNewPlayer({id, name, gender}: Player) {
         if(players.length >= MAX_PLAYERS) return
 
-        setPlayers([{id, name, gender}, ...players]);
+        setPlayers([{id, name, gender, character: currentImage}, ...players]);
     }
 
     function editPlayer(player: Player, newName: string) {
@@ -51,7 +51,7 @@ export default function CreateGame() {
 
     function handleCreateGame() {
         createGame(players);
-        router.navigate("/round");
+        router.navigate("/showWordToAll");
     }
 
     function handleChangeGender() {

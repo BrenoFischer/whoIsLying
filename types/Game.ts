@@ -7,4 +7,5 @@ export interface Game {
     currentRound: number
     lyingPlayer: Player
     word: undefined | string
+    showingWordToPlayer: number
 }

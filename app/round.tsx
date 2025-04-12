@@ -4,6 +4,7 @@ import { StyleSheet, Text, SafeAreaView } from 'react-native';
 import EndGame from './endGame';
 import Button from '@/components/button';
 import { router } from 'expo-router';
+import { colors } from '@/styles/colors';
 
 
 export default function RoundScreen() {
@@ -25,10 +26,8 @@ export default function RoundScreen() {
     router.navigate('/round')
   }
 
-  console.log(game.players)
-
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
       <Text>Round {game.currentRound} of {totalRounds}</Text>
         <Text>{playerThatAsks.name} asks {playerThatAnswers.name}</Text>
         <Text>{question}</Text>

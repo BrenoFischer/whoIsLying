@@ -5,7 +5,9 @@ export default function Character({mood}: {mood: string}) {
         paola: require('@/assets/images/paola.png'),
         breno: require('@/assets/images/breno.png'),
         umpa: require('@/assets/images/umpa.png'),
-        bothCharacter: require('@/assets/images/bothCharacter.png')
+        bothCharacter: require('@/assets/images/bothCharacter.png'),
+        risada: require('@/assets/images/risada.png'),
+        sara: require('@/assets/images/sara.png')
     }
 
     return(

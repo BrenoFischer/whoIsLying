@@ -2,6 +2,7 @@ import { Game } from "@/types/Game";
 import { Player } from "@/types/Player";
 import { Round } from "@/types/Round";
 import questions from "@/data/questions.json";
+import allCategories from "@/data/categories.json";
 import { createContext, useState } from "react";
 
 interface GameContextType {
@@ -9,12 +10,13 @@ interface GameContextType {
     createGame: (players: Player[]) => void
     setGameWord: (word: string) => void 
     nextRound: () => void
+    showWordToNextPlayer: () => void
   }
 
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: {children: React.ReactNode}) => {
-    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', gender: ''}, word: undefined });
+    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', gender: '', character: ''}, word: undefined, showingWordToPlayer: 0 });
 
     const shuffleRounds = (rounds: Round[]) => {
         for (let i = rounds.length - 1; i > 0; i--) {
@@ -74,23 +76,31 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         return rounds;
     }
 
-    const setGameWord = (word: string) => {
+    const setGameWord = (category: string) => {
+        const categories: any = allCategories
+        const categoryWords: string[] = categories[category].content
+        const word = categoryWords[Math.floor(Math.random() * categoryWords.length)]
         setGame({...game, word})
     }
 
     const createGame = (newPlayers: Player[]) => {
         const rounds = setAllRounds(newPlayers);
         const lyingPlayer: Player = newPlayers[Math.floor(Math.random() * newPlayers.length)] //get a random player to be out of the round 
-        setGame({ players: newPlayers, currentRound: 1, rounds, lyingPlayer, word: undefined });
+        setGame({...game, players: newPlayers, currentRound: 1, rounds, lyingPlayer, showingWordToPlayer: 0 });
     }
 
     const nextRound = () => {
         const newRound = game.currentRound + 1
         setGame({...game, currentRound: newRound})
     }
+
+    const showWordToNextPlayer = () => {
+        const nextPlayer = game.showingWordToPlayer + 1
+        setGame({...game, showingWordToPlayer: nextPlayer})
+    }
  
     return(
-        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound }}>
+        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound, showWordToNextPlayer }}>
             {children}
         </GameContext.Provider>
     )
