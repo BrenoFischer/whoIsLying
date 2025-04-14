@@ -16,7 +16,7 @@ interface GameContextType {
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: {children: React.ReactNode}) => {
-    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', gender: '', character: ''}, word: undefined, showingWordToPlayer: 0 });
+    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', gender: '', character: ''}, category: undefined, word: undefined, showingWordToPlayer: 0 });
 
     const shuffleRounds = (rounds: Round[]) => {
         for (let i = rounds.length - 1; i > 0; i--) {
@@ -80,7 +80,7 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         const categories: any = allCategories
         const categoryWords: string[] = categories[category].content
         const word = categoryWords[Math.floor(Math.random() * categoryWords.length)]
-        setGame({...game, word})
+        setGame({...game, word, category})
     }
 
     const createGame = (newPlayers: Player[]) => {

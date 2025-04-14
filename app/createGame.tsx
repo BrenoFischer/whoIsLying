@@ -26,6 +26,8 @@ export default function CreateGame() {
     const [ currentImageIndex, setCurrentImageIndex ] = useState(0)
     const { createGame, game } = useContext(GameContext)
 
+    const imagesArray = playerGender === 'man' ? maleImages : femaleImages
+
     const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS
 
     function setNewPlayer({id, name, gender}: Player) {
@@ -67,7 +69,6 @@ export default function CreateGame() {
     }
 
     function handleChangeImage() {
-        const imagesArray = playerGender === 'man' ? maleImages : femaleImages
         const newIndex = imagesArray.length - 1 <= currentImageIndex ? 0 : currentImageIndex + 1
 
         setCurrentImage(imagesArray[newIndex])
@@ -93,9 +94,12 @@ export default function CreateGame() {
                             <Text style={styles.title}>(3 to 10)</Text>
                         </View>
                         <View>
-                            <TouchableOpacity onPress={handleChangeImage}>
-                                <MaterialCommunityIcons style={{left: 20}} name="image-edit" size={35} color={colors.black[100]} />
-                            </TouchableOpacity>
+                            <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
+                                <TouchableOpacity onPress={handleChangeImage}>
+                                    <MaterialCommunityIcons style={{left: 20}} name="image-edit" size={35} color={colors.black[100]} />
+                                </TouchableOpacity>
+                                <Text style={{ fontSize: 16, color: colors.white[100], fontWeight: "bold" }}>{currentImageIndex + 1} of {imagesArray.length}</Text>
+                            </View>
                             <Character mood={currentImage} />
                         </View>
                     </View>

@@ -26,7 +26,7 @@ export default function NewPlayerInput({setPlayer, disabled, currentPlayerGender
         }
         setInputError(false);
         const id = uuid.v4();
-        setPlayer({id, name: newName, gender: currentPlayerGender});
+        setPlayer({id, name: newName, gender: currentPlayerGender, character: ''});
         setNewName('');
     }
 
