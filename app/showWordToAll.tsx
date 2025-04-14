@@ -41,7 +41,7 @@ export default function ShowWordToAll() {
   }
 
   return (
-    <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.8 }]}>
+    <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
         <Elipse top={-30} left={-30} />
         <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
             <Text style={styles.headerCategoryTitle}>Category</Text>
@@ -67,7 +67,13 @@ export default function ShowWordToAll() {
           }}>
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
             <View style={styles.modalView}>
-              <Text>Hello World!</Text>
+              <View>
+                <View>
+                    <Text style={styles.titleInformation}>Pass device to:</Text>
+                    <Text style={styles.modalPlayerName}>{currentPlayer.name}</Text>
+                </View>
+              <Character mood={currentPlayer.character} />
+        </View>
               <Button text={`I'm ${currentPlayer.name}`} onPress={() => {setModalVisible(false)}} />
             </View>
           </View>
@@ -96,18 +102,22 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around"
     },
+    modalPlayerName: {
+      fontFamily: "Ralway",
+      fontSize: 25,
+      fontWeight: "bold",
+      color: colors.orange[200]
+    },
     headerCategoryTitle: {
         textTransform: "capitalize",
         fontSize: 16,
         fontFamily: "Raleway",
-        
     },
     titleInformation: {
         fontSize: 20,
         fontFamily: "Raleway",
         fontWeight: "bold",
         color: colors.black[100],
-        marginBottom: 10
     },
     playerName: {
         fontFamily: "Ralway",
