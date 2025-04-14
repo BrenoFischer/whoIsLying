@@ -88,7 +88,7 @@ export default function CreateGame() {
                             <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
                                 <Text style={styles.headerCategoryTitle}>Category</Text>
                                 <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
-                                <Text style={styles.headerCategoryTitle}>{game.word}</Text>
+                                <Text style={styles.headerCategoryTitle}>{game.category}</Text>
                             </View>
                             <Text style={styles.title}>Add players</Text>
                             <Text style={styles.title}>(3 to 10)</Text>

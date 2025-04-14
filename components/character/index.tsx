@@ -1,6 +1,11 @@
 import { Image, StyleSheet } from "react-native"
 
-export default function Character({mood}: {mood: string}) {
+interface CharacterProps {
+    mood: string
+    flip?: boolean
+}
+
+export default function Character({mood, flip=false}: CharacterProps) {
     const characterImages = {
         paola: require('@/assets/images/paola.png'),
         breno: require('@/assets/images/breno.png'),
@@ -11,13 +16,13 @@ export default function Character({mood}: {mood: string}) {
     }
 
     return(
-        <Image source={characterImages[mood as keyof typeof characterImages]} style={styles.image} resizeMode="cover"/>
+        <Image source={characterImages[mood as keyof typeof characterImages]} style={[styles.image, flip && {transform: [{  scaleX: -1 }]}]} resizeMode="cover"/>
     )
 }
 
 const styles = StyleSheet.create({
     image: {
         height: 200,
-        width: 200
+        width: 200,
     }
 })

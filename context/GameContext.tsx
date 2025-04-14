@@ -10,6 +10,7 @@ interface GameContextType {
     createGame: (players: Player[]) => void
     setGameWord: (word: string) => void 
     nextRound: () => void
+    previousRound: () => void
     showWordToNextPlayer: () => void
   }
 
@@ -94,13 +95,18 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         setGame({...game, currentRound: newRound})
     }
 
+    const previousRound = () => {
+        const newRound = game.currentRound - 1
+        setGame({...game, currentRound: newRound})
+    }
+
     const showWordToNextPlayer = () => {
         const nextPlayer = game.showingWordToPlayer + 1
         setGame({...game, showingWordToPlayer: nextPlayer})
     }
  
     return(
-        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound, showWordToNextPlayer }}>
+        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound, previousRound, showWordToNextPlayer }}>
             {children}
         </GameContext.Provider>
     )
