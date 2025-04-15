@@ -1,12 +1,12 @@
-import { GameContext, GameContextProvider } from '@/context/GameContext';
+import { GameContext } from '@/context/GameContext';
 import React, { useContext } from 'react';
 import { StyleSheet, Text, SafeAreaView, View, TouchableOpacity } from 'react-native';
-import EndGame from './endGame';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Character from '@/components/character';
+import Discussion from './discussion';
 
 
 export default function RoundScreen() {
@@ -15,7 +15,7 @@ export default function RoundScreen() {
   const totalRounds = (game.players.length) * 2
 
   if(game.currentRound === totalRounds + 1) {
-    return <EndGame />
+    return <Discussion />
   }
 
   const round = game.rounds[game.currentRound - 1]
