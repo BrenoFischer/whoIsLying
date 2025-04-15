@@ -54,21 +54,17 @@ export default function RoundScreen() {
 
       <View>
         <View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={styles.playerName}>{playerThatAsks.name} <Text style={styles.playerThatAnswers}>asks</Text> {playerThatAnswers.name}</Text>
-          </View>
+          <Text style={styles.playerName}>{playerThatAsks.name} <Text style={styles.playerThatAnswers}>asks</Text> {playerThatAnswers.name}</Text>
           <View style={{ flexDirection: "row" }}> 
             <Character mood={playerThatAsks.character} />
             <Character mood={playerThatAnswers.character} flip />
           </View>
         </View>
-
-        <View></View>
       </View>
-      
-        <Text>{playerThatAsks.name} asks {playerThatAnswers.name}</Text>
-        <Text>{question}</Text>
+      <Text style={styles.question}>{question}</Text>
+      <View style={styles.buttonContainer}>
         <Button text='Continue' onPress={handleNextRound} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -88,9 +84,26 @@ const styles = StyleSheet.create({
     fontFamily: "Ralway",
     fontSize: 40,
     fontWeight: "bold",
-    color: colors.white[100]
+    color: colors.white[100],
+    textAlign: "center",
   },
   playerThatAnswers: {
     color: colors.orange[200]
+  },
+  question: {
+    fontSize: 30,
+    color: colors.white[100],
+    fontFamily: "Sigmar",
+    padding: 20,
+    textAlign: "center",
+    marginTop: 20,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 60,
+    left: 0,
+    right: 0,
+    justifyContent: 'center', 
+    alignItems: 'center',
   },
 });
