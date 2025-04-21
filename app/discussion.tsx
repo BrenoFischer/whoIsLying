@@ -4,7 +4,7 @@ import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
 import { useContext } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Discussion() {
@@ -49,21 +49,23 @@ export default function Discussion() {
         <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
             <Elipse left={10} />
             <Text style={styles.title}>Discussion time!</Text>
-            <View style={styles.table}>
-                {
-                    agregatedArray.map(round => {
-                        return(
-                            <View key={round.question}>
-                                <Text style={styles.playerName}>{round.playerThatAnswers.name}</Text>
-                                <Text style={styles.question}>{round.question}</Text>
-                            </View>
-                        )
-                    })
-                }
-            </View>
-            <View style={styles.buttonContainer}>
-                <Button text="Continue" onPress={handleNextPage} />
-            </View>
+            <ScrollView>
+                <View style={styles.table}>
+                    {
+                        agregatedArray.map(round => {
+                            return(
+                                <View key={round.question}>
+                                    <Text style={styles.playerName}>{round.playerThatAnswers.name}</Text>
+                                    <Text style={styles.question}>{round.question}</Text>
+                                </View>
+                            )
+                        })
+                    }
+                </View>
+                <View style={styles.buttonContainer}>
+                    <Button text="Continue" onPress={handleNextPage} />
+                </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }
@@ -81,6 +83,7 @@ const styles = StyleSheet.create({
         gap: 10,
         padding: 20,
         marginHorizontal: 25,
+        marginBottom: 200,
         backgroundColor: colors.white[100],
         borderRadius: 10,
         shadowColor: '#000',

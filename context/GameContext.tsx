@@ -34,7 +34,7 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
 
         setOfQuestions = setOfQuestions.filter(q => q !== randomQuestion)
 
-        return randomQuestion
+        return {question: randomQuestion, questions: setOfQuestions}
     }
 
     const setAllRounds = (newPlayers: Player[]): Round[] => {
@@ -51,7 +51,9 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         for(let i=0; i < numberOfPlayers; i++) {
             const playerThatAsks = newPlayers[i]
             const playerThatAnswers = i === (numberOfPlayers - 1) ? newPlayers[0] : newPlayers[i+1]
-            const question = getRandomQuestionFromSet(firstSetOfQuestions)
+            const set = getRandomQuestionFromSet(firstSetOfQuestions)
+            const question = set.question
+            firstSetOfQuestions = set.questions
             
             const round: Round = {playerThatAsks, playerThatAnswers, question }
 
@@ -64,7 +66,9 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         for(let i=(numberOfPlayers - 1); i >= 0; i--) {
             const playerThatAsks = newPlayers[i]
             const playerThatAnswers = i === 0 ? newPlayers[numberOfPlayers - 1] : newPlayers[i - 1]
-            const question = getRandomQuestionFromSet(secondSetOfQuestions)
+            const set = getRandomQuestionFromSet(secondSetOfQuestions)
+            const question = set.question
+            secondSetOfQuestions = set.questions
 
             const round: Round = {playerThatAsks, playerThatAnswers, question}
 
