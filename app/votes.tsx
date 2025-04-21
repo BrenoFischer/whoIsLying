@@ -1,10 +1,174 @@
-import { Text } from "react-native";
+import { GameContext } from "@/context/GameContext";
+import { colors } from "@/styles/colors";
+import { useContext, useState } from "react";
+import { Alert, Modal, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Button from "@/components/button";
+import { router } from "expo-router";
+import Elipse from "@/components/elipse";
+import Character from "@/components/character";
 
 export default function Votes() {
+    const { game } = useContext(GameContext)
+    const players = game.players
+    const [ player, setPlayer ] = useState(players[0])
+    const [ playerIndex, setPlayerIndex ] = useState(0)
+    const [ modalVisible, setModalVisible ] = useState(true);
+    const [ selectedPlayer, setSelectedPlayer ] = useState(undefined)
+
+    const handleNextPlayer = () => {
+        const newIndex = playerIndex + 1
+        if(newIndex >= players.length) {
+            router.navigate('/endGame')
+        }
+        else {
+            setPlayerIndex(newIndex)
+            setPlayer(players[newIndex])
+            setModalVisible(true)
+        }
+    }
+
+    const getRestOfPlayers = () => {
+        return players.filter(p => p.id !== player.id)
+    }
+
+    const restOfPlayer = getRestOfPlayers()
+
     return(
-        <SafeAreaView>
-            <Text>Vote</Text>
+        <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, , modalVisible && { opacity: 0.1 }]}>
+            <Elipse top={-30} left={-30} />
+            <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
+                <Text style={styles.headerCategoryTitle}>Vote</Text>
+                <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
+                <Text style={styles.headerCategoryTitle}>Player {playerIndex + 1} of {players.length}</Text>
+            </View>
+            <View style={styles.headerContainer}>
+                <View>
+                    <Text style={styles.titleInformation}>Pass device to:</Text>
+                    <Text style={styles.playerName}>{player.name}</Text>
+                </View>
+                <Character mood={player.character} />
+            </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+                }}>
+                <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={styles.modalView}>
+                    <View>
+                    <View>
+                        <Text style={styles.titleInformation}>Pass device to:</Text>
+                        <Text style={styles.modalPlayerName}>{player.name}</Text>
+                    </View>
+                    <Character mood={player.character} />
+                </View>
+                    <Button text={`I'm ${player.name}`} onPress={() => {setModalVisible(false)}} />
+                </View>
+                </View>
+            </Modal>
+            <View style={styles.table}>
+                <Text style={styles.playerNameOnTable}>{player.name}, <Text style={styles.tableText}>vote on the person you think is the impostor:</Text></Text>
+                {
+                    restOfPlayer.map(p => {
+                        return <Text style={styles.playerOptions}>{p.name}</Text>
+                    })
+                }
+            </View>
+            <View style={styles.buttonContainer}>
+                <Button text="Vote!" onPress={handleNextPlayer} />
+            </View>
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    headerCategoryTitle: {
+        textTransform: "capitalize",
+        fontSize: 16,
+        fontFamily: "Raleway",
+    },
+    headerContainer: {
+        marginLeft: 30,
+        marginTop: 20,
+        flexDirection: "row",
+        justifyContent: "space-around"
+    },
+    titleInformation: {
+        fontSize: 20,
+        fontFamily: "Raleway",
+        fontWeight: "bold",
+        color: colors.black[100],
+    },
+    playerName: {
+        fontFamily: "Ralway",
+        fontSize: 40,
+        fontWeight: "bold",
+        color: colors.white[100]
+    },
+    playerNameOnTable: {
+        fontFamily: "Ralway",
+        fontSize: 30,
+        fontWeight: "bold",
+        color: colors.orange[200]
+    },
+    playerOptions: {
+        fontFamily: "Ralway",
+        fontSize: 40,
+        fontWeight: "bold",
+        color: colors.black[200]
+    },
+    tableText: {
+        fontSize: 20,
+        fontFamily: "Raleway",
+        color: colors.black[100],
+    },
+    buttonContainer: {
+        position: "absolute",
+        bottom: 60,
+        left: 0,
+        right: 0,
+        justifyContent: 'center', 
+        alignItems: 'center',
+    },
+    table: {
+        gap: 10,
+        padding: 20,
+        marginHorizontal: 25,
+        marginBottom: 200,
+        backgroundColor: colors.white[100],
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    modalPlayerName: {
+        fontFamily: "Ralway",
+        fontSize: 25,
+        fontWeight: "bold",
+        color: colors.orange[200]
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+})

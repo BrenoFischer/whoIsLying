@@ -1,4 +1,5 @@
 import Button from "@/components/button";
+import Character from "@/components/character";
 import Elipse from "@/components/elipse";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
@@ -48,7 +49,13 @@ export default function Discussion() {
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
             <Elipse left={10} />
-            <Text style={styles.title}>Discussion time!</Text>
+            <View style={{alignItems: "center", justifyContent: "center", marginTop: 60}}>
+                <View style={{ marginBottom: 30 }}>
+                    <Text style={styles.title}>Discussion time!</Text>
+                    <Text style={styles.subtitle}>Review all questions and analyse each detail that was answered</Text>
+                </View>
+                <Character mood="bothCharacter" />
+            </View>
             <ScrollView>
                 <View style={styles.table}>
                     {
@@ -73,11 +80,15 @@ export default function Discussion() {
 const styles = StyleSheet.create({
     title: {
         fontSize: 35,
+        maxWidth: 250,
         fontFamily: "Raleway",
         fontWeight: "bold",
         textAlign: "center",
-        marginTop: 50,
-        marginBottom: 40
+    },
+    subtitle: {
+        fontSize: 16,
+        fontFamily: "Raleway",
+        maxWidth: 250,
     },
     table: {
         gap: 10,

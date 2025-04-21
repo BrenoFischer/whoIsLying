@@ -73,7 +73,7 @@ export default function ShowWordToAll() {
                     <Text style={styles.modalPlayerName}>{currentPlayer.name}</Text>
                 </View>
               <Character mood={currentPlayer.character} />
-        </View>
+          </View>
               <Button text={`I'm ${currentPlayer.name}`} onPress={() => {setModalVisible(false)}} />
             </View>
           </View>
