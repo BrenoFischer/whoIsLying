@@ -1,5 +1,6 @@
 import { Player } from "./Player";
 import { Round } from "./Round";
+import { Vote } from "./Vote";
 
 export interface Game {
     players: Player[]
@@ -9,4 +10,5 @@ export interface Game {
     category: undefined | string
     word: undefined | string
     showingWordToPlayer: number
+    votes: Vote[]
 }

@@ -1,30 +1,34 @@
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { useContext, useState } from "react";
-import { Alert, Modal, StyleSheet, Text, View } from "react-native";
+import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/button";
 import { router } from "expo-router";
 import Elipse from "@/components/elipse";
 import Character from "@/components/character";
+import { Player } from "@/types/Player";
 
 export default function Votes() {
-    const { game } = useContext(GameContext)
+    const { game, addVote } = useContext(GameContext)
     const players = game.players
     const [ player, setPlayer ] = useState(players[0])
     const [ playerIndex, setPlayerIndex ] = useState(0)
     const [ modalVisible, setModalVisible ] = useState(true);
-    const [ selectedPlayer, setSelectedPlayer ] = useState(undefined)
+    const [ selectedPlayer, setSelectedPlayer ] = useState<Player | undefined>(undefined)
 
     const handleNextPlayer = () => {
         const newIndex = playerIndex + 1
+        addVote(player, selectedPlayer!)
+
         if(newIndex >= players.length) {
-            router.navigate('/endGame')
+            router.navigate('/votesResults')
         }
         else {
             setPlayerIndex(newIndex)
             setPlayer(players[newIndex])
             setModalVisible(true)
+            setSelectedPlayer(undefined)
         }
     }
 
@@ -32,10 +36,25 @@ export default function Votes() {
         return players.filter(p => p.id !== player.id)
     }
 
+
+    const handleSelectPlayer = (player: Player) => {
+        setSelectedPlayer(player)
+    }
+
+    function PlayerVoteOption({player}: {player: Player}){
+        const isPlayerSelected = selectedPlayer === undefined ? false : player.id === selectedPlayer.id
+
+        return(
+            <TouchableOpacity onPress={() => handleSelectPlayer(player)} style={[styles.container, isPlayerSelected && {backgroundColor: colors.orange[200]}]}>
+                <Text style={styles.playerOptionName}>{player.name}</Text>
+            </TouchableOpacity>
+        )
+    }
+
     const restOfPlayer = getRestOfPlayers()
 
     return(
-        <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, , modalVisible && { opacity: 0.1 }]}>
+        <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
             <Elipse top={-30} left={-30} />
             <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
                 <Text style={styles.headerCategoryTitle}>Vote</Text>
@@ -70,16 +89,16 @@ export default function Votes() {
                 </View>
                 </View>
             </Modal>
-            <View style={styles.table}>
+            <ScrollView style={styles.table}>
                 <Text style={styles.playerNameOnTable}>{player.name}, <Text style={styles.tableText}>vote on the person you think is the impostor:</Text></Text>
                 {
                     restOfPlayer.map(p => {
-                        return <Text style={styles.playerOptions}>{p.name}</Text>
+                        return <PlayerVoteOption key={p.id} player={p} />
                     })
                 }
-            </View>
+            </ScrollView>
             <View style={styles.buttonContainer}>
-                <Button text="Vote!" onPress={handleNextPlayer} />
+                <Button text="Vote!" onPress={handleNextPlayer} variants={selectedPlayer ? "primary" : "disabled" } />
             </View>
         </SafeAreaView>
     )
@@ -115,12 +134,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: colors.orange[200]
     },
-    playerOptions: {
-        fontFamily: "Ralway",
-        fontSize: 40,
-        fontWeight: "bold",
-        color: colors.black[200]
-    },
     tableText: {
         fontSize: 20,
         fontFamily: "Raleway",
@@ -135,10 +148,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     table: {
-        gap: 10,
         padding: 20,
         marginHorizontal: 25,
-        marginBottom: 200,
+        maxHeight: 380,
         backgroundColor: colors.white[100],
         borderRadius: 10,
         shadowColor: '#000',
@@ -170,5 +182,21 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
+    },
+    container: {
+        width: 300,
+        alignItems: "center",
+        borderWidth: 2,
+        borderRadius: 10,
+        borderColor: colors.orange[200],
+        marginTop: 15,
+        paddingHorizontal: 10,
+        paddingVertical: 9,
+        backgroundColor: colors.white[100],
+    },
+    playerOptionName: {
+        fontFamily: "Ralway",
+        fontSize: 20,
+        color: colors.black[200]
     },
 })

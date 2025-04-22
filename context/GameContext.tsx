@@ -12,12 +12,22 @@ interface GameContextType {
     nextRound: () => void
     previousRound: () => void
     showWordToNextPlayer: () => void
+    addVote: (playerThatVoted: Player, playerVoted: Player) => void
   }
 
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: {children: React.ReactNode}) => {
-    const [game, setGame] = useState<Game>({ players: [], currentRound: 1, rounds: [], lyingPlayer: {id: '', name: '', gender: '', character: ''}, category: undefined, word: undefined, showingWordToPlayer: 0 });
+    const [game, setGame] = useState<Game>({ 
+        players: [], 
+        currentRound: 1, 
+        rounds: [], 
+        lyingPlayer: {id: '', name: '', gender: '', character: ''}, 
+        category: undefined, 
+        word: undefined, 
+        showingWordToPlayer: 0,
+        votes: []
+    });
 
     const shuffleRounds = (rounds: Round[]) => {
         for (let i = rounds.length - 1; i > 0; i--) {
@@ -108,9 +118,14 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         const nextPlayer = game.showingWordToPlayer + 1
         setGame({...game, showingWordToPlayer: nextPlayer})
     }
- 
+    
+    const addVote = (playerThatVoted: Player, playerVoted: Player) => {
+        const newVotes = [...game.votes, {playerThatVoted, playerVoted}]
+        setGame({...game, votes: newVotes})
+    } 
+
     return(
-        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound, previousRound, showWordToNextPlayer }}>
+        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound, previousRound, showWordToNextPlayer, addVote }}>
             {children}
         </GameContext.Provider>
     )
