@@ -4,6 +4,7 @@ import Elipse from "@/components/elipse";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { Player } from "@/types/Player";
+import { router } from "expo-router";
 import { useContext } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -123,7 +124,7 @@ export default function VotesResults() {
                     }
             </ScrollView>
             <View style={styles.buttonContainer}>
-                <Button text='Reveal impostor' onPress={() => {}} />
+                <Button text='Reveal impostor' onPress={() => { router.navigate('/revealImpostor') }} />
             </View>
         </SafeAreaView>
     )
