@@ -6,6 +6,7 @@ import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
 import Character from '@/components/character';
 import Elipse from '@/components/elipse';
+import PlayerModal from '@/components/modal';
 
 
 export default function ShowWordToAll() {
@@ -57,27 +58,7 @@ export default function ShowWordToAll() {
             </View>
             <Character mood={currentPlayer.character} />
         </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}>
-          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
-            <View style={styles.modalView}>
-              <View>
-                <View>
-                    <Text style={styles.titleInformation}>Pass device to:</Text>
-                    <Text style={styles.modalPlayerName}>{currentPlayer.name}</Text>
-                </View>
-              <Character mood={currentPlayer.character} />
-          </View>
-              <Button text={`I'm ${currentPlayer.name}`} onPress={() => {setModalVisible(false)}} />
-            </View>
-          </View>
-        </Modal>
+        <PlayerModal player={currentPlayer} setModalVisible={setModalVisible} modalVisible={modalVisible} />
         <View style={styles.secretWordContainer}>
             <Text style={styles.secretWord}>{displayWord}</Text>
             <Text style={styles.subtitle}>{displaySubtitle}</Text>

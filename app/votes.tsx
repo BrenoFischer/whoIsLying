@@ -8,6 +8,7 @@ import { router } from "expo-router";
 import Elipse from "@/components/elipse";
 import Character from "@/components/character";
 import { Player } from "@/types/Player";
+import PlayerModal from "@/components/modal";
 
 export default function Votes() {
     const { game, addVote } = useContext(GameContext)
@@ -68,27 +69,7 @@ export default function Votes() {
                 </View>
                 <Character mood={player.character} />
             </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-                setModalVisible(!modalVisible);
-                }}>
-                <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
-                <View style={styles.modalView}>
-                    <View>
-                    <View>
-                        <Text style={styles.titleInformation}>Pass device to:</Text>
-                        <Text style={styles.modalPlayerName}>{player.name}</Text>
-                    </View>
-                    <Character mood={player.character} />
-                </View>
-                    <Button text={`I'm ${player.name}`} onPress={() => {setModalVisible(false)}} />
-                </View>
-                </View>
-            </Modal>
+            <PlayerModal player={player} modalVisible={modalVisible} setModalVisible={setModalVisible} />
             <ScrollView style={styles.table}>
                 <Text style={styles.playerNameOnTable}>{player.name}, <Text style={styles.tableText}>vote on the person you think is the impostor:</Text></Text>
                 {
