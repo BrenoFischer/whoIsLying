@@ -1,10 +1,11 @@
-import { Text, View } from "react-native";
+import { colors } from "@/styles/colors";
+import { SafeAreaView, Text } from "react-native";
 
 
 export default function EndGame() {
     return(
-        <View>
+        <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
             <Text>End game</Text>
-        </View>
+        </SafeAreaView>
     )
 }
