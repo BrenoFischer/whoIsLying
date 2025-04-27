@@ -9,6 +9,8 @@ interface GameContextType {
     game: Game
     createGame: (players: Player[]) => void
     setGameWord: (word: string) => void 
+    getRandomWord: (category: string) => string
+    setSelectedWord: (newWord: string) => void
     nextRound: () => void
     previousRound: () => void
     showWordToNextPlayer: () => void
@@ -25,6 +27,7 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         lyingPlayer: {id: '', name: '', gender: '', character: ''}, 
         category: undefined, 
         word: undefined, 
+        selectedWord: undefined,
         showingWordToPlayer: 0,
         votes: []
     });
@@ -91,11 +94,19 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         return rounds;
     }
 
-    const setGameWord = (category: string) => {
+    const getRandomWord = (category: string) => {
         const categories: any = allCategories
         const categoryWords: string[] = categories[category].content
-        const word = categoryWords[Math.floor(Math.random() * categoryWords.length)]
+        return categoryWords[Math.floor(Math.random() * categoryWords.length)]
+    }
+
+    const setGameWord = (category: string) => {
+        const word = getRandomWord(category)
         setGame({...game, word, category})
+    }
+
+    const setSelectedWord = (newWord: string) => {
+        setGame({...game, selectedWord: newWord})
     }
 
     const createGame = (newPlayers: Player[]) => {
@@ -125,7 +136,7 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
     } 
 
     return(
-        <GameContext.Provider value={{ game, createGame, setGameWord, nextRound, previousRound, showWordToNextPlayer, addVote }}>
+        <GameContext.Provider value={{ game, createGame, setGameWord, getRandomWord, setSelectedWord, nextRound, previousRound, showWordToNextPlayer, addVote }}>
             {children}
         </GameContext.Provider>
     )

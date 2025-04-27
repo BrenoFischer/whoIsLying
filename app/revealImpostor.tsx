@@ -2,6 +2,7 @@ import Button from "@/components/button";
 import Character from "@/components/character";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
+import { router } from "expo-router";
 import { useContext, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 
@@ -49,7 +50,7 @@ export default function RevealImpostor() {
                 }
                 <View style={styles.buttonContainer}>
                     {nextReveal ? 
-                            <Button text="Continue" onPress={() => {}} />
+                            <Button text="Continue" onPress={() => { router.navigate('/words') }} />
                         :
                             <Button text="Done it" onPress={() => setNextReveal(true)} />
                     }

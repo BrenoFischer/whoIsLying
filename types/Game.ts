@@ -9,6 +9,7 @@ export interface Game {
     lyingPlayer: Player
     category: undefined | string
     word: undefined | string
+    selectedWord: undefined | string
     showingWordToPlayer: number
     votes: Vote[]
 }
