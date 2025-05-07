@@ -33,7 +33,7 @@ export default function CreateGame() {
     function setNewPlayer({id, name, gender}: Player) {
         if(players.length >= MAX_PLAYERS) return
 
-        setPlayers([{id, name, gender, character: currentImage}, ...players]);
+        setPlayers([{id, name, gender, character: currentImage, score: 0}, ...players]);
     }
 
     function editPlayer(player: Player, newName: string) {

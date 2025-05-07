@@ -15,6 +15,8 @@ interface GameContextType {
     previousRound: () => void
     showWordToNextPlayer: () => void
     addVote: (playerThatVoted: Player, playerVoted: Player) => void
+    updatePlayers: (players: Player[]) => void
+    updatePointsToPlayer: (player: Player, points: number) => Player[]
   }
 
 export const GameContext = createContext({} as GameContextType);
@@ -24,7 +26,7 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         players: [], 
         currentRound: 1, 
         rounds: [], 
-        lyingPlayer: {id: '', name: '', gender: '', character: ''}, 
+        lyingPlayer: {id: '', name: '', gender: '', character: '', score: 0}, 
         category: undefined, 
         word: undefined, 
         selectedWord: undefined,
@@ -129,14 +131,51 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         const nextPlayer = game.showingWordToPlayer + 1
         setGame({...game, showingWordToPlayer: nextPlayer})
     }
+
+    const updatePlayers = (players: Player[]) => {
+        setGame({...game, players})
+    }
+
+    const updatePointsToPlayer = (player: Player, points: number) => {
+        const updatedPlayers = game.players.map(p => {
+            if(player.id === p.id) {
+                return {...player, score: player.score + points}
+            } else {
+                return p
+            }
+        })
+
+        return updatedPlayers
+    }
     
     const addVote = (playerThatVoted: Player, playerVoted: Player) => {
         const newVotes = [...game.votes, {playerThatVoted, playerVoted}]
-        setGame({...game, votes: newVotes})
+
+        //add 50 points if player voted correctly on the impostor
+        if(playerVoted.id === game.lyingPlayer.id) {
+            const updatedPlayers = updatePointsToPlayer(playerThatVoted, 50)
+            setGame({...game, votes: newVotes, players: updatedPlayers})
+        }
+        else {
+            setGame({...game, votes: newVotes})
+        }
     } 
 
     return(
-        <GameContext.Provider value={{ game, createGame, setGameWord, getRandomWord, setSelectedWord, nextRound, previousRound, showWordToNextPlayer, addVote }}>
+        <GameContext.Provider value={
+            { 
+                game, 
+                createGame,
+                setGameWord, 
+                getRandomWord, 
+                setSelectedWord, 
+                nextRound, 
+                previousRound, 
+                showWordToNextPlayer, 
+                addVote, 
+                updatePointsToPlayer,
+                updatePlayers, 
+            }}>
             {children}
         </GameContext.Provider>
     )

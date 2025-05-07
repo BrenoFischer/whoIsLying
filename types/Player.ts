@@ -3,4 +3,5 @@ export interface Player {
     name: string,
     gender: string,
     character: string,
+    score: number
 }

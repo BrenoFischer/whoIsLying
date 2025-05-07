@@ -9,7 +9,17 @@ import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 
 export default function RevealWord() {
     const [secretWordRevealed, setSecretWordRevealed] = useState(false)
-    const {game} = useContext(GameContext)
+    const {game, updatePointsToPlayer, updatePlayers} = useContext(GameContext)
+
+    const handleContinue = () => {
+        //if impostor got correct the secret word, it obtains 50 points
+        if(game.selectedWord === game.word) {
+            const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 50)
+            updatePlayers(updatedPlayers)
+        }
+
+        router.navigate('/endGame')
+    }
         
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
@@ -32,7 +42,7 @@ export default function RevealWord() {
             <View style={styles.buttonContainer}>
                 {
                     secretWordRevealed ?
-                        <Button text="Continue" onPress={() => { router.navigate('/endGame') }} />
+                        <Button text="Continue" onPress={handleContinue} />
                     :
                         <Button text="Reveal secret word" onPress={() => {setSecretWordRevealed(true)}} />
 

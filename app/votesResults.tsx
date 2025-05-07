@@ -1,6 +1,5 @@
 import Button from "@/components/button";
 import Character from "@/components/character";
-import Elipse from "@/components/elipse";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { Player } from "@/types/Player";
@@ -15,7 +14,7 @@ type VotesByPlayerType = {
 }
 
 export default function VotesResults() {
-    const { game } = useContext(GameContext)
+    const { game, updatePointsToPlayer, updatePlayers } = useContext(GameContext)
 
     let votesByPlayer: VotesByPlayerType[] = game.players.map(p => {
         return({player: p, votes: 0, playersThatVoted: []})
@@ -75,6 +74,23 @@ export default function VotesResults() {
     const highestVoted = getMostVotedPlayer()
     const isTied = highestVoted.length > 1
 
+    const handleContinue = () => {
+        //check if none players voted on the impostor, so impostor obtains 50 points
+        let impostorWasVoted = false
+        game.votes.forEach(v => {
+            if(v.playerVoted.id === game.lyingPlayer.id) {
+                impostorWasVoted = true
+            }
+        })
+
+        if(!impostorWasVoted) {
+            const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 50)
+            updatePlayers(updatedPlayers)
+        }
+
+        router.navigate('/revealImpostor')
+    }
+
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
             <ScrollView style={{ marginBottom: 20 }}>
@@ -124,7 +140,7 @@ export default function VotesResults() {
                     }
             </ScrollView>
             <View style={styles.buttonContainer}>
-                <Button text='Reveal impostor' onPress={() => { router.navigate('/revealImpostor') }} />
+                <Button text='Reveal impostor' onPress={handleContinue} />
             </View>
         </SafeAreaView>
     )

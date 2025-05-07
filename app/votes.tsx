@@ -11,8 +11,8 @@ import { Player } from "@/types/Player";
 import PlayerModal from "@/components/modal";
 
 export default function Votes() {
-    const { game, addVote } = useContext(GameContext)
-    const players = game.players
+    let { game, addVote } = useContext(GameContext)
+    let players = game.players
     const [ player, setPlayer ] = useState(players[0])
     const [ playerIndex, setPlayerIndex ] = useState(0)
     const [ modalVisible, setModalVisible ] = useState(true);
@@ -20,6 +20,7 @@ export default function Votes() {
 
     const handleNextPlayer = () => {
         const newIndex = playerIndex + 1
+        
         addVote(player, selectedPlayer!)
 
         if(newIndex >= players.length) {
