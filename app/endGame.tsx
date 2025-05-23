@@ -3,12 +3,13 @@ import Character from "@/components/character";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { Player } from "@/types/Player";
+import { router } from "expo-router";
 import { useContext } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
 
 export default function EndGame() {
-    const {game} = useContext(GameContext)
+    const { game, addNewMatch } = useContext(GameContext)
 
     const sortedWinningPlayers = game.players
         .slice()
@@ -33,6 +34,18 @@ export default function EndGame() {
         )
     }
 
+    const handleContinue = () => {
+        const currentMatch = game.currentMatch
+        
+        if(currentMatch >= game.maximumMatches) {
+            router.navigate('/endOfMatches')
+        }
+        else {
+            addNewMatch()
+            router.navigate('/createGame')
+        }
+    }
+
     return(
         <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
             <ScrollView style={{marginBottom: 100}}>
@@ -44,7 +57,7 @@ export default function EndGame() {
                 }
             </ScrollView>
             <View style={styles.buttonContainer}>
-                <Button text="Continue" onPress={() => {}} />
+                <Button text="Continue" onPress={handleContinue} />
             </View>
         </SafeAreaView>
     )

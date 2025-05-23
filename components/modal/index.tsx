@@ -1,16 +1,14 @@
-import { Alert, Modal, StyleSheet, Text, View } from "react-native";
-import Character from "../character";
-import Button from "../button";
+import { Alert, Modal, StyleSheet, View } from "react-native";
 import { colors } from "@/styles/colors";
-import { Player } from "@/types/Player";
+import { ReactNode } from "react";
 
-interface PlayerModalProps {
+interface ModalProps {
     modalVisible: boolean
     setModalVisible: (modalVisible: boolean) => void
-    player: Player
+    children: ReactNode
 }
 
-export default function PlayerModal({modalVisible, setModalVisible, player}: PlayerModalProps) {
+export default function CustomModal({ modalVisible, setModalVisible, children }: ModalProps) {
     return(
         <Modal
             animationType="slide"
@@ -21,28 +19,15 @@ export default function PlayerModal({modalVisible, setModalVisible, player}: Pla
             setModalVisible(!modalVisible);
             }}>
             <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
-            <View style={styles.modalView}>
-                <View>
-                <View>
-                    <Text style={styles.titleInformation}>Pass device to:</Text>
-                    <Text style={styles.modalPlayerName}>{player.name}</Text>
+                <View style={styles.modalView}>
+                    {children}
                 </View>
-                <Character mood={player.character} />
-            </View>
-                <Button text={`I'm ${player.name}`} onPress={() => {setModalVisible(false)}} />
-            </View>
             </View>
         </Modal>
     )
 }
 
 const styles = StyleSheet.create({
-    modalPlayerName: {
-        fontFamily: "Ralway",
-        fontSize: 25,
-        fontWeight: "bold",
-        color: colors.orange[200]
-    },
     modalView: {
         margin: 20,
         backgroundColor: 'white',
@@ -57,11 +42,5 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-    },
-    titleInformation: {
-        fontSize: 20,
-        fontFamily: "Raleway",
-        fontWeight: "bold",
-        color: colors.black[100],
     },
 })

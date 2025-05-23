@@ -1,11 +1,11 @@
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font'; 
 import * as SplashScreen from 'expo-splash-screen'; 
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import { GameContextProvider } from "@/context/GameContext";
+import { AppResetProvider } from "@/context/AppResetContext"; // <-- Add this
 
 SplashScreen.preventAutoHideAsync();
-
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -20,18 +20,17 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
-
- return (
-  <GameContextProvider>
-    <Stack 
-     screenOptions={{
-       headerShown: false,
-     }} 
-    />
-  </GameContextProvider>
- )
+  return (
+    <AppResetProvider>
+      <GameContextProvider>
+        <Stack 
+          screenOptions={{
+            headerShown: false,
+          }} 
+        />
+      </GameContextProvider>
+    </AppResetProvider>
+  );
 }

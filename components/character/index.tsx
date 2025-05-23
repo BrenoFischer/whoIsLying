@@ -12,7 +12,8 @@ export default function Character({mood, flip=false}: CharacterProps) {
         umpa: require('@/assets/images/umpa.png'),
         bothCharacter: require('@/assets/images/bothCharacter.png'),
         risada: require('@/assets/images/risada.png'),
-        sara: require('@/assets/images/sara.png')
+        sara: require('@/assets/images/sara.png'),
+        luh: require('@/assets/images/luh.png')
     }
 
     return(

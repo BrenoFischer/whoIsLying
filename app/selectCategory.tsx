@@ -30,7 +30,7 @@ export default function SelectCategory() {
 
     const handleContinueWithSelectedCategory = () => {
         setGameWord(selectedCategory)
-        router.navigate("/createGame")
+        router.replace("/showWordToAll")
     }
 
     function CategoryCard({categoryName}: {categoryName: string}) {

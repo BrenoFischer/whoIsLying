@@ -20,11 +20,11 @@ const MAX_PLAYERS = 10;
 export default function CreateGame() {
     const maleImages = ['breno', 'umpa', 'risada']
     const femaleImages = ['paola', 'sara']
-    const [ players, setPlayers ] = useState<Player[]>([]);
     const [ playerGender, setPlayerGender ] = useState('man')
     const [ currentImage, setCurrentImage ] = useState(maleImages[0])
     const [ currentImageIndex, setCurrentImageIndex ] = useState(0)
     const { createGame, game } = useContext(GameContext)
+    const [ players, setPlayers ] = useState<Player[]>(game.players);
 
     const imagesArray = playerGender === 'man' ? maleImages : femaleImages
 
@@ -53,7 +53,7 @@ export default function CreateGame() {
 
     function handleCreateGame() {
         createGame(players);
-        router.navigate("/showWordToAll");
+        router.replace("/selectCategory");
     }
 
     function handleChangeGender() {

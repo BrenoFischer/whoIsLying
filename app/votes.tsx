@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import Elipse from "@/components/elipse";
 import Character from "@/components/character";
 import { Player } from "@/types/Player";
-import PlayerModal from "@/components/modal";
+import PlayerModal from "@/components/playerModal";
 
 export default function Votes() {
     let { game, addVote } = useContext(GameContext)
@@ -24,7 +24,11 @@ export default function Votes() {
         addVote(player, selectedPlayer!)
 
         if(newIndex >= players.length) {
-            router.navigate('/votesResults')
+            setPlayerIndex(0)
+            setPlayer(players[0])
+            setModalVisible(true)
+            setSelectedPlayer(undefined)
+            router.replace('/votesResults')
         }
         else {
             setPlayerIndex(newIndex)

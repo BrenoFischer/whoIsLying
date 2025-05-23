@@ -1,10 +1,8 @@
 import { colors } from '@/styles/colors';
-import React from 'react';
-import { View, Image, StyleSheet, Platform, Text } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import Button from "@/components/button";
 import { router } from 'expo-router';
 import Logo from '@/components/logo';
-
 
 export default function SkillUpScreen() {
   return (
@@ -13,14 +11,12 @@ export default function SkillUpScreen() {
         <Logo />
       </View>
       <View style={styles.buttonContainer}>
-        <Button text="New game" onPress={() => router.navigate("/selectCategory")}/>
+        <Button text="New game" onPress={() => router.navigate("/defineQuantityOfMatches")}/>
       </View>
       <Image source={require('@/assets/images/logo2.png')} style={styles.bottomImage} resizeMode="cover"/>
     </View>
   );
 }
-
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
 
 const styles = StyleSheet.create({
   container: {

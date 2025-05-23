@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
 import Character from '@/components/character';
 import Elipse from '@/components/elipse';
-import PlayerModal from '@/components/modal';
+import PlayerModal from '@/components/playerModal';
 
 
 export default function ShowWordToAll() {
@@ -29,7 +29,10 @@ export default function ShowWordToAll() {
 
   function handleShowWordToNextPlayer() {
     if(game.showingWordToPlayer >= game.players.length - 1) {
-        router.navigate('/round')
+        setWordRevealed(false)
+        setDisplayWord('')
+        setDisplaySubtitle('')
+        router.replace('/round')
     }
     else{
         showWordToNextPlayer()

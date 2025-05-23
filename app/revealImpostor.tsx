@@ -50,7 +50,7 @@ export default function RevealImpostor() {
                 }
                 <View style={styles.buttonContainer}>
                     {nextReveal ? 
-                            <Button text="Continue" onPress={() => { router.navigate('/words') }} />
+                            <Button text="Continue" onPress={() => { router.replace('/words') }} />
                         :
                             <Button text="Done it" onPress={() => setNextReveal(true)} />
                     }

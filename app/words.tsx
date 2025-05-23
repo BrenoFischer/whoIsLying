@@ -1,6 +1,6 @@
 import Button from "@/components/button";
 import Character from "@/components/character";
-import PlayerModal from "@/components/modal";
+import PlayerModal from "@/components/playerModal";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
@@ -63,6 +63,7 @@ export default function Words() {
 
     const handleContinue = () => {
         setSelectedWord(newSelectedWord)
+        setAllWords([])
         router.push('/revealWord')
     }
 

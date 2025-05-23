@@ -8,6 +8,9 @@ import { createContext, useState } from "react";
 interface GameContextType {
     game: Game
     createGame: (players: Player[]) => void
+    createNewGame: () => void
+    setMaximumMatches: (maxQtd: number) => void
+    addNewMatch: () => void
     setGameWord: (word: string) => void 
     getRandomWord: (category: string) => string
     setSelectedWord: (newWord: string) => void
@@ -22,7 +25,7 @@ interface GameContextType {
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: {children: React.ReactNode}) => {
-    const [game, setGame] = useState<Game>({ 
+    const newGame: Game = {
         players: [], 
         currentRound: 1, 
         rounds: [], 
@@ -31,8 +34,12 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         word: undefined, 
         selectedWord: undefined,
         showingWordToPlayer: 0,
-        votes: []
-    });
+        votes: [],
+        maximumMatches: 2,
+        currentMatch: 1
+    }
+
+    const [game, setGame] = useState<Game>(newGame);
 
     const shuffleRounds = (rounds: Round[]) => {
         for (let i = rounds.length - 1; i > 0; i--) {
@@ -96,6 +103,15 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         return rounds;
     }
 
+    const setMaximumMatches = (maxQtd: number) => {
+        setGame({...game, maximumMatches: maxQtd})
+    }
+
+    const addNewMatch = () => {
+        const newMatch = game.currentMatch + 1
+        setGame({...game, currentMatch: newMatch})
+    }
+
     const getRandomWord = (category: string) => {
         const categories: any = allCategories
         const categoryWords: string[] = categories[category].content
@@ -111,10 +127,47 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         setGame({...game, selectedWord: newWord})
     }
 
+    const resetGameWithExistingPlayers = () => {
+        const newGame = {
+            ...game,
+            currentRound: 1, 
+            rounds: [], 
+            lyingPlayer: {id: '', name: '', gender: '', character: '', score: 0}, 
+            category: undefined, 
+            word: undefined, 
+            selectedWord: undefined,
+            showingWordToPlayer: 0,
+            votes: []
+        }
+        return newGame
+    }
+
+    const createNewGame = () => {
+        const players = game.players.map(p => {
+            return(
+                {...p, score: 0}
+            )
+        })
+
+        setGame({
+            ...game, 
+            players, 
+            currentRound: 1,
+            rounds: [], 
+            lyingPlayer: {id: '', name: '', gender: '', character: '', score: 0},
+            category: undefined, 
+            word: undefined, 
+            selectedWord: undefined,
+            showingWordToPlayer: 0,
+            votes: []
+        })
+    }
+
     const createGame = (newPlayers: Player[]) => {
+        const newGame = resetGameWithExistingPlayers()
         const rounds = setAllRounds(newPlayers);
         const lyingPlayer: Player = newPlayers[Math.floor(Math.random() * newPlayers.length)] //get a random player to be out of the round 
-        setGame({...game, players: newPlayers, currentRound: 1, rounds, lyingPlayer, showingWordToPlayer: 0 });
+        setGame({...newGame, players: newPlayers, rounds, lyingPlayer });
     }
 
     const nextRound = () => {
@@ -165,7 +218,10 @@ export const GameContextProvider = ({ children }: {children: React.ReactNode}) =
         <GameContext.Provider value={
             { 
                 game, 
+                setMaximumMatches,
+                addNewMatch,
                 createGame,
+                createNewGame,
                 setGameWord, 
                 getRandomWord, 
                 setSelectedWord, 
