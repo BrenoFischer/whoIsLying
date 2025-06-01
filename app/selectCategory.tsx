@@ -9,6 +9,7 @@ import { router } from "expo-router";
 import Elipse from "@/components/elipse";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Character from "@/components/character";
+import WithSidebar from "@/components/withSideBar";
 
 const images = {
     foods: require("@/assets/images/foodCategory.png"),
@@ -62,33 +63,35 @@ export default function SelectCategory() {
     }
 
     return(
-        <SafeAreaView style={{backgroundColor: colors.background[100], height: "100%", overflow: "hidden"}}>
-            <Elipse top={-90} />
-            <ScrollView style={styles.container}>
-                <View style={styles.headerContainer}>
-                    <View>
-                        <TouchableOpacity onPress={() => { router.back() }}>
-                            <Ionicons name="arrow-back" size={24} color="black" />
-                        </TouchableOpacity>
-                        <Text style={styles.pageTitle}>Categories</Text>
-                        <Text style={styles.subtitle}>Questions will be based on the selected category</Text>
+        <WithSidebar>
+            <SafeAreaView style={{backgroundColor: colors.background[100], height: "100%", overflow: "hidden"}}>
+                <Elipse top={-90} />
+                <ScrollView style={styles.container}>
+                    <View style={styles.headerContainer}>
+                        <View>
+                            <TouchableOpacity onPress={() => { router.back() }}>
+                                <Ionicons name="arrow-back" size={24} color="black" />
+                            </TouchableOpacity>
+                            <Text style={styles.pageTitle}>Categories</Text>
+                            <Text style={styles.subtitle}>Questions will be based on the selected category</Text>
+                        </View>
+                        <Character mood={"bothCharacter"} />
                     </View>
-                    <Character mood={"bothCharacter"} />
-                </View>
-                <View style={styles.categoriesContainer}>
-                    {
-                        Object.keys(categories).map(category => {
-                            return(
-                                <CategoryCard key={category} categoryName={category} />
-                            )
-                        })
-                    }
-                </View>
-            </ScrollView>
-                <View style={styles.buttonContainer}>
-                    <Button text="Select category" variants={selectedCategory ? "primary" : "disabled" } onPress={handleContinueWithSelectedCategory} />
-                </View>
-        </SafeAreaView>
+                    <View style={styles.categoriesContainer}>
+                        {
+                            Object.keys(categories).map(category => {
+                                return(
+                                    <CategoryCard key={category} categoryName={category} />
+                                )
+                            })
+                        }
+                    </View>
+                </ScrollView>
+                    <View style={styles.buttonContainer}>
+                        <Button text="Select category" variants={selectedCategory ? "primary" : "disabled" } onPress={handleContinueWithSelectedCategory} />
+                    </View>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

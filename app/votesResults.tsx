@@ -1,5 +1,6 @@
 import Button from "@/components/button";
 import Character from "@/components/character";
+import WithSidebar from "@/components/withSideBar";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { Player } from "@/types/Player";
@@ -92,57 +93,59 @@ export default function VotesResults() {
     }
 
     return(
-        <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-            <ScrollView style={{ marginBottom: 20 }}>
-                <View style={styles.mostVotedPlayerContainer}>
-                    <Text style={styles.mostVotedPlayerText}>
-                        {isTied ?  "It is a tie, the most voted players were:" : "The most voted player was:"}
-                    </Text>
-                        {
-                            highestVoted.map(vote => {
-                                return(
-                                    <View key={vote.player.id} style={styles.playerCard}>
-                                        <View style={styles.headerContainer}>
-                                            <View style={{ alignItems: "center" }}>
-                                                <Text style={styles.playerName}>{vote.player.name}</Text>
-                                                <Character mood={vote.player.character} />
-                                            </View>
-                                            <View style={{ alignItems: "center", justifyContent: "center", flexWrap: "wrap", maxWidth: 150 }}>
-                                                <Text style={styles.votesInfo}>With {vote.votes} votes!</Text>
-                                                <Text style={styles.votesInfo}>( 
-                                                    {
-                                                        vote.playersThatVoted.map((player, idx) => {
-                                                            if(idx >= vote.playersThatVoted.length - 1) {
+        <WithSidebar>
+            <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
+                <ScrollView style={{ marginBottom: 20 }}>
+                    <View style={styles.mostVotedPlayerContainer}>
+                        <Text style={styles.mostVotedPlayerText}>
+                            {isTied ?  "It is a tie, the most voted players were:" : "The most voted player was:"}
+                        </Text>
+                            {
+                                highestVoted.map(vote => {
+                                    return(
+                                        <View key={vote.player.id} style={styles.playerCard}>
+                                            <View style={styles.headerContainer}>
+                                                <View style={{ alignItems: "center" }}>
+                                                    <Text style={styles.playerName}>{vote.player.name}</Text>
+                                                    <Character mood={vote.player.character} />
+                                                </View>
+                                                <View style={{ alignItems: "center", justifyContent: "center", flexWrap: "wrap", maxWidth: 150 }}>
+                                                    <Text style={styles.votesInfo}>With {vote.votes} votes!</Text>
+                                                    <Text style={styles.votesInfo}>( 
+                                                        {
+                                                            vote.playersThatVoted.map((player, idx) => {
+                                                                if(idx >= vote.playersThatVoted.length - 1) {
+                                                                    return(
+                                                                        <Text key={player.id} style={{color: colors.white[100]}}>{player.name}</Text>
+                                                                    )
+                                                                }
                                                                 return(
-                                                                    <Text key={player.id} style={{color: colors.white[100]}}>{player.name}</Text>
+                                                                    <Text key={player.id} style={{color: colors.white[100]}}>{player.name}, </Text>
                                                                 )
-                                                            }
-                                                            return(
-                                                                <Text key={player.id} style={{color: colors.white[100]}}>{player.name}, </Text>
-                                                            )
-                                                        })
-                                                    }
-                                                )</Text>
+                                                            })
+                                                        }
+                                                    )</Text>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
+                                    )
+                                })
+                            }
+                    </View>
+                    <Text style={styles.allPlayersText}>All players:</Text>
+                        {
+                            votesByPlayer.map(vote => {
+                                return(
+                                    <PlayerCard {...vote} key={vote.player.id} />
                                 )
                             })
                         }
+                </ScrollView>
+                <View style={styles.buttonContainer}>
+                    <Button text='Reveal impostor' onPress={handleContinue} />
                 </View>
-                <Text style={styles.allPlayersText}>All players:</Text>
-                    {
-                        votesByPlayer.map(vote => {
-                            return(
-                                <PlayerCard {...vote} key={vote.player.id} />
-                            )
-                        })
-                    }
-            </ScrollView>
-            <View style={styles.buttonContainer}>
-                <Button text='Reveal impostor' onPress={handleContinue} />
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

@@ -7,6 +7,7 @@ import { colors } from '@/styles/colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Character from '@/components/character';
 import Discussion from './discussion';
+import WithSidebar from '@/components/withSideBar';
 
 
 export default function RoundScreen() {
@@ -34,38 +35,40 @@ export default function RoundScreen() {
   }
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-      <View style={{ marginLeft: 10, marginTop: 30}}>
-        {
-          game.currentRound !== 1 ?
-          <TouchableOpacity onPress={handlePreviousRound}>
-            <Ionicons name="arrow-back" size={24} color={colors.orange[200]} />
-          </TouchableOpacity>
-          :
-          <View style={{ height: 24 }} />
-        }
-        
-        <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
-            <Text style={styles.headerCategoryTitle}>Round {game.currentRound} of {totalRounds}</Text>
-            <View style={{ backgroundColor: colors.orange[200], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
-            <Text style={styles.headerCategoryTitle}>Category: {game.category}</Text>
-        </View>
-      </View>
-
-      <View>
-        <View>
-          <Text style={styles.playerName}>{playerThatAsks.name} <Text style={styles.playerThatAnswers}>asks</Text> {playerThatAnswers.name}</Text>
-          <View style={{ flexDirection: "row" }}> 
-            <Character mood={playerThatAsks.character} />
-            <Character mood={playerThatAnswers.character} flip />
+    <WithSidebar>
+      <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
+        <View style={{ marginLeft: 10, marginTop: 30}}>
+          {
+            game.currentRound !== 1 ?
+            <TouchableOpacity onPress={handlePreviousRound}>
+              <Ionicons name="arrow-back" size={24} color={colors.orange[200]} />
+            </TouchableOpacity>
+            :
+            <View style={{ height: 24 }} />
+          }
+          
+          <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
+              <Text style={styles.headerCategoryTitle}>Round {game.currentRound} of {totalRounds}</Text>
+              <View style={{ backgroundColor: colors.orange[200], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
+              <Text style={styles.headerCategoryTitle}>Category: {game.category}</Text>
           </View>
         </View>
-      </View>
-      <Text style={styles.question}>{question}</Text>
-      <View style={styles.buttonContainer}>
-        <Button text='Continue' onPress={handleNextRound} />
-      </View>
-    </SafeAreaView>
+
+        <View>
+          <View>
+            <Text style={styles.playerName}>{playerThatAsks.name} <Text style={styles.playerThatAnswers}>asks</Text> {playerThatAnswers.name}</Text>
+            <View style={{ flexDirection: "row" }}> 
+              <Character mood={playerThatAsks.character} />
+              <Character mood={playerThatAnswers.character} flip />
+            </View>
+          </View>
+        </View>
+        <Text style={styles.question}>{question}</Text>
+        <View style={styles.buttonContainer}>
+          <Button text='Continue' onPress={handleNextRound} />
+        </View>
+      </SafeAreaView>
+    </WithSidebar>
   );
 }
 

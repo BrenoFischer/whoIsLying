@@ -7,6 +7,7 @@ import { colors } from '@/styles/colors';
 import Character from '@/components/character';
 import Elipse from '@/components/elipse';
 import PlayerModal from '@/components/playerModal';
+import WithSidebar from '@/components/withSideBar';
 
 
 export default function ShowWordToAll() {
@@ -45,36 +46,38 @@ export default function ShowWordToAll() {
   }
 
   return (
-    <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
-        <Elipse top={-30} left={-30} />
-        <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
-            <Text style={styles.headerCategoryTitle}>Category</Text>
-            <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
-            <Text style={styles.headerCategoryTitle}>{game.category}</Text>
-            <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
-            <Text style={styles.headerCategoryTitle}>Player {game.showingWordToPlayer + 1} of {game.players.length}</Text>
-        </View>
-        <View style={styles.headerContainer}>
-            <View>
-                <Text style={styles.titleInformation}>Pass device to:</Text>
-                <Text style={styles.playerName}>{currentPlayer.name}</Text>
+    <WithSidebar>
+        <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
+            <Elipse top={-30} left={-30} />
+            <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
+                <Text style={styles.headerCategoryTitle}>Category</Text>
+                <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
+                <Text style={styles.headerCategoryTitle}>{game.category}</Text>
+                <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
+                <Text style={styles.headerCategoryTitle}>Player {game.showingWordToPlayer + 1} of {game.players.length}</Text>
             </View>
-            <Character mood={currentPlayer.character} />
-        </View>
-        <PlayerModal player={currentPlayer} setModalVisible={setModalVisible} modalVisible={modalVisible} />
-        <View style={styles.secretWordContainer}>
-            <Text style={styles.secretWord}>{displayWord}</Text>
-            <Text style={styles.subtitle}>{displaySubtitle}</Text>
-        </View>
-        <View style={styles.buttonContainer}>
-            {
-                wordRevealed === false ?
-                    <Button text={'Tap to reveal'} onPress={handleRevealWord} variants={modalVisible ? 'disabled' : 'primary'} />
-                :
-                    <Button text={'Got it!'} onPress={handleShowWordToNextPlayer} />
-            }
-        </View>
-    </SafeAreaView>
+            <View style={styles.headerContainer}>
+                <View>
+                    <Text style={styles.titleInformation}>Pass device to:</Text>
+                    <Text style={styles.playerName}>{currentPlayer.name}</Text>
+                </View>
+                <Character mood={currentPlayer.character} />
+            </View>
+            <PlayerModal player={currentPlayer} setModalVisible={setModalVisible} modalVisible={modalVisible} />
+            <View style={styles.secretWordContainer}>
+                <Text style={styles.secretWord}>{displayWord}</Text>
+                <Text style={styles.subtitle}>{displaySubtitle}</Text>
+            </View>
+            <View style={styles.buttonContainer}>
+                {
+                    wordRevealed === false ?
+                        <Button text={'Tap to reveal'} onPress={handleRevealWord} variants={modalVisible ? 'disabled' : 'primary'} />
+                    :
+                        <Button text={'Got it!'} onPress={handleShowWordToNextPlayer} />
+                }
+            </View>
+        </SafeAreaView>
+    </WithSidebar>
   );
 }
 

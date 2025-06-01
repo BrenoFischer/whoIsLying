@@ -1,6 +1,7 @@
 import Button from "@/components/button";
 import Character from "@/components/character";
 import Elipse from "@/components/elipse";
+import WithSidebar from "@/components/withSideBar";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
@@ -47,33 +48,35 @@ export default function Discussion() {
     const agregatedArray = agregateByPlayer()
 
     return(
-        <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-            <Elipse left={10} />
-            <View style={{alignItems: "center", justifyContent: "center", marginTop: 60}}>
-                <View style={{ marginBottom: 30 }}>
-                    <Text style={styles.title}>Discussion time!</Text>
-                    <Text style={styles.subtitle}>Review all questions and analyse each detail that was answered</Text>
+        <WithSidebar>
+            <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
+                <Elipse left={10} />
+                <View style={{alignItems: "center", justifyContent: "center", marginTop: 60}}>
+                    <View style={{ marginBottom: 30 }}>
+                        <Text style={styles.title}>Discussion time!</Text>
+                        <Text style={styles.subtitle}>Review all questions and analyse each detail that was answered</Text>
+                    </View>
+                    <Character mood="bothCharacter" />
                 </View>
-                <Character mood="bothCharacter" />
-            </View>
-            <ScrollView>
-                <View style={styles.table}>
-                    {
-                        agregatedArray.map(round => {
-                            return(
-                                <View key={round.question}>
-                                    <Text style={styles.playerName}>{round.playerThatAnswers.name}</Text>
-                                    <Text style={styles.question}>{round.question}</Text>
-                                </View>
-                            )
-                        })
-                    }
-                </View>
-                <View style={styles.buttonContainer}>
-                    <Button text="Continue" onPress={handleNextPage} />
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                <ScrollView>
+                    <View style={styles.table}>
+                        {
+                            agregatedArray.map(round => {
+                                return(
+                                    <View key={round.question}>
+                                        <Text style={styles.playerName}>{round.playerThatAnswers.name}</Text>
+                                        <Text style={styles.question}>{round.question}</Text>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <Button text="Continue" onPress={handleNextPage} />
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

@@ -1,5 +1,6 @@
 import Button from "@/components/button";
 import Character from "@/components/character";
+import WithSidebar from "@/components/withSideBar";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
@@ -39,24 +40,26 @@ export default function RevealImpostor() {
     }
 
     return(
-        <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-            <View style={styles.headerContainer}>
-                <Text style={styles.title}>The real impostor was:</Text>
-                {
-                    nextReveal ?
-                            <PlayerCard />
-                        :
-                            <Text style={styles.randomPhrase}>{randomPhrase}</Text>
-                }
-                <View style={styles.buttonContainer}>
-                    {nextReveal ? 
-                            <Button text="Continue" onPress={() => { router.replace('/words') }} />
-                        :
-                            <Button text="Done it" onPress={() => setNextReveal(true)} />
+        <WithSidebar>
+            <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
+                <View style={styles.headerContainer}>
+                    <Text style={styles.title}>The real impostor was:</Text>
+                    {
+                        nextReveal ?
+                                <PlayerCard />
+                            :
+                                <Text style={styles.randomPhrase}>{randomPhrase}</Text>
                     }
+                    <View style={styles.buttonContainer}>
+                        {nextReveal ? 
+                                <Button text="Continue" onPress={() => { router.replace('/words') }} />
+                            :
+                                <Button text="Done it" onPress={() => setNextReveal(true)} />
+                        }
+                    </View>
                 </View>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

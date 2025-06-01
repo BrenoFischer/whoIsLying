@@ -18,7 +18,8 @@ export default function Button({ text, variants = 'primary', onPress }: ButtonPr
         buttonStyle = styles.primaryButton
         buttonTextStyle = styles.primaryButtonText 
     } else if(variants === "secondary") {
-
+        buttonStyle = styles.secondaryButton
+        buttonTextStyle = styles.secondaryButtonText 
     } else if(variants === "disabled") {
         buttonStyle = styles.disabledButton
         buttonTextStyle = styles.disabledButtonText

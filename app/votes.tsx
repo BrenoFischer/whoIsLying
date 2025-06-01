@@ -9,6 +9,7 @@ import Elipse from "@/components/elipse";
 import Character from "@/components/character";
 import { Player } from "@/types/Player";
 import PlayerModal from "@/components/playerModal";
+import WithSidebar from "@/components/withSideBar";
 
 export default function Votes() {
     let { game, addVote } = useContext(GameContext)
@@ -60,33 +61,35 @@ export default function Votes() {
     const restOfPlayer = getRestOfPlayers()
 
     return(
-        <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
-            <Elipse top={-30} left={-30} />
-            <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
-                <Text style={styles.headerCategoryTitle}>Vote</Text>
-                <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
-                <Text style={styles.headerCategoryTitle}>Player {playerIndex + 1} of {players.length}</Text>
-            </View>
-            <View style={styles.headerContainer}>
-                <View>
-                    <Text style={styles.titleInformation}>Pass device to:</Text>
-                    <Text style={styles.playerName}>{player.name}</Text>
+        <WithSidebar>
+            <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
+                <Elipse top={-30} left={-30} />
+                <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
+                    <Text style={styles.headerCategoryTitle}>Vote</Text>
+                    <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
+                    <Text style={styles.headerCategoryTitle}>Player {playerIndex + 1} of {players.length}</Text>
                 </View>
-                <Character mood={player.character} />
-            </View>
-            <PlayerModal player={player} modalVisible={modalVisible} setModalVisible={setModalVisible} />
-            <ScrollView style={styles.table}>
-                <Text style={styles.playerNameOnTable}>{player.name}, <Text style={styles.tableText}>vote on the person you think is the impostor:</Text></Text>
-                {
-                    restOfPlayer.map(p => {
-                        return <PlayerVoteOption key={p.id} player={p} />
-                    })
-                }
-            </ScrollView>
-            <View style={styles.buttonContainer}>
-                <Button text="Vote!" onPress={handleNextPlayer} variants={selectedPlayer ? "primary" : "disabled" } />
-            </View>
-        </SafeAreaView>
+                <View style={styles.headerContainer}>
+                    <View>
+                        <Text style={styles.titleInformation}>Pass device to:</Text>
+                        <Text style={styles.playerName}>{player.name}</Text>
+                    </View>
+                    <Character mood={player.character} />
+                </View>
+                <PlayerModal player={player} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+                <ScrollView style={styles.table}>
+                    <Text style={styles.playerNameOnTable}>{player.name}, <Text style={styles.tableText}>vote on the person you think is the impostor:</Text></Text>
+                    {
+                        restOfPlayer.map(p => {
+                            return <PlayerVoteOption key={p.id} player={p} />
+                        })
+                    }
+                </ScrollView>
+                <View style={styles.buttonContainer}>
+                    <Button text="Vote!" onPress={handleNextPlayer} variants={selectedPlayer ? "primary" : "disabled" } />
+                </View>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

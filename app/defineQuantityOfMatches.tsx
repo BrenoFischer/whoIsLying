@@ -8,6 +8,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Entypo from '@expo/vector-icons/Entypo';
 import { GameContext } from "@/context/GameContext"
 import { router } from "expo-router"
+import WithSidebar from "@/components/withSideBar"
 
 export default function DefineQuantityOfMatches() {
     const [selectQuantity, setSelectedQuantity] = useState(1)
@@ -27,32 +28,34 @@ export default function DefineQuantityOfMatches() {
     }
 
     return(
-        <SafeAreaView style={{backgroundColor: colors.background[100], height: "100%", overflow: "hidden"}}>
-            <Elipse top={-90} />
-            <ScrollView style={styles.container}>
-                <View style={styles.headerContainer}>
-                    <View>
-                        <Text style={styles.pageTitle}>How many matches will be played?</Text>
-                        <Text style={styles.subtitle}>The one with most points after all matches is the winner!</Text>
-                    </View>
-                    <Character mood={"luh"} />
-                </View>
-                <View style={styles.quantityContainer}>
-                        <TouchableOpacity onPress={() => handleChangeQuantity(-1)}>
-                            <Entypo name="minus" size={40} color={colors.orange[200]} />
-                        </TouchableOpacity>
-                        <View style={styles.quantityCardContainer}>
-                            <Text style={styles.quantity}>{selectQuantity}</Text>
+        <WithSidebar>
+            <SafeAreaView style={{backgroundColor: colors.background[100], height: "100%", overflow: "hidden"}}>
+                <Elipse top={-90} />
+                <ScrollView style={styles.container}>
+                    <View style={styles.headerContainer}>
+                        <View>
+                            <Text style={styles.pageTitle}>How many matches will be played?</Text>
+                            <Text style={styles.subtitle}>The one with most points after all matches is the winner!</Text>
                         </View>
-                        <TouchableOpacity onPress={() => handleChangeQuantity(1)}>
-                            <FontAwesome6 name="add" size={40} color={colors.orange[200]}/>
-                        </TouchableOpacity>
+                        <Character mood={"luh"} />
+                    </View>
+                    <View style={styles.quantityContainer}>
+                            <TouchableOpacity onPress={() => handleChangeQuantity(-1)}>
+                                <Entypo name="minus" size={40} color={colors.orange[200]} />
+                            </TouchableOpacity>
+                            <View style={styles.quantityCardContainer}>
+                                <Text style={styles.quantity}>{selectQuantity}</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => handleChangeQuantity(1)}>
+                                <FontAwesome6 name="add" size={40} color={colors.orange[200]}/>
+                            </TouchableOpacity>
+                    </View>
+                </ScrollView>
+                <View style={styles.buttonContainer}>
+                    <Button text="Continue with this quantity" onPress={handleContinueWithSelectedQuantity} />
                 </View>
-            </ScrollView>
-            <View style={styles.buttonContainer}>
-                <Button text="Continue with this quantity" onPress={handleContinueWithSelectedQuantity} />
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

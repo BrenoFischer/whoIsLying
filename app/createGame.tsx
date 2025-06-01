@@ -14,6 +14,7 @@ import { colors } from "@/styles/colors";
 import Elipse from "@/components/elipse";
 import PlayerInput from "@/components/playerInput";
 import Character from "@/components/character";
+import WithSidebar from "@/components/withSideBar";
 
 const MAX_PLAYERS = 10;
 
@@ -76,57 +77,59 @@ export default function CreateGame() {
     }
  
     return(
-        <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-            <Elipse top={-30} />
-            <ScrollView>
-                <View style={styles.container}>
-                    <View style={styles.headerContainer}>
-                        <View>
-                            <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
-                                <Text style={styles.headerCategoryTitle}>Category</Text>
-                                <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
-                                <Text style={styles.headerCategoryTitle}>{game.category}</Text>
+        <WithSidebar>
+            <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
+                <Elipse top={-30} />
+                <ScrollView>
+                    <View style={styles.container}>
+                        <View style={styles.headerContainer}>
+                            <View>
+                                <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
+                                    <Text style={styles.headerCategoryTitle}>Category</Text>
+                                    <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
+                                    <Text style={styles.headerCategoryTitle}>{game.category}</Text>
+                                </View>
+                                <Text style={styles.title}>Add players</Text>
+                                <Text style={styles.title}>(3 to 10)</Text>
                             </View>
-                            <Text style={styles.title}>Add players</Text>
-                            <Text style={styles.title}>(3 to 10)</Text>
-                        </View>
-                        <View>
-                            <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-                                <TouchableOpacity onPress={handleChangeImage}>
-                                    <MaterialCommunityIcons style={{left: 20}} name="image-edit" size={35} color={colors.black[100]} />
-                                </TouchableOpacity>
-                                <Text style={{ fontSize: 16, color: colors.white[100], fontWeight: "bold" }}>{currentImageIndex + 1} of {imagesArray.length}</Text>
+                            <View>
+                                <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
+                                    <TouchableOpacity onPress={handleChangeImage}>
+                                        <MaterialCommunityIcons style={{left: 20}} name="image-edit" size={35} color={colors.black[100]} />
+                                    </TouchableOpacity>
+                                    <Text style={{ fontSize: 16, color: colors.white[100], fontWeight: "bold" }}>{currentImageIndex + 1} of {imagesArray.length}</Text>
+                                </View>
+                                <Character mood={currentImage} />
                             </View>
-                            <Character mood={currentImage} />
                         </View>
-                    </View>
-                    <View style={{alignItems: "center"}}>
-                        {
-                            players.length >= MAX_PLAYERS ?
-                            <NewPlayerInput disabled={true} setPlayer={() => {}} currentPlayerGender={playerGender} handleChangeGender={handleChangeGender} />
-                            :
-                            <NewPlayerInput disabled={false} setPlayer={setNewPlayer} currentPlayerGender={playerGender} handleChangeGender={handleChangeGender} />
-                        }
-                        <View style={styles.playersAddedContainer}>
-                            <CustomText>Players added - {players.length}</CustomText>
+                        <View style={{alignItems: "center"}}>
+                            {
+                                players.length >= MAX_PLAYERS ?
+                                <NewPlayerInput disabled={true} setPlayer={() => {}} currentPlayerGender={playerGender} handleChangeGender={handleChangeGender} />
+                                :
+                                <NewPlayerInput disabled={false} setPlayer={setNewPlayer} currentPlayerGender={playerGender} handleChangeGender={handleChangeGender} />
+                            }
+                            <View style={styles.playersAddedContainer}>
+                                <CustomText>Players added - {players.length}</CustomText>
+                            </View>
+                            {
+                                players.map((player) => 
+                                    <PlayerInput key={player.id} player={player} editPlayer={editPlayer} deletePlayer={deletePlayer} />
+                                )
+                            }
                         </View>
-                        {
-                            players.map((player) => 
-                                <PlayerInput key={player.id} player={player} editPlayer={editPlayer} deletePlayer={deletePlayer} />
-                            )
-                        }
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        {
-                            notAvailableToContinue ?
-                                <Button text="Create game" onPress={handleCreateGame} variants="disabled" />
-                            :
-                                <Button text="Create game" onPress={handleCreateGame} />
-                        }
-                    </View>
-                    </View>
-            </ScrollView>
-        </SafeAreaView>
+                        <View style={styles.buttonContainer}>
+                            {
+                                notAvailableToContinue ?
+                                    <Button text="Create game" onPress={handleCreateGame} variants="disabled" />
+                                :
+                                    <Button text="Create game" onPress={handleCreateGame} />
+                            }
+                        </View>
+                        </View>
+                </ScrollView>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

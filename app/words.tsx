@@ -1,6 +1,7 @@
 import Button from "@/components/button";
 import Character from "@/components/character";
 import PlayerModal from "@/components/playerModal";
+import WithSidebar from "@/components/withSideBar";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
@@ -75,21 +76,23 @@ export default function Words() {
     }, [])
 
     return(
-        <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
-            <PlayerModal player={impostorPlayer} modalVisible={modalVisible} setModalVisible={setModalVisible} />
-            <Character mood={impostorPlayer.character} />
-            <View style={styles.table}>
-                <Text style={styles.playerNameOnTable}>{impostorPlayer.name}, <Text style={styles.tableText}>vote on the secret word your think is the correct one:</Text></Text>
-                {
-                    allWords.map(w => {
-                        return <WordVoteOption key={w} word={w} />
-                    })
-                }
-            </View>
-            <View style={styles.buttonContainer}>
-                <Button text="Vote!" onPress={handleContinue} variants={newSelectedWord ? "primary" : "disabled" } />
-            </View>
-        </SafeAreaView>
+        <WithSidebar>
+            <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
+                <PlayerModal player={impostorPlayer} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+                <Character mood={impostorPlayer.character} />
+                <View style={styles.table}>
+                    <Text style={styles.playerNameOnTable}>{impostorPlayer.name}, <Text style={styles.tableText}>vote on the secret word your think is the correct one:</Text></Text>
+                    {
+                        allWords.map(w => {
+                            return <WordVoteOption key={w} word={w} />
+                        })
+                    }
+                </View>
+                <View style={styles.buttonContainer}>
+                    <Button text="Vote!" onPress={handleContinue} variants={newSelectedWord ? "primary" : "disabled" } />
+                </View>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 

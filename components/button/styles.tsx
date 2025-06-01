@@ -20,6 +20,18 @@ export const styles = StyleSheet.create({
       fontFamily: "Raleway",
       fontWeight: "bold",
     },
+    secondaryButton: {
+      backgroundColor: colors.white[100],
+      borderWidth: 3,
+      borderColor: colors.orange[200]
+    },
+    secondaryButtonText: {
+      textAlign: "center",
+      fontSize: 16,
+      color: colors.black[200],
+      fontFamily: "Raleway",
+      fontWeight: "bold",
+    },
     disabledButton: {
       backgroundColor: colors.gray[200],
     },

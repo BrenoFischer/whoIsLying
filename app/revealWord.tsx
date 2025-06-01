@@ -1,6 +1,7 @@
 import Button from "@/components/button";
 import Character from "@/components/character";
 import Elipse from "@/components/elipse";
+import WithSidebar from "@/components/withSideBar";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
@@ -22,33 +23,35 @@ export default function RevealWord() {
     }
         
     return(
-        <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-            <View style={styles.headerContainer}>
-                <Character mood={game.lyingPlayer.character} />
-                <View>
-                    <Text style={styles.title}>{game.lyingPlayer.name} voted for:</Text>
-                    <Text style={styles.word}>{game.selectedWord}</Text>
+        <WithSidebar>
+            <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
+                <View style={styles.headerContainer}>
+                    <Character mood={game.lyingPlayer.character} />
+                    <View>
+                        <Text style={styles.title}>{game.lyingPlayer.name} voted for:</Text>
+                        <Text style={styles.word}>{game.selectedWord}</Text>
+                    </View>
                 </View>
-            </View>
 
-            {
-                secretWordRevealed &&
-                <View style={{marginTop: 120}}>
-                    <Text style={styles.title}>The secret word was:</Text>
-                    <Text style={[styles.word, {color: colors.orange[200]}]}>{game.word}</Text>
-                </View> 
-            }
-
-            <View style={styles.buttonContainer}>
                 {
-                    secretWordRevealed ?
-                        <Button text="Continue" onPress={handleContinue} />
-                    :
-                        <Button text="Reveal secret word" onPress={() => {setSecretWordRevealed(true)}} />
-
+                    secretWordRevealed &&
+                    <View style={{marginTop: 120}}>
+                        <Text style={styles.title}>The secret word was:</Text>
+                        <Text style={[styles.word, {color: colors.orange[200]}]}>{game.word}</Text>
+                    </View> 
                 }
-            </View>
-        </SafeAreaView>
+
+                <View style={styles.buttonContainer}>
+                    {
+                        secretWordRevealed ?
+                            <Button text="Continue" onPress={handleContinue} />
+                        :
+                            <Button text="Reveal secret word" onPress={() => {setSecretWordRevealed(true)}} />
+
+                    }
+                </View>
+            </SafeAreaView>
+        </WithSidebar>
     )
 }
 
