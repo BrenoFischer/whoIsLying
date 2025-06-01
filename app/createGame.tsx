@@ -82,9 +82,6 @@ export default function CreateGame() {
                 <View style={styles.container}>
                     <View style={styles.headerContainer}>
                         <View>
-                            <TouchableOpacity onPress={() => { router.back() }}>
-                                <Ionicons name="arrow-back" size={24} color="black" />
-                            </TouchableOpacity>
                             <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
                                 <Text style={styles.headerCategoryTitle}>Category</Text>
                                 <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
