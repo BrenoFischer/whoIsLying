@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 16,
-        fontFamily: "Raleway",
+        fontFamily: "Raleway-Medium",
         maxWidth: 250,
     },
     table: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     },
     question: {
         fontSize: 15,
-        fontFamily: "Raleway"
+        fontFamily: "Raleway-Medium"
     },
     buttonContainer: {
         position: "absolute",

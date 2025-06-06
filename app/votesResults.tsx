@@ -179,8 +179,7 @@ const styles = StyleSheet.create({
         color: colors.white[100]
     },
     votesInfo: {
-        fontFamily: "Raleway",
-        fontWeight: "600",
+        fontFamily: "Raleway-Medium",
         fontSize: 20,
         color: colors.black[200],
     },

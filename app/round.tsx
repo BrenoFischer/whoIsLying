@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   headerCategoryTitle: {
     textTransform: "capitalize",
     fontSize: 16,
-    fontFamily: "Raleway",
+    fontFamily: "Raleway-Medium",
     color: colors.white[100],
   },
   playerName: {

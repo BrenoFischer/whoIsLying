@@ -49,7 +49,7 @@ export default function ShowWordToAll() {
     <WithSidebar>
         <SafeAreaView style={[{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}, modalVisible && { opacity: 0.1 }]}>
             <Elipse top={-30} left={-30} />
-            <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12, marginLeft: 30, marginTop: 20 }}>
+            <View style={{alignItems: "center", flexDirection: "row", marginBottom: 12, marginLeft: 30, marginTop: 50 }}>
                 <Text style={styles.headerCategoryTitle}>Category</Text>
                 <View style={{ backgroundColor: colors.white[100], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
                 <Text style={styles.headerCategoryTitle}>{game.category}</Text>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     headerCategoryTitle: {
         textTransform: "capitalize",
         fontSize: 16,
-        fontFamily: "Raleway",
+        fontFamily: "Raleway-Medium",
     },
     titleInformation: {
         fontSize: 20,

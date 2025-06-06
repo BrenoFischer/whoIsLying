@@ -114,8 +114,8 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 16,
-        fontFamily: "Raleway",
-        maxWidth: 190
+        fontFamily: "Raleway-Medium",
+        maxWidth: 190,
     },
     categoriesContainer: {
         rowGap: 40,
@@ -143,10 +143,9 @@ const styles = StyleSheet.create({
         borderColor: 'white',
     },
     categoryTitle: {
-        fontFamily: "Raleway",
+        fontFamily: "Raleway-Medium",
         textTransform: "capitalize",
         fontSize: 20,
-        fontWeight: "600",
     },
     categoryImage: {
         height: 100

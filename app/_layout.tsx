@@ -12,6 +12,7 @@ export default function RootLayout() {
     'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
     'Sigmar': require('../assets/fonts/SigmarRegular.ttf'),
     'Raleway': require('../assets/fonts/Raleway.ttf'),
+    'Raleway-Medium': require('../assets/fonts/Raleway-Medium.ttf'),
   });
 
   useEffect(() => {

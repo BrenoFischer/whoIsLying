@@ -48,11 +48,11 @@ export default function Votes() {
         setSelectedPlayer(player)
     }
 
-    function PlayerVoteOption({player}: {player: Player}){
+    function PlayerVoteOption({player, isLastPlayer}: {player: Player, isLastPlayer: boolean}){
         const isPlayerSelected = selectedPlayer === undefined ? false : player.id === selectedPlayer.id
 
         return(
-            <TouchableOpacity onPress={() => handleSelectPlayer(player)} style={[styles.container, isPlayerSelected && {backgroundColor: colors.orange[200]}]}>
+            <TouchableOpacity onPress={() => handleSelectPlayer(player)} style={[styles.container, isLastPlayer && {marginBottom: 50}, isPlayerSelected && {backgroundColor: colors.orange[200]}]}>
                 <Text style={styles.playerOptionName}>{player.name}</Text>
             </TouchableOpacity>
         )
@@ -80,8 +80,9 @@ export default function Votes() {
                 <ScrollView style={styles.table}>
                     <Text style={styles.playerNameOnTable}>{player.name}, <Text style={styles.tableText}>vote on the person you think is the impostor:</Text></Text>
                     {
-                        restOfPlayer.map(p => {
-                            return <PlayerVoteOption key={p.id} player={p} />
+                        restOfPlayer.map((p, idx) => {
+                            const isLastPlayer = idx === restOfPlayer.length - 1
+                            return <PlayerVoteOption key={p.id} player={p} isLastPlayer={isLastPlayer} />
                         })
                     }
                 </ScrollView>
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     headerCategoryTitle: {
         textTransform: "capitalize",
         fontSize: 16,
-        fontFamily: "Raleway",
+        fontFamily: "Raleway-Medium",
     },
     headerContainer: {
         marginLeft: 30,

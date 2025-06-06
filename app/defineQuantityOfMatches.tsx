@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 16,
-        fontFamily: "Raleway",
-        maxWidth: 190
+        fontFamily: "Raleway-Medium",
+        maxWidth: 190,
     },
     quantityContainer: {
         marginTop: 80,
