@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.brenin.whoislying",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -30,27 +31,18 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#393939"
         }
-      ],
-      [
-        "expo-font",
-        {
-          "fonts": [
-            "./assets/fonts/Sigmar-Regular.ttf"
-          ]
-        }
-      ],
-      [
-        "expo-asset",
-        {
-          "assets": ["@/assets/images/test.jpg"]
-        }
-
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c2f03e77-0056-4132-af99-493b5c654b96"
+      }
     }
   }
 }
