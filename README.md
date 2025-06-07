@@ -47,9 +47,9 @@ Simple to learn, tricky to master. Perfect for game nights, parties, and social 
 
 ## 📸 Screenshots
 
-![Creating Game with unique characters](./assets/images/screenshot2.jpeg)
-![A round of questions](./assets/images/screenshot1.jpeg)
-![Revealing secret word](./assets/images/screenshot3.jpeg)
+<img src="./assets/images/screenshot2.jpeg" alt="Creating Game with unique characters" width="100"/>
+<img src="./assets/images/screenshot1.jpeg" alt="A round of questions" width="100"/>
+<img src="./assets/images/screenshot3.jpeg" alt="Revealing secret word" width="100"/>
 
 ---
 
