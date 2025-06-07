@@ -1,50 +1,96 @@
-# Welcome to your Expo app 👋
+# 🕵️ Who is Lying?
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Who is Lying** is a local multiplayer party game for **3–10 players**, where all the action happens on a single phone. Try to spot the impostor — or *blend in* and survive if it’s you.
 
-## Get started
+![Who is Lying Logo](./assets/icon.png)
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 📲 Coming Soon
 
-2. Start the app
+- **Google Play Store**  
+- **Apple App Store**
 
-   ```bash
-    npx expo start
-   ```
+Currently in **final testing**. Stay tuned!
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🧠 How to Play
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1. Everyone reads a secret word — except **one player**: the **impostor**.
+2. Two rounds of questions follow. Each player answers in turn.
+   - The goal: Prove you know the word.
+   - But be careful — give too much detail, and the impostor might guess it!
+3. After both rounds, everyone votes on who they think the impostor is.
+4. The impostor then tries to guess the word to win!
 
-## Get a fresh project
+Simple to learn, tricky to master. Perfect for game nights, parties, and social gatherings.
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## 🚀 Features
+
+- 🎉 3–10 player local play
+- 🗝️ Dozens of unique word themes
+- 🤫 Secret roles & deception mechanics
+- 📱 Easy one-phone interface
+- 🧩 Built with React Native + Expo + TypeScript
+
+---
+
+## 🛠 Tech Stack
+
+- React Native (Expo)
+- TypeScript
+
+---
+
+## 📸 Screenshots
+
+```md
+![Creating Game with unique characters](./assets/screenshot2.png)
+![A round of questions](./assets/screenshot1.png)
+![Revealing secret word](./assets/screenshot3.png)
+
+---
+
+## 💻 Running Locally
+
+```console
+git clone https://github.com/BrenoFischer/whoIsLying
+cd who-is-lying
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 📌 Roadmap
 
-To learn more about developing your project with Expo, look at the following resources:
+- [x] Core game logic
+- [x] UI design
+- [x] Game logic testings
+- [x] UI Responsive testings
+- [ ] App Store / Play Store release
+- [ ] Multiple languages to choose
+- [ ] More characters to choose
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 🤝 Contributing
 
-Join our community of developers creating universal apps.
+Contributions, suggestions, and feedback are welcome!  
+Open an issue or submit a pull request.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 👤 Author
+
+**Your Name**  
+GitHub: [@BrenoFischer](https://github.com/BrenoFischer)
