@@ -2,7 +2,7 @@
 
 **Who is Lying** is a local multiplayer party game for **3–10 players**, where all the action happens on a single phone. Try to spot the impostor — or *blend in* and survive if it’s you.
 
-![Who is Lying Logo](./assets/icon.png)
+![Who is Lying Logo](./assets/images/icon.png)
 
 ---
 
@@ -47,7 +47,6 @@ Simple to learn, tricky to master. Perfect for game nights, parties, and social 
 
 ## 📸 Screenshots
 
-```md
 ![Creating Game with unique characters](./assets/screenshot2.png)
 ![A round of questions](./assets/screenshot1.png)
 ![Revealing secret word](./assets/screenshot3.png)
