@@ -47,9 +47,9 @@ Simple to learn, tricky to master. Perfect for game nights, parties, and social 
 
 ## 📸 Screenshots
 
-![Creating Game with unique characters](./assets/screenshot2.png)
-![A round of questions](./assets/screenshot1.png)
-![Revealing secret word](./assets/screenshot3.png)
+![Creating Game with unique characters](./assets/images/screenshot2.png)
+![A round of questions](./assets/images/screenshot1.png)
+![Revealing secret word](./assets/images/screenshot3.png)
 
 ---
 
@@ -85,7 +85,7 @@ Open an issue or submit a pull request.
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](https://opensource.org/license/mit).
 
 ---
 
