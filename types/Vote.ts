@@ -1,6 +1,6 @@
-import { Player } from "./Player";
+import { Player } from './Player';
 
 export interface Vote {
-    playerThatVoted: Player,
-    playerVoted: Player
+  playerThatVoted: Player;
+  playerVoted: Player;
 }

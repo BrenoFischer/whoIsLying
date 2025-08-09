@@ -1,129 +1,143 @@
-import Button from "@/components/button";
-import Character from "@/components/character";
-import Elipse from "@/components/elipse";
-import WithSidebar from "@/components/withSideBar";
-import { GameContext } from "@/context/GameContext";
-import { colors } from "@/styles/colors";
-import { router } from "expo-router";
-import { useContext } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Button from '@/components/button';
+import Character from '@/components/character';
+import Elipse from '@/components/elipse';
+import WithSidebar from '@/components/withSideBar';
+import { GameContext } from '@/context/GameContext';
+import { colors } from '@/styles/colors';
+import { router } from 'expo-router';
+import { useContext } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Discussion() {
-    const { game } = useContext(GameContext)
+  const { game } = useContext(GameContext);
 
-    const rounds = game.rounds
+  const rounds = game.rounds;
 
-    const agregateByPlayer = () => {
-        let agregatedArray = [game.rounds[0]]
+  const agregateByPlayer = () => {
+    let agregatedArray = [game.rounds[0]];
 
-        for(let i=1; i < rounds.length ; i++) {
-            let hasPlayer = false
-            let playerPosition = 0
-            const player = rounds[i].playerThatAnswers
+    for (let i = 1; i < rounds.length; i++) {
+      let hasPlayer = false;
+      let playerPosition = 0;
+      const player = rounds[i].playerThatAnswers;
 
-            agregatedArray.forEach((r, idx) => {
-                if(r.playerThatAnswers.id === player.id) {
-                    hasPlayer = true
-                    playerPosition = idx 
-                }
-            })
-            if(hasPlayer) {
-                agregatedArray = agregatedArray
-                                    .slice(0, playerPosition)
-                                    .concat([rounds[i]])
-                                    .concat(agregatedArray.slice(playerPosition, agregatedArray.length))
-            } else {
-                agregatedArray = [...agregatedArray, rounds[i]]
-            }
+      agregatedArray.forEach((r, idx) => {
+        if (r.playerThatAnswers.id === player.id) {
+          hasPlayer = true;
+          playerPosition = idx;
         }
-
-        return agregatedArray
+      });
+      if (hasPlayer) {
+        agregatedArray = agregatedArray
+          .slice(0, playerPosition)
+          .concat([rounds[i]])
+          .concat(agregatedArray.slice(playerPosition, agregatedArray.length));
+      } else {
+        agregatedArray = [...agregatedArray, rounds[i]];
+      }
     }
 
-    const handleNextPage = () => {
-        router.navigate('/votes')
-    }
+    return agregatedArray;
+  };
 
-    const agregatedArray = agregateByPlayer()
+  const handleNextPage = () => {
+    router.navigate('/votes');
+  };
 
-    return(
-        <WithSidebar>
-            <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-                <Elipse left={10} />
-                <View style={{alignItems: "center", justifyContent: "center", marginTop: 60}}>
-                    <View style={{ marginBottom: 30 }}>
-                        <Text style={styles.title}>Discussion time!</Text>
-                        <Text style={styles.subtitle}>Review all questions and analyse each detail that was answered</Text>
-                    </View>
-                    <Character mood="bothCharacter" />
+  const agregatedArray = agregateByPlayer();
+
+  return (
+    <WithSidebar>
+      <SafeAreaView
+        style={{
+          backgroundColor: colors.background[100],
+          overflow: 'hidden',
+          height: '100%',
+        }}
+      >
+        <Elipse left={10} />
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 60,
+          }}
+        >
+          <View style={{ marginBottom: 30 }}>
+            <Text style={styles.title}>Discussion time!</Text>
+            <Text style={styles.subtitle}>
+              Review all questions and analyse each detail that was answered
+            </Text>
+          </View>
+          <Character mood="bothCharacter" />
+        </View>
+        <ScrollView>
+          <View style={styles.table}>
+            {agregatedArray.map(round => {
+              return (
+                <View key={round.question}>
+                  <Text style={styles.playerName}>
+                    {round.playerThatAnswers.name}
+                  </Text>
+                  <Text style={styles.question}>{round.question}</Text>
                 </View>
-                <ScrollView>
-                    <View style={styles.table}>
-                        {
-                            agregatedArray.map(round => {
-                                return(
-                                    <View key={round.question}>
-                                        <Text style={styles.playerName}>{round.playerThatAnswers.name}</Text>
-                                        <Text style={styles.question}>{round.question}</Text>
-                                    </View>
-                                )
-                            })
-                        }
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Button text="Continue" onPress={handleNextPage} />
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
-        </WithSidebar>
-    )
+              );
+            })}
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button text="Continue" onPress={handleNextPage} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </WithSidebar>
+  );
 }
 
 const styles = StyleSheet.create({
-    title: {
-        fontSize: 35,
-        maxWidth: 250,
-        fontFamily: "Raleway",
-        fontWeight: "bold",
-        textAlign: "center",
+  title: {
+    fontSize: 35,
+    maxWidth: 250,
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    fontFamily: 'Raleway-Medium',
+    maxWidth: 250,
+  },
+  table: {
+    gap: 10,
+    padding: 20,
+    marginHorizontal: 25,
+    marginBottom: 200,
+    backgroundColor: colors.white[100],
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    subtitle: {
-        fontSize: 16,
-        fontFamily: "Raleway-Medium",
-        maxWidth: 250,
-    },
-    table: {
-        gap: 10,
-        padding: 20,
-        marginHorizontal: 25,
-        marginBottom: 200,
-        backgroundColor: colors.white[100],
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-        elevation: 5,
-    },
-    playerName: {
-        fontSize: 17,
-        fontFamily: "Sigmar",
-        color: colors.orange[200],
-    },
-    question: {
-        fontSize: 15,
-        fontFamily: "Raleway-Medium"
-    },
-    buttonContainer: {
-        position: "absolute",
-        bottom: 60,
-        left: 0,
-        right: 0,
-        justifyContent: 'center', 
-        alignItems: 'center',
-    },
-})
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  playerName: {
+    fontSize: 17,
+    fontFamily: 'Sigmar',
+    color: colors.orange[200],
+  },
+  question: {
+    fontSize: 15,
+    fontFamily: 'Raleway-Medium',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 60,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

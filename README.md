@@ -1,6 +1,6 @@
 # 🕵️ Who is Lying?
 
-**Who is Lying** is a local multiplayer party game for **3–10 players**, where all the action happens on a single phone. Try to spot the impostor — or *blend in* and survive if it's you.
+**Who is Lying** is a local multiplayer party game for **3–10 players**, where all the action happens on a single phone. Try to spot the impostor — or _blend in_ and survive if it's you.
 
 ![Who is Lying Logo](./assets/images/icon.png)
 
@@ -8,7 +8,7 @@
 
 ## 📲 Coming Soon
 
-- **Google Play Store**  
+- **Google Play Store**
 - **Apple App Store**
 
 Currently in **final testing**. Stay tuned!
@@ -66,14 +66,16 @@ This project follows professional software development practices with comprehens
 This project demonstrates comprehensive QA practices suitable for production applications:
 
 ### Testing Coverage
+
 - ✅ **35+ Test Cases** across functional, UI/UX, performance, and edge cases
 - ✅ **Unit Testing** with Jest for core game logic
-- ✅ **Integration Testing** for component interactions  
+- ✅ **Integration Testing** for component interactions
 - ✅ **Manual Testing** protocols for user experience validation
 - ✅ **Performance Testing** for memory usage and frame rate
 - ✅ **Compatibility Testing** across different device sizes
 
 ### Testing Types Implemented
+
 - **Functional Testing**: Player management, game flow, win conditions
 - **Usability Testing**: Single-device multiplayer UX, accessibility
 - **Performance Testing**: Load times, memory usage, battery impact
@@ -104,12 +106,14 @@ npm run test:performance
 ## 💻 Development Setup
 
 ### Prerequisites
+
 - Node.js 16+
 - npm or yarn
 - Expo CLI
 - Android Studio (for Android testing)
 
 ### Installation
+
 ```console
 git clone https://github.com/BrenoFischer/whoIsLying
 cd whoIsLying
@@ -117,6 +121,7 @@ npm install
 ```
 
 ### Running the App
+
 ```console
 # Start Expo development server
 npx expo start
@@ -124,11 +129,12 @@ npx expo start
 # Run on Android
 npx expo start --android
 
-# Run on iOS  
+# Run on iOS
 npx expo start --ios
 ```
 
 ### Development Commands
+
 ```console
 # Run tests
 npm test
@@ -148,7 +154,7 @@ npm run type-check
 ## 🏗️ Architecture & Design Patterns
 
 - **Component Architecture**: Modular React Native components with clear separation of concerns
-- **State Management**: Context API for global game state, local state for UI components  
+- **State Management**: Context API for global game state, local state for UI components
 - **Navigation**: Stack-based navigation with proper screen transitions
 - **Data Flow**: Unidirectional data flow following React best practices
 - **Error Handling**: Comprehensive error boundaries and graceful failure handling
@@ -159,6 +165,7 @@ npm run type-check
 ## 📌 Roadmap
 
 ### Completed ✅
+
 - [x] Core game logic implementation
 - [x] UI/UX design and responsive layout
 - [x] Comprehensive test suite development
@@ -167,11 +174,13 @@ npm run type-check
 - [x] Technical documentation and requirements
 
 ### In Progress 🚧
+
 - [ ] Play Store release preparation
 - [ ] Final user acceptance testing
 - [ ] Store listing optimization
 
 ### Future Enhancements 🔮
+
 - [ ] Multiple language support (i18n)
 - [ ] Additional character themes
 - [ ] Game statistics and analytics
@@ -196,7 +205,7 @@ This project follows professional development practices:
 ## 📊 Project Metrics
 
 - **Lines of Code**: ~2,500+ (TypeScript)
-- **Test Coverage**: 85%+ 
+- **Test Coverage**: 85%+
 - **Performance**: <3s launch time, 60fps gameplay
 - **Compatibility**: Android 7.0+, multiple screen sizes
 - **Bundle Size**: <25MB optimized

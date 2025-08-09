@@ -1,7 +1,7 @@
-import { Player } from "./Player"
+import { Player } from './Player';
 
 export interface Round {
-    playerThatAsks: Player
-    playerThatAnswers: Player
-    question: string
+  playerThatAsks: Player;
+  playerThatAnswers: Player;
+  question: string;
 }

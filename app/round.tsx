@@ -1,6 +1,12 @@
 import { GameContext } from '@/context/GameContext';
 import React, { useContext } from 'react';
-import { StyleSheet, Text, SafeAreaView, View, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  SafeAreaView,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
@@ -9,55 +15,85 @@ import Character from '@/components/character';
 import Discussion from './discussion';
 import WithSidebar from '@/components/withSideBar';
 
-
 export default function RoundScreen() {
   const { game, nextRound, previousRound } = useContext(GameContext);
 
-  const totalRounds = (game.players.length) * 2
+  const totalRounds = game.players.length * 2;
 
-  if(game.currentRound === totalRounds + 1) {
-    return <Discussion />
+  if (game.currentRound === totalRounds + 1) {
+    return <Discussion />;
   }
 
-  const round = game.rounds[game.currentRound - 1]
-  const playerThatAsks = round.playerThatAsks
-  const playerThatAnswers = round.playerThatAnswers
-  const question = round.question
+  const round = game.rounds[game.currentRound - 1];
+  const playerThatAsks = round.playerThatAsks;
+  const playerThatAnswers = round.playerThatAnswers;
+  const question = round.question;
 
   const handleNextRound = () => {
     nextRound();
-    router.navigate('/round')
-  }
+    router.navigate('/round');
+  };
 
   const handlePreviousRound = () => {
     previousRound();
-    router.navigate('/round')
-  }
+    router.navigate('/round');
+  };
 
   return (
     <WithSidebar>
-      <SafeAreaView style={{backgroundColor: colors.background[100], overflow: "hidden", height: "100%"}}>
-        <View style={{ marginLeft: 10, marginTop: 30}}>
-          {
-            game.currentRound !== 1 ?
+      <SafeAreaView
+        style={{
+          backgroundColor: colors.background[100],
+          overflow: 'hidden',
+          height: '100%',
+        }}
+      >
+        <View style={{ marginLeft: 10, marginTop: 30 }}>
+          {game.currentRound !== 1 ? (
             <TouchableOpacity onPress={handlePreviousRound}>
-              <Ionicons name="arrow-back" size={24} color={colors.orange[200]} />
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={colors.orange[200]}
+              />
             </TouchableOpacity>
-            :
+          ) : (
             <View style={{ height: 24 }} />
-          }
-          
-          <View style={{alignItems: "center", flexDirection: "row", marginVertical: 12}}>
-              <Text style={styles.headerCategoryTitle}>Round {game.currentRound} of {totalRounds}</Text>
-              <View style={{ backgroundColor: colors.orange[200], width: 8, height: 8, borderRadius: "50%", marginHorizontal: 8 }} />
-              <Text style={styles.headerCategoryTitle}>Category: {game.category}</Text>
+          )}
+
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              marginVertical: 12,
+            }}
+          >
+            <Text style={styles.headerCategoryTitle}>
+              Round {game.currentRound} of {totalRounds}
+            </Text>
+            <View
+              style={{
+                backgroundColor: colors.orange[200],
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                marginHorizontal: 8,
+              }}
+            />
+            <Text style={styles.headerCategoryTitle}>
+              Category: {game.category}
+            </Text>
           </View>
         </View>
 
         <View>
           <View>
-            <Text style={styles.playerName}>{playerThatAsks.name} <Text style={styles.playerThatAnswers}>asks</Text> {playerThatAnswers.name}</Text>
-            <View style={{ flexDirection: "row" }}> 
+            <Text style={styles.playerName}>
+              {playerThatAsks.name}{' '}
+              <Text style={styles.playerThatAnswers}>asks</Text>{' '}
+              {playerThatAnswers.name}
+            </Text>
+            <View style={{ flexDirection: 'row' }}>
               <Character mood={playerThatAsks.character} />
               <Character mood={playerThatAnswers.character} flip />
             </View>
@@ -65,48 +101,47 @@ export default function RoundScreen() {
         </View>
         <Text style={styles.question}>{question}</Text>
         <View style={styles.buttonContainer}>
-          <Button text='Continue' onPress={handleNextRound} />
+          <Button text="Continue" onPress={handleNextRound} />
         </View>
       </SafeAreaView>
     </WithSidebar>
   );
 }
 
-
 const styles = StyleSheet.create({
   headerCategoryTitle: {
-    textTransform: "capitalize",
+    textTransform: 'capitalize',
     fontSize: 16,
-    fontFamily: "Raleway-Medium",
+    fontFamily: 'Raleway-Medium',
     color: colors.white[100],
   },
   playerName: {
     marginTop: 30,
     marginBottom: 10,
     paddingHorizontal: 20,
-    fontFamily: "Ralway",
+    fontFamily: 'Ralway',
     fontSize: 40,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.white[100],
-    textAlign: "center",
+    textAlign: 'center',
   },
   playerThatAnswers: {
-    color: colors.orange[200]
+    color: colors.orange[200],
   },
   question: {
     fontSize: 30,
     color: colors.white[100],
-    fontFamily: "Sigmar",
+    fontFamily: 'Sigmar',
     padding: 20,
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 20,
   },
   buttonContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 60,
     left: 0,
     right: 0,
-    justifyContent: 'center', 
+    justifyContent: 'center',
     alignItems: 'center',
   },
 });

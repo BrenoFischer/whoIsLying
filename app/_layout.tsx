@@ -1,17 +1,17 @@
-import { Stack } from "expo-router";
-import { useFonts } from 'expo-font'; 
-import * as SplashScreen from 'expo-splash-screen'; 
+import { Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { GameContextProvider } from "@/context/GameContext";
-import { AppResetProvider } from "@/context/AppResetContext"; // <-- Add this
+import { GameContextProvider } from '@/context/GameContext';
+import { AppResetProvider } from '@/context/AppResetContext'; // <-- Add this
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
-    'Sigmar': require('../assets/fonts/SigmarRegular.ttf'),
-    'Raleway': require('../assets/fonts/Raleway.ttf'),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Sigmar: require('../assets/fonts/SigmarRegular.ttf'),
+    Raleway: require('../assets/fonts/Raleway.ttf'),
     'Raleway-Medium': require('../assets/fonts/Raleway-Medium.ttf'),
   });
 
@@ -26,10 +26,10 @@ export default function RootLayout() {
   return (
     <AppResetProvider>
       <GameContextProvider>
-        <Stack 
+        <Stack
           screenOptions={{
             headerShown: false,
-          }} 
+          }}
         />
       </GameContextProvider>
     </AppResetProvider>

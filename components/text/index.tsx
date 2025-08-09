@@ -10,20 +10,29 @@ interface CustomTextProps extends TextProps {
   children: React.ReactNode;
 }
 
-export default function CustomText({ 
-  children, 
-  style, 
-  variant = 'body', 
-  ...props 
+export default function CustomText({
+  children,
+  style,
+  variant = 'body',
+  ...props
 }: CustomTextProps) {
-    let fontSize = 14;
+  let fontSize = 14;
 
-    if(variant === 'title') {
-        fontSize = 30
-    }
+  if (variant === 'title') {
+    fontSize = 30;
+  }
 
   return (
-    <Text style={{fontSize, fontFamily: 'Raleway', fontWeight: "bold", color: colors.white[100], textAlign: "center"}} {...props}>
+    <Text
+      style={{
+        fontSize,
+        fontFamily: 'Raleway',
+        fontWeight: 'bold',
+        color: colors.white[100],
+        textAlign: 'center',
+      }}
+      {...props}
+    >
       {children}
     </Text>
   );

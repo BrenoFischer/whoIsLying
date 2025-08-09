@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import SidebarMenu from "@/components/sideBarMenu"
+import SidebarMenu from '@/components/sideBarMenu';
 
 type WithSidebarProps = {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ export default function WithSidebar({ children }: WithSidebarProps) {
       <SidebarMenu />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
