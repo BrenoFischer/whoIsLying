@@ -64,7 +64,7 @@ export default function CreateGame() {
 
   function handleCreateGame() {
     createGame(players);
-    router.replace('/selectCategory');
+    router.replace('/showWordToAll');
   }
 
   function handleChangeGender() {

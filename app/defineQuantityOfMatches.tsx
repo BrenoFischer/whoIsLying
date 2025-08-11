@@ -23,7 +23,7 @@ export default function DefineQuantityOfMatches() {
 
   const handleContinueWithSelectedQuantity = () => {
     setMaximumMatches(selectQuantity);
-    router.replace('/createGame');
+    router.replace('/selectCategory');
   };
 
   const handleChangeQuantity = (amount: number) => {

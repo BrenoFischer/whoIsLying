@@ -40,7 +40,7 @@ export default function SelectCategory() {
 
   const handleContinueWithSelectedCategory = () => {
     setGameWord(selectedCategory);
-    router.replace('/showWordToAll');
+    router.replace('/createGame');
   };
 
   function CategoryCard({ categoryName }: { categoryName: string }) {

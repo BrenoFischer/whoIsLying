@@ -57,7 +57,7 @@ export default function EndOfMatches() {
 
   const handlePlayerOneMoreRound = () => {
     setModalOpen(!modalOpen);
-    router.replace('/createGame');
+    router.replace('/selectCategory');
   };
 
   const handleStartNewGame = () => {

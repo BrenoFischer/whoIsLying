@@ -61,7 +61,7 @@ export default function EndGame() {
       router.navigate('/endOfMatches');
     } else {
       addNewMatch();
-      router.navigate('/createGame');
+      router.navigate('/selectCategory');
     }
   };
 
