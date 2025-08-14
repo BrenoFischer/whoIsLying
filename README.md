@@ -44,8 +44,7 @@ Simple to learn, tricky to master. Perfect for game nights, parties, and social 
 - **Language**: TypeScript
 - **State Management**: React Context API
 - **Navigation**: React Navigation
-- **Storage**: AsyncStorage
-- **Testing**: Jest + React Native Testing Library
+- **Testing**: Jira, Jest + React Native Testing Library
 - **Code Quality**: ESLint + Prettier
 
 ---
@@ -54,10 +53,10 @@ Simple to learn, tricky to master. Perfect for game nights, parties, and social 
 
 This project follows professional software development practices with comprehensive documentation and testing:
 
-- 📖 **[Requirements & Specifications](./docs/REQUIREMENTS.md)** - Detailed functional and non-functional requirements
-- 🧪 **[Test Plans & Coverage](./docs/TEST_PLANS.md)** - Comprehensive testing strategy with 35+ test cases
-- 🏗️ **[Architecture Overview](./docs/ARCHITECTURE.md)** - System design and component structure
-- 🐛 **[Bug Reports & Testing Results](./docs/TESTING_RESULTS.md)** - Manual testing execution results
+- 📖 **[Requirements & Specifications](./requirements.md)** - Detailed functional and non-functional requirements
+- 🧪 **[Test Plans & Coverage](./test_plans.md)** - Comprehensive testing strategy with 10+ test cases
+- 🏗️ **[Architecture Overview](./docs/ARCHITECTURE.md)** - System design and component structure - TODO
+- 🐛 **[Bug Reports & Testing Results](./docs/TESTING_RESULTS.md)** - Manual testing execution results - TODO
 
 ---
 
@@ -67,18 +66,16 @@ This project demonstrates comprehensive QA practices suitable for production app
 
 ### Testing Coverage
 
-- ✅ **35+ Test Cases** across functional, UI/UX, performance, and edge cases
-- ✅ **Unit Testing** with Jest for core game logic
-- ✅ **Integration Testing** for component interactions
+- ✅ **10+ Test Cases** across functional and edge cases
+- ✅ **Unit Testing** with Jest for core game logic - TODO
+- ✅ **Integration Testing** for component interactions - TODO
 - ✅ **Manual Testing** protocols for user experience validation
-- ✅ **Performance Testing** for memory usage and frame rate
 - ✅ **Compatibility Testing** across different device sizes
 
 ### Testing Types Implemented
 
 - **Functional Testing**: Player management, game flow, win conditions
 - **Usability Testing**: Single-device multiplayer UX, accessibility
-- **Performance Testing**: Load times, memory usage, battery impact
 - **Compatibility Testing**: Multiple screen sizes, Android versions
 - **Edge Case Testing**: Interruptions, device rotation, low memory
 
@@ -169,7 +166,6 @@ npm run type-check
 - [x] Core game logic implementation
 - [x] UI/UX design and responsive layout
 - [x] Comprehensive test suite development
-- [x] Performance optimization and profiling
 - [x] Cross-device compatibility testing
 - [x] Technical documentation and requirements
 
@@ -195,20 +191,10 @@ This project follows professional development practices:
 
 - **Version Control**: Conventional commits with clear commit messages
 - **Code Quality**: ESLint + Prettier for consistent code style
-- **Testing**: Test-driven development with comprehensive coverage
+- **Testing**: Manual, automatic and regression tests being part of the software life cycle
 - **Documentation**: Detailed requirements and technical documentation
-- **CI/CD**: Automated testing and code quality checks
-- **Issue Tracking**: Systematic bug reporting and feature tracking
-
----
-
-## 📊 Project Metrics
-
-- **Lines of Code**: ~2,500+ (TypeScript)
-- **Test Coverage**: 85%+
-- **Performance**: <3s launch time, 60fps gameplay
-- **Compatibility**: Android 7.0+, multiple screen sizes
-- **Bundle Size**: <25MB optimized
+- **CI/CD**: Automated testing and code quality checks - TODO
+- **Issue Tracking**: Systematic bug reporting on Jira and feature tracking
 
 ---
 
