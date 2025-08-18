@@ -10,6 +10,7 @@ interface GameContextType {
   createGame: (players: Player[]) => void;
   createNewGame: () => void;
   setMaximumMatches: (maxQtd: number) => void;
+  setLyingPlayer: (players: Player[]) => Player;
   addNewMatch: () => void;
   setGameWord: (word: string) => void;
   getRandomWord: (category: string) => string;
@@ -173,12 +174,20 @@ export const GameContextProvider = ({
     });
   };
 
+  const setLyingPlayer = (players: Player[]) => {
+    const lyingPlayer: Player =
+      players[Math.floor(Math.random() * players.length)]; //get a random player to be out of the round
+
+      setGame({ ...newGame, lyingPlayer });
+      return lyingPlayer
+  }
+
   const createGame = (newPlayers: Player[]) => {
     const newGame = resetGameWithExistingPlayers();
     const category = game.category ? game.category : ''
     const rounds = setAllRounds(newPlayers, category);
-    const lyingPlayer: Player =
-      newPlayers[Math.floor(Math.random() * newPlayers.length)]; //get a random player to be out of the round
+    const lyingPlayer = setLyingPlayer(newPlayers);
+
     setGame({ ...newGame, players: newPlayers, rounds, lyingPlayer });
   };
 
@@ -233,6 +242,7 @@ export const GameContextProvider = ({
         addNewMatch,
         createGame,
         createNewGame,
+        setLyingPlayer,
         setGameWord,
         getRandomWord,
         setSelectedWord,
