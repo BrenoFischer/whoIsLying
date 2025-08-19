@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 2,
       "package": "com.brenin.whoislying",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
