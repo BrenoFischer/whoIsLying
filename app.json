@@ -2,7 +2,7 @@
   "expo": {
     "name": "whoIsLying",
     "slug": "whoIsLying",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -12,7 +12,7 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 3,
       "package": "com.brenin.whoislying",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
