@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GameContextProvider } from '@/context/GameContext';
 import { AppResetProvider } from '@/context/AppResetContext'; // <-- Add this
@@ -26,6 +27,7 @@ export default function RootLayout() {
   return (
     <AppResetProvider>
       <GameContextProvider>
+        <StatusBar style="light" />
         <Stack
           screenOptions={{
             headerShown: false,
