@@ -73,7 +73,7 @@ export default function RevealImpostor() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 40,
+    marginTop: 50,
     justifyContent: 'space-between',
     height: '90%',
   },

@@ -74,19 +74,6 @@ export default function VotesResults() {
   const isTied = highestVoted.length > 1;
 
   const handleContinue = () => {
-    //check if none players voted on the impostor, so impostor obtains 50 points
-    let impostorWasVoted = false;
-    game.votes.forEach(v => {
-      if (v.playerVoted.id === game.lyingPlayer.id) {
-        impostorWasVoted = true;
-      }
-    });
-
-    if (!impostorWasVoted) {
-      const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 50);
-      updatePlayers(updatedPlayers);
-    }
-
     router.navigate('/revealImpostor');
   };
 
@@ -231,5 +218,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 30,
   },
 });

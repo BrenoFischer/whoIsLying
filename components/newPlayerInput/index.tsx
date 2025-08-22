@@ -75,7 +75,7 @@ export default function NewPlayerInput({
           placeholderTextColor={colors.orange[200]}
           keyboardType="ascii-capable"
           inputMode="text"
-          maxLength={15}
+          maxLength={10}
           style={styles.textInput}
           value={newName}
           onChangeText={text => setNewName(text)}

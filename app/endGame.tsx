@@ -73,7 +73,7 @@ export default function EndGame() {
         height: '100%',
       }}
     >
-      <ScrollView style={{ marginBottom: 100 }}>
+      <ScrollView style={{ marginBottom: 120 }}>
         <Text style={styles.title}>Scores:</Text>
         {sortedWinningPlayers.map((p, idx) => {
           return <PlayerWithScore key={p.id} player={p} index={idx} />;
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     color: colors.orange[200],
+    marginTop: 40,
   },
   playerCard: {
     backgroundColor: colors.orange[200],

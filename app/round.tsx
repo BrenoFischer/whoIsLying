@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   question: {
-    fontSize: 30,
+    fontSize: 26,
     color: colors.white[100],
     fontFamily: 'Sigmar',
     padding: 20,

@@ -123,7 +123,7 @@ export default function EndOfMatches() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 40,
+    marginTop: 100,
     height: '90%',
   },
   title: {

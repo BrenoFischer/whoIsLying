@@ -33,10 +33,10 @@ export default function RevealWord() {
       >
         <View style={styles.headerContainer}>
           <Character mood={game.lyingPlayer.character} />
-          <View>
-            <Text style={styles.title}>{game.lyingPlayer.name} voted for:</Text>
-            <Text style={styles.word}>{game.selectedWord}</Text>
-          </View>
+        </View>  
+        <View style={styles.wordVotedContainer}>
+          <Text style={styles.title}>{game.lyingPlayer.name} voted for:</Text>
+          <Text style={styles.word}>{game.selectedWord}</Text>
         </View>
 
         {secretWordRevealed && (
@@ -67,10 +67,11 @@ export default function RevealWord() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: 50,
+  },
+  wordVotedContainer: {
+    paddingVertical: 30,
     backgroundColor: colors.orange[200],
-    marginTop: 30,
   },
   title: {
     textAlign: 'center',

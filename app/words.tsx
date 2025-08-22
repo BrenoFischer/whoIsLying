@@ -105,7 +105,9 @@ export default function Words() {
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
         />
-        <Character mood={impostorPlayer.character} />
+        <View style={styles.topContainer}>
+          <Character mood={impostorPlayer.character} />
+        </View>
         <View style={styles.table}>
           <Text style={styles.playerNameOnTable}>
             {impostorPlayer.name},{' '}
@@ -130,6 +132,9 @@ export default function Words() {
 }
 
 const styles = StyleSheet.create({
+  topContainer: {
+    marginTop: 40,
+  },
   tableText: {
     fontSize: 20,
     fontFamily: 'Raleway',

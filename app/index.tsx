@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 
   logoContainer: {
     height: 180,
-    marginTop: 50,
+    marginTop: 100,
   },
 
   icon: {
