@@ -151,17 +151,16 @@ export default function SidebarMenu() {
             </Text>
             <Text style={styles.text}>
               <Text style={styles.specialText}>9.1.</Text> If you voted for the
-              impostor – <Text style={styles.specialText}>+50 points</Text>.
+              impostor – <Text style={styles.specialText}>+3 points</Text>.
             </Text>
             <Text style={styles.text}>
               <Text style={styles.specialText}>9.2.</Text> If you are the
-              impostor and no one voted for you –{' '}
-              <Text style={styles.specialText}>+50 points</Text>.
+              impostor you receive <Text style={styles.specialText}>+1 points</Text> for every vote not on you.
             </Text>
             <Text style={styles.text}>
               <Text style={styles.specialText}>9.3.</Text> If you are the
               impostor and correctly guessed the secret word –{' '}
-              <Text style={styles.specialText}>+50 points</Text>.
+              <Text style={styles.specialText}>+2 point</Text>.
             </Text>
             <View style={{ marginBottom: 50 }} />
           </ScrollView>

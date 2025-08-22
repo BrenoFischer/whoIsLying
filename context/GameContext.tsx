@@ -213,7 +213,7 @@ export const GameContextProvider = ({
   const updatePointsToPlayer = (player: Player, points: number) => {
     const updatedPlayers = game.players.map(p => {
       if (player.id === p.id) {
-        return { ...player, score: player.score + points };
+        return { ...p, score: p.score + points };
       } else {
         return p;
       }
@@ -225,12 +225,20 @@ export const GameContextProvider = ({
   const addVote = (playerThatVoted: Player, playerVoted: Player) => {
     const newVotes = [...game.votes, { playerThatVoted, playerVoted }];
 
-    //add 50 points if player voted correctly on the impostor
+    if(playerThatVoted.id === game.lyingPlayer.id) {
+      //the impostor does not compute points with his vote
+      setGame({...game, votes: newVotes});
+      return;
+    }
+  
+    //add 3 points if player voted correctly on the impostor
     if (playerVoted.id === game.lyingPlayer.id) {
-      const updatedPlayers = updatePointsToPlayer(playerThatVoted, 50);
+      const updatedPlayers = updatePointsToPlayer(playerThatVoted, 3);
       setGame({ ...game, votes: newVotes, players: updatedPlayers });
     } else {
-      setGame({ ...game, votes: newVotes });
+    //add 1 point to the impostor
+      const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 1);
+      setGame({ ...game, votes: newVotes, players: updatedPlayers });
     }
   };
 

@@ -13,9 +13,9 @@ export default function RevealWord() {
   const { game, updatePointsToPlayer, updatePlayers } = useContext(GameContext);
 
   const handleContinue = () => {
-    //if impostor got correct the secret word, it obtains 50 points
+    //if impostor got correct the secret word, it obtains 2 points
     if (game.selectedWord === game.word) {
-      const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 50);
+      const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 2);
       updatePlayers(updatedPlayers);
     }
 
