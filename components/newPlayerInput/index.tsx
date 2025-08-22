@@ -18,6 +18,7 @@ interface NewPlayerInputProps {
   disabled: boolean;
   currentPlayerGender: string;
   handleChangeGender: () => void;
+  genderLocked?: boolean;
 }
 
 export default function NewPlayerInput({
@@ -25,6 +26,7 @@ export default function NewPlayerInput({
   disabled,
   currentPlayerGender,
   handleChangeGender,
+  genderLocked = false,
 }: NewPlayerInputProps) {
   const [newName, setNewName] = useState('');
   const [inputError, setInputError] = useState(false);
@@ -61,11 +63,11 @@ export default function NewPlayerInput({
   return (
     <>
       <View style={[styles.container, { borderColor }]}>
-        <TouchableOpacity onPress={handleChangeGender}>
+        <TouchableOpacity onPress={handleChangeGender} disabled={genderLocked}>
           <MaterialIcons
             name={playerGenderIcon}
             size={26}
-            color={colors.orange[200]}
+            color={genderLocked ? colors.gray[100] : colors.orange[200]}
           />
         </TouchableOpacity>
         <TextInput
