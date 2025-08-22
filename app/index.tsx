@@ -20,11 +20,6 @@ export default function SkillUpScreen() {
           onPress={() => router.navigate('/defineQuantityOfMatches')}
         />
       </View>
-      <Image
-        source={require('@/assets/images/logo2.png')}
-        style={styles.bottomImage}
-        resizeMode="cover"
-      />
     </View>
   );
 }
@@ -59,13 +54,11 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    marginTop: 110,
-  },
-
-  bottomImage: {
-    width: '100%',
     position: 'absolute',
-    bottom: 0,
+    bottom: 100,
     left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
