@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { TouchableOpacity, View, TextInput, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, TextInput, StyleSheet, Text } from 'react-native';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
+import CustomModal from '../modal';
+import Button from '../button';
 
 interface PlayerInputProps {
   player: Player;
@@ -17,17 +19,33 @@ export default function PlayerInput({
   deletePlayer,
 }: PlayerInputProps) {
   const [newName, setNewName] = useState(player.name);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleSubmit = () => {
     editPlayer(player, newName);
   };
 
+  const clickDeletePlayer = () => {
+    setModalOpen(true)
+  };
+
   const handleDeletePlayer = () => {
-    deletePlayer(player.id);
+    deletePlayer(player.id)
+    setModalOpen(false)
   };
 
   return (
     <View style={[styles.container, { borderColor: colors.orange[200] }]}>
+      <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
+        <View>
+          <Text style={styles.modalTitle}>Do you want to delete this player from the list?</Text>
+          <Text style={styles.modalText}>All points the player currently has will be lost.</Text>
+          <View style={styles.modalButtonsContainer}>
+            <Button onPress={handleDeletePlayer} text='Confirm' />
+            <Button onPress={() => { setModalOpen(false) }} text='Cancel' variants='secondary' />
+          </View>
+        </View>
+      </CustomModal>
       <TextInput
         placeholder="Add a new name"
         keyboardType="ascii-capable"
@@ -41,7 +59,7 @@ export default function PlayerInput({
       />
       <TouchableOpacity
         style={[styles.iconContainer]}
-        onPress={handleDeletePlayer}
+        onPress={clickDeletePlayer}
       >
         <EvilIcons name="trash" size={40} color="red" />
       </TouchableOpacity>
@@ -50,6 +68,22 @@ export default function PlayerInput({
 }
 
 const styles = StyleSheet.create({
+  modalTitle: {
+    textAlign: 'center',
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  modalText: {
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  modalButtonsContainer: {
+    marginTop: 50,
+    justifyContent: "space-around",
+    alignItems: "center",
+    gap: 20,
+  },
   container: {
     width: 300,
     flexDirection: 'row',
