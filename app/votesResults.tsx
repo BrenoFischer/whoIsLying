@@ -7,6 +7,7 @@ import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from '@/translations';
 
 type VotesByPlayerType = {
   player: Player;
@@ -16,6 +17,7 @@ type VotesByPlayerType = {
 
 export default function VotesResults() {
   const { game, updatePointsToPlayer, updatePlayers } = useContext(GameContext);
+  const { t } = useTranslation();
 
   const votesByPlayer: VotesByPlayerType[] = game.players.map(p => {
     return { player: p, votes: 0, playersThatVoted: [] };
@@ -50,7 +52,7 @@ export default function VotesResults() {
         <Character mood={vote.player.character} />
         <View style={{ justifyContent: 'center' }}>
           <Text style={styles.allPlayersName}>{vote.player.name}</Text>
-          <Text style={styles.allPlayersInfo}>Votes: {vote.votes}</Text>
+          <Text style={styles.allPlayersInfo}>{t('Votes')}: {vote.votes}</Text>
           {vote.votes > 0 && (
             <View style={{ maxWidth: 140 }}>
               <Text style={styles.allPlayersInfoVotes}>
@@ -90,8 +92,8 @@ export default function VotesResults() {
           <View style={styles.mostVotedPlayerContainer}>
             <Text style={styles.mostVotedPlayerText}>
               {isTied
-                ? 'It is a tie, the most voted players were:'
-                : 'The most voted player was:'}
+                ? t('It is a tie, the most voted players were:')
+                : t('The most voted player was:')}
             </Text>
             {highestVoted.map(vote => {
               return (
@@ -110,7 +112,7 @@ export default function VotesResults() {
                       }}
                     >
                       <Text style={styles.votesInfo}>
-                        With {vote.votes} votes!
+                        {t('With')} {vote.votes} {t('votes!')}
                       </Text>
                       <Text style={styles.votesInfo}>
                         (
@@ -142,13 +144,13 @@ export default function VotesResults() {
               );
             })}
           </View>
-          <Text style={styles.allPlayersText}>All players:</Text>
+          <Text style={styles.allPlayersText}>{t('All players')}:</Text>
           {votesByPlayer.map(vote => {
             return <PlayerCard {...vote} key={vote.player.id} />;
           })}
         </ScrollView>
         <View style={styles.buttonContainer}>
-          <Button text="Reveal impostor" onPress={handleContinue} />
+          <Button text={t('Reveal impostor')} onPress={handleContinue} />
         </View>
       </SafeAreaView>
     </WithSidebar>

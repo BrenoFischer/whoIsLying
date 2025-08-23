@@ -14,9 +14,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Character from '@/components/character';
 import Discussion from './discussion';
 import WithSidebar from '@/components/withSideBar';
+import { useTranslation } from '@/translations';
 
 export default function RoundScreen() {
-  const { game, nextRound, previousRound } = useContext(GameContext);
+  const { game, nextRound, previousRound, getCurrentQuestion } = useContext(GameContext);
+  const { language, t } = useTranslation();
 
   const totalRounds = game.players.length * 2;
 
@@ -27,7 +29,7 @@ export default function RoundScreen() {
   const round = game.rounds[game.currentRound - 1];
   const playerThatAsks = round.playerThatAsks;
   const playerThatAnswers = round.playerThatAnswers;
-  const question = round.question;
+  const question = getCurrentQuestion(language);
 
   const handleNextRound = () => {
     nextRound();
@@ -69,7 +71,7 @@ export default function RoundScreen() {
             }}
           >
             <Text style={styles.headerCategoryTitle}>
-              Round {game.currentRound} of {totalRounds}
+              {t('Round')} {game.currentRound} {t('of')} {totalRounds}
             </Text>
             <View
               style={{
@@ -81,7 +83,7 @@ export default function RoundScreen() {
               }}
             />
             <Text style={styles.headerCategoryTitle}>
-              Category: {game.category}
+              {t('Category')}: {t(game.category || '')}
             </Text>
           </View>
         </View>
@@ -90,7 +92,7 @@ export default function RoundScreen() {
           <View>
             <Text style={styles.playerName}>
               {playerThatAsks.name}{' '}
-              <Text style={styles.playerThatAnswers}>asks</Text>{' '}
+              <Text style={styles.playerThatAnswers}>{t('asks')}</Text>{' '}
               {playerThatAnswers.name}
             </Text>
             <View style={{ flexDirection: 'row' }}>
@@ -101,7 +103,7 @@ export default function RoundScreen() {
         </View>
         <Text style={styles.question}>{question}</Text>
         <View style={styles.buttonContainer}>
-          <Button text="Continue" onPress={handleNextRound} />
+          <Button text={t('Continue')} onPress={handleNextRound} />
         </View>
       </SafeAreaView>
     </WithSidebar>

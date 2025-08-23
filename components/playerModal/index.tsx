@@ -3,6 +3,7 @@ import Character from '../character';
 import Button from '../button';
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
+import { useTranslation } from '@/translations';
 
 interface PlayerModalProps {
   modalVisible: boolean;
@@ -15,6 +16,9 @@ export default function PlayerModal({
   setModalVisible,
   player,
 }: PlayerModalProps) {
+  const { language, t } = useTranslation();
+  const buttonText = t("I'm") + (language === 'en' ? ' ' : player.gender === 'woman' ? ' a ' : ' o ') + player.name
+
   return (
     <Modal
       animationType="slide"
@@ -39,13 +43,13 @@ export default function PlayerModal({
         <View style={styles.modalView}>
           <View>
             <View>
-              <Text style={styles.titleInformation}>Pass device to:</Text>
+              <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
               <Text style={styles.modalPlayerName}>{player.name}</Text>
             </View>
             <Character mood={player.character} />
           </View>
           <Button
-            text={`I'm ${player.name}`}
+            text={buttonText}
             onPress={() => {
               setModalVisible(false);
             }}

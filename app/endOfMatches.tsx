@@ -10,6 +10,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAppReset } from '@/context/AppResetContext';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
+import { useTranslation } from '@/translations';
 
 export default function EndOfMatches() {
   const navigation = useNavigation();
@@ -17,6 +18,7 @@ export default function EndOfMatches() {
 
   const { resetApp } = useAppReset();
   const { game } = useContext(GameContext);
+  const { t } = useTranslation();
 
   const getWinners = () => {
     const firstPlayer = game.players[0];
@@ -84,9 +86,9 @@ export default function EndOfMatches() {
     >
       <View style={styles.headerContainer}>
         {allWinners.length > 1 ? (
-          <Text style={styles.title}>The grand winners are!</Text>
+          <Text style={styles.title}>{t('The grand winners are!')}</Text>
         ) : (
-          <Text style={styles.title}>The grand winner is!</Text>
+          <Text style={styles.title}>{t('The grand winner is!')}</Text>
         )}
         <ScrollView>
           {allWinners.map(p => {
@@ -98,24 +100,24 @@ export default function EndOfMatches() {
         <>
           <View>
             <View style={{ marginBottom: 30 }}>
-              <Text style={styles.titleInformation}>Do you want to:</Text>
+              <Text style={styles.titleInformation}>{t('Do you want to:')}</Text>
             </View>
           </View>
           <Character mood="bothCharacter" />
           <View style={{ gap: 40 }}>
             <Button
-              text={'Play one more round'}
+              text={t('Play one more round')}
               onPress={handlePlayerOneMoreRound}
             />
             <Button
-              text={'Start a fresh new game'}
+              text={t('Start a fresh new game')}
               onPress={handleStartNewGame}
             />
           </View>
         </>
       </CustomModal>
       <View style={styles.buttonContainer}>
-        <Button text="Continue" onPress={handleContinue} />
+        <Button text={t('Continue')} onPress={handleContinue} />
       </View>
     </SafeAreaView>
   );

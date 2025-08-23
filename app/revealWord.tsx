@@ -7,14 +7,17 @@ import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from '@/translations';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
-  const { game, updatePointsToPlayer, updatePlayers } = useContext(GameContext);
+  const { game, updatePointsToPlayer, updatePlayers, getCurrentWord } = useContext(GameContext);
+  const { language, t } = useTranslation();
 
   const handleContinue = () => {
     //if impostor got correct the secret word, it obtains 2 points
-    if (game.selectedWord === game.word) {
+    const currentWord = getCurrentWord(language);
+    if (game.selectedWord === currentWord) {
       const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 2);
       updatePlayers(updatedPlayers);
     }
@@ -33,27 +36,27 @@ export default function RevealWord() {
       >
         <View style={styles.headerContainer}>
           <Character mood={game.lyingPlayer.character} />
-        </View>  
+        </View>
         <View style={styles.wordVotedContainer}>
-          <Text style={styles.title}>{game.lyingPlayer.name} voted for:</Text>
+          <Text style={styles.title}>{game.lyingPlayer.name} {t('voted for:')}</Text>
           <Text style={styles.word}>{game.selectedWord}</Text>
         </View>
 
         {secretWordRevealed && (
           <View style={{ marginTop: 120 }}>
-            <Text style={styles.title}>The secret word was:</Text>
+            <Text style={styles.title}>{t('The secret word was:')}</Text>
             <Text style={[styles.word, { color: colors.orange[200] }]}>
-              {game.word}
+              {getCurrentWord(language)}
             </Text>
           </View>
         )}
 
         <View style={styles.buttonContainer}>
           {secretWordRevealed ? (
-            <Button text="Continue" onPress={handleContinue} />
+            <Button text={t('Continue')} onPress={handleContinue} />
           ) : (
             <Button
-              text="Reveal secret word"
+              text={t('Reveal secret word')}
               onPress={() => {
                 setSecretWordRevealed(true);
               }}

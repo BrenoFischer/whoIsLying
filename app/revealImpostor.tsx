@@ -6,12 +6,14 @@ import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from '@/translations';
 
 export default function RevealImpostor() {
+  const { t } = useTranslation();
   const phrasesToReveal = [
-    'Impostor, you can cough 3 times to reveal yourself',
-    'Impostor, you can raise your right hand to reveal yourself',
-    'Impostor, you can stand up to reveal yourself',
+    t('Impostor, you can cough 3 times to reveal yourself'),
+    t('Impostor, you can raise your right hand to reveal yourself'),
+    t('Impostor, you can stand up to reveal yourself'),
   ];
   const [nextReveal, setNextReveal] = useState(false);
   const { game } = useContext(GameContext);
@@ -47,7 +49,7 @@ export default function RevealImpostor() {
         }}
       >
         <View style={styles.headerContainer}>
-          <Text style={styles.title}>The real impostor was:</Text>
+          <Text style={styles.title}>{t('The real impostor was:')}</Text>
           {nextReveal ? (
             <PlayerCard />
           ) : (
@@ -56,13 +58,13 @@ export default function RevealImpostor() {
           <View style={styles.buttonContainer}>
             {nextReveal ? (
               <Button
-                text="Continue"
+                text={t('Continue')}
                 onPress={() => {
                   router.replace('/words');
                 }}
               />
             ) : (
-              <Button text="Done it" onPress={() => setNextReveal(true)} />
+              <Button text={t('Done it')} onPress={() => setNextReveal(true)} />
             )}
           </View>
         </View>

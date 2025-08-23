@@ -6,6 +6,7 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
+import { useTranslation } from '@/translations';
 import {
   SafeAreaView,
   ScrollView,
@@ -19,17 +20,20 @@ export default function Words() {
   const [modalVisible, setModalVisible] = useState(true);
   const [newSelectedWord, setNewSelectedWord] = useState('');
   const [allWords, setAllWords] = useState<string[]>([]);
-  const { game, getRandomWord, setSelectedWord } = useContext(GameContext);
+  const { game, getRandomWord, setSelectedWord, getCurrentWord } =
+    useContext(GameContext);
+  const { language, t } = useTranslation();
 
   const impostorPlayer = game.lyingPlayer;
 
   const getRandomWords = (): string[] => {
     let i = 0;
     const randomWords = [];
+    const currentWord = getCurrentWord(language);
 
     while (i < 4) {
-      const word = getRandomWord(game.category!);
-      if (word !== game.word) {
+      const word = getRandomWord(game.category!, language);
+      if (word !== currentWord) {
         let wordNotAlreadySelected = true;
         for (let j = 0; j < randomWords.length; j++) {
           if (randomWords[j] === word) {
@@ -47,7 +51,8 @@ export default function Words() {
   };
 
   const addWordAndShuffle = (words: string[]) => {
-    words.push(game.word!);
+    const currentWord = getCurrentWord(language);
+    words.push(currentWord);
     for (let i = words.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [words[i], words[j]] = [words[j], words[i]]; // Swap elements
@@ -82,11 +87,13 @@ export default function Words() {
   };
 
   useEffect(() => {
-    const randomWords = getRandomWords();
-    const words = addWordAndShuffle(randomWords);
+    if (game.category && language) {
+      const randomWords = getRandomWords();
+      const words = addWordAndShuffle(randomWords);
 
-    setAllWords(words);
-  }, []);
+      setAllWords(words);
+    }
+  }, [language, game.category]);
 
   return (
     <WithSidebar>
@@ -112,7 +119,7 @@ export default function Words() {
           <Text style={styles.playerNameOnTable}>
             {impostorPlayer.name},{' '}
             <Text style={styles.tableText}>
-              vote on the secret word your think is the correct one:
+              {t('vote on the secret word you think is the correct one:')}
             </Text>
           </Text>
           {allWords.map(w => {
@@ -121,7 +128,7 @@ export default function Words() {
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            text="Vote!"
+            text={t('Vote!')}
             onPress={handleContinue}
             variants={newSelectedWord ? 'primary' : 'disabled'}
           />

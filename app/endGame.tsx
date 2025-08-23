@@ -6,9 +6,11 @@ import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from '@/translations';
 
 export default function EndGame() {
   const { game, addNewMatch } = useContext(GameContext);
+  const { t } = useTranslation();
 
   const sortedWinningPlayers = game.players
     .slice()
@@ -46,7 +48,7 @@ export default function EndGame() {
             }}
           >
             <Text style={styles.playerScore}>
-              {player.score} <Text style={styles.playerPointsText}>points</Text>
+              {player.score} <Text style={styles.playerPointsText}>{t('points')}</Text>
             </Text>
           </View>
         </View>
@@ -74,13 +76,13 @@ export default function EndGame() {
       }}
     >
       <ScrollView style={{ marginBottom: 120 }}>
-        <Text style={styles.title}>Scores:</Text>
+        <Text style={styles.title}>{t('Scores')}:</Text>
         {sortedWinningPlayers.map((p, idx) => {
           return <PlayerWithScore key={p.id} player={p} index={idx} />;
         })}
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <Button text="Continue" onPress={handleContinue} />
+        <Button text={t('Continue')} onPress={handleContinue} />
       </View>
     </SafeAreaView>
   );

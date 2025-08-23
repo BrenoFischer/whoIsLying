@@ -16,9 +16,11 @@ import Character from '@/components/character';
 import Elipse from '@/components/elipse';
 import PlayerModal from '@/components/playerModal';
 import WithSidebar from '@/components/withSideBar';
+import { useTranslation } from '@/translations';
 
 export default function ShowWordToAll() {
-  const { game, showWordToNextPlayer } = useContext(GameContext);
+  const { game, showWordToNextPlayer, getCurrentWord } = useContext(GameContext);
+  const { language, t } = useTranslation();
   const [wordRevealed, setWordRevealed] = useState(false);
   const [displayWord, setDisplayWord] = useState('');
   const [displaySubtitle, setDisplaySubtitle] = useState('');
@@ -29,11 +31,11 @@ export default function ShowWordToAll() {
   function handleRevealWord() {
     const playerIsLying = game.lyingPlayer.id === currentPlayer.id;
     const word = playerIsLying
-      ? 'You will be the impostor this round!'
-      : game.word;
+      ? t('You will be the impostor this round!')
+      : getCurrentWord(language);
     const subtitle = playerIsLying
-      ? "Pretend you know the word and try to discover it based on people's answers."
-      : 'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.';
+      ? t("Pretend you know the word and try to discover it based on people's answers.")
+      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.');
     setDisplayWord(word || '');
     setDisplaySubtitle(subtitle || '');
     setWordRevealed(true);
@@ -77,7 +79,7 @@ export default function ShowWordToAll() {
             marginTop: 50,
           }}
         >
-          <Text style={styles.headerCategoryTitle}>Category</Text>
+          <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
           <View
             style={{
               backgroundColor: colors.white[100],
@@ -87,7 +89,7 @@ export default function ShowWordToAll() {
               marginHorizontal: 8,
             }}
           />
-          <Text style={styles.headerCategoryTitle}>{game.category}</Text>
+          <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
           <View
             style={{
               backgroundColor: colors.white[100],
@@ -98,12 +100,12 @@ export default function ShowWordToAll() {
             }}
           />
           <Text style={styles.headerCategoryTitle}>
-            Player {game.showingWordToPlayer + 1} of {game.players.length}
+            {t('Player')} {game.showingWordToPlayer + 1} {t('of')} {game.players.length}
           </Text>
         </View>
         <View style={styles.headerContainer}>
           <View>
-            <Text style={styles.titleInformation}>Pass device to:</Text>
+            <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
             <Text style={styles.playerName}>{currentPlayer.name}</Text>
           </View>
           <Character mood={currentPlayer.character} />
@@ -120,12 +122,12 @@ export default function ShowWordToAll() {
         <View style={styles.buttonContainer}>
           {wordRevealed === false ? (
             <Button
-              text={'Tap to reveal'}
+              text={t('Tap to reveal')}
               onPress={handleRevealWord}
               variants={modalVisible ? 'disabled' : 'primary'}
             />
           ) : (
-            <Button text={'Got it!'} onPress={handleShowWordToNextPlayer} />
+            <Button text={t('Got it!')} onPress={handleShowWordToNextPlayer} />
           )}
         </View>
       </SafeAreaView>

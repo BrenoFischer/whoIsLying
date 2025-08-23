@@ -16,11 +16,15 @@ import Character from '../character';
 import { useNavigation } from 'expo-router';
 import { useAppReset } from '@/context/AppResetContext';
 import { CommonActions } from '@react-navigation/native';
+import { Language, useTranslation } from '@/translations';
 
 export default function SidebarMenu() {
   const [visible, setVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [clickedLanguage, setClickedLanguage] = useState<Language | undefined>(undefined);
+  const [languageModalOpen, setLanguageModalOpen] = useState(false);
   const navigation = useNavigation();
+  const { t, language, setLanguage } = useTranslation();
 
   const { resetApp } = useAppReset();
   const toggleMenu = () => setVisible(!visible);
@@ -35,6 +39,17 @@ export default function SidebarMenu() {
       })
     );
   };
+
+  const clickSetLanguage = (lan: Language) => {
+    setLanguageModalOpen(true);
+    setClickedLanguage(lan);
+  }
+
+  const handleChangeLanguage = () => {
+    setLanguage(clickedLanguage!);
+    setLanguageModalOpen(false);
+    handleStartNewGame();
+  }
 
   return (
     <>
@@ -53,9 +68,47 @@ export default function SidebarMenu() {
         <View style={styles.backdrop}>
           <ScrollView style={styles.sidebar}>
             <Character mood="umpa" />
+            <View style={styles.languageContainer}>
+              <Text style={styles.languageLabel}>Language / Idioma:</Text>
+              <View style={styles.languageButtons}>
+                <TouchableOpacity
+                  style={[
+                    styles.langButton,
+                    language === 'en' && styles.activeLangButton,
+                  ]}
+                  onPress={() => clickSetLanguage('en')}
+                >
+                  <Text
+                    style={[
+                      styles.langText,
+                      language === 'en' && styles.activeLangText,
+                    ]}
+                  >
+                    🇺🇸 EN
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.langButton,
+                    language === 'pt' && styles.activeLangButton,
+                  ]}
+                  onPress={() => clickSetLanguage('pt')}
+                >
+                  <Text
+                    style={[
+                      styles.langText,
+                      language === 'pt' && styles.activeLangText,
+                    ]}
+                  >
+                    🇧🇷 PT
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
             <View style={styles.startNewGameContainer}>
               <Button
-                text="Start a new game"
+                text={t('Start a new game')}
                 onPress={() => {
                   setModalOpen(true);
                 }}
@@ -69,17 +122,19 @@ export default function SidebarMenu() {
               <>
                 <View>
                   <View style={{ marginBottom: 30 }}>
-                    <Text style={styles.titleInformation}>Do you want to:</Text>
+                    <Text style={styles.titleInformation}>
+                      {t('Do you want to:')}
+                    </Text>
                   </View>
                 </View>
                 <Character mood="bothCharacter" />
                 <View style={{ gap: 40 }}>
                   <Button
-                    text={'Start a fresh new game'}
+                    text={t('Start a fresh new game')}
                     onPress={handleStartNewGame}
                   />
                   <Button
-                    text={'Continue with current game'}
+                    text={t('Continue with current game')}
                     variants="secondary"
                     onPress={() => {
                       setModalOpen(false);
@@ -89,20 +144,56 @@ export default function SidebarMenu() {
               </>
             </CustomModal>
 
-            <Text style={styles.menuItem}>📖 How to Play</Text>
+            <CustomModal
+              setModalVisible={setLanguageModalOpen}
+              modalVisible={languageModalOpen}
+            >
+              <>
+                <View>
+                  <View style={{ marginBottom: 30 }}>
+                    <Text style={styles.titleInformation}>
+                      {t('Do you want to change the language?')}
+                    </Text>
+                    <Text style={styles.altText}>
+                      {t('Note that this will start a new game to be effective.')}
+                    </Text>
+                  </View>
+                </View>
+                <Character mood="bothCharacter" />
+                <View style={{ gap: 40 }}>
+                  <Button
+                    text={t('Change language and start a new game')}
+                    onPress={handleChangeLanguage}
+                  />
+                  <Button
+                    text={t('Continue with current game')}
+                    variants="secondary"
+                    onPress={() => {
+                      setLanguageModalOpen(false);
+                    }}
+                  />
+                </View>
+              </>
+            </CustomModal>
+
+            <Text style={styles.menuItem}>{t('📖 How to Play')}</Text>
             <Text style={styles.subtitle}>
-              <Text style={styles.specialText}>All players</Text> except{' '}
-              <Text style={styles.specialText}>one</Text> receive a secret{' '}
-              <Text style={styles.specialText}>word</Text>. One random player is
-              the <Text style={styles.specialText}>impostor</Text> for the
-              round.
-              <Text style={styles.specialText}>Questions</Text> are asked
-              between players. Can you{' '}
-              <Text style={styles.specialText}>identify</Text> who is{' '}
-              <Text style={styles.specialText}>pretending</Text> to know the
-              word? Will the <Text style={styles.specialText}>impostor</Text> be
-              able to guess what the secret{' '}
-              <Text style={styles.specialText}>word</Text> is?
+              <Text style={styles.specialText}>{t('All players')}</Text>{' '}
+              {t('except')} <Text style={styles.specialText}>{t('one')}</Text>{' '}
+              {t('receive a secret')}{' '}
+              <Text style={styles.specialText}>{t('word')}</Text>.{' '}
+              {t('One random player is the')}{' '}
+              <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+              {t('for the round.')}
+              <Text style={styles.specialText}>{t('Questions')}</Text>{' '}
+              {t('are asked between players. Can you')}{' '}
+              <Text style={styles.specialText}>{t('identify')}</Text>{' '}
+              {t('who is')}{' '}
+              <Text style={styles.specialText}>{t('pretending')}</Text>{' '}
+              {t('to know the word? Will the')}{' '}
+              <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+              {t('be able to guess what the secret')}{' '}
+              <Text style={styles.specialText}>{t('word')}</Text> {t('is?')}
             </Text>
             <Text style={styles.text}>
               <Text style={styles.specialText}>1.</Text> Enter the names of{' '}
@@ -155,11 +246,13 @@ export default function SidebarMenu() {
             </Text>
             <Text style={styles.text}>
               <Text style={styles.specialText}>9.2.</Text> If you are the
-              impostor you receive <Text style={styles.specialText}>+1 point</Text> for every vote not on you.
+              impostor you receive{' '}
+              <Text style={styles.specialText}>+1 point</Text> for every vote
+              not on you.
             </Text>
             <Text style={styles.text}>
               <Text style={styles.specialText}>9.3.</Text> If you are the
-              impostor and correctly guessed the secret word {' '}
+              impostor and correctly guessed the secret word{' '}
               <Text style={styles.specialText}>+2 point</Text>.
             </Text>
             <View style={{ marginBottom: 150 }} />
@@ -178,6 +271,39 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 100,
   },
+  languageContainer: {
+    marginBottom: 30,
+    alignItems: 'center',
+  },
+  languageLabel: {
+    fontFamily: 'Raleway',
+    fontSize: 16,
+    color: colors.white[100],
+    marginBottom: 10,
+  },
+  languageButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  langButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.orange[200],
+  },
+  activeLangButton: {
+    backgroundColor: colors.orange[200],
+  },
+  langText: {
+    fontFamily: 'Raleway',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colors.orange[200],
+  },
+  activeLangText: {
+    color: colors.background[100],
+  },
   startNewGameContainer: {
     marginBottom: 50,
   },
@@ -190,6 +316,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
+  },
+  altText: {
+    marginTop: 10,
+    fontFamily: 'Raleway',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.orange[200],
   },
   sidebar: {
     width: width,

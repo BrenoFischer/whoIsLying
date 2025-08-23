@@ -12,6 +12,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
+import { useTranslation } from '@/translations';
 
 interface NewPlayerInputProps {
   setPlayer: ({ id, name }: Player) => void;
@@ -30,6 +31,7 @@ export default function NewPlayerInput({
 }: NewPlayerInputProps) {
   const [newName, setNewName] = useState('');
   const [inputError, setInputError] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     if (newName.length < 1) {
@@ -71,7 +73,7 @@ export default function NewPlayerInput({
           />
         </TouchableOpacity>
         <TextInput
-          placeholder="Add a new name"
+          placeholder={t('Add a new name')}
           placeholderTextColor={colors.orange[200]}
           keyboardType="ascii-capable"
           inputMode="text"
@@ -90,7 +92,7 @@ export default function NewPlayerInput({
       </View>
       {inputError && (
         <Text style={styles.error}>
-          A name should contains at least 1 character.
+          {t('A name should contain at least 1 character.')}
         </Text>
       )}
     </>

@@ -19,6 +19,7 @@ import Elipse from '@/components/elipse';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Character from '@/components/character';
 import WithSidebar from '@/components/withSideBar';
+import { useTranslation } from '@/translations';
 
 const images = {
   foods: require('@/assets/images/foodCategory.png'),
@@ -33,13 +34,14 @@ const cardColors = {
 export default function SelectCategory() {
   const { setGameWord } = useContext(GameContext);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const { language, t } = useTranslation();
 
   const handleSelectCategory = (categoryName: string) => {
     setSelectedCategory(categoryName);
   };
 
   const handleContinueWithSelectedCategory = () => {
-    setGameWord(selectedCategory);
+    setGameWord(selectedCategory, language);
     router.replace('/createGame');
   };
 
@@ -66,7 +68,7 @@ export default function SelectCategory() {
         activeOpacity={1}
         onPress={() => handleSelectCategory(categoryName)}
       >
-        <Text style={styles.categoryTitle}>{categoryName}</Text>
+        <Text style={styles.categoryTitle}>{t(categoryName)}</Text>
         <Image
           source={images[categoryName as keyof typeof images]}
           style={styles.categoryImage}
@@ -95,9 +97,9 @@ export default function SelectCategory() {
               >
                 <Ionicons name="arrow-back" size={24} color="black" />
               </TouchableOpacity>
-              <Text style={styles.pageTitle}>Categories</Text>
+              <Text style={styles.pageTitle}>{t('Categories')}</Text>
               <Text style={styles.subtitle}>
-                Questions will be based on the selected category
+                {t('Questions will be based on the selected category')}
               </Text>
             </View>
             <Character mood={'bothCharacter'} />
@@ -110,7 +112,7 @@ export default function SelectCategory() {
         </ScrollView>
         <View style={styles.buttonContainer}>
           <Button
-            text="Select category"
+            text={t('Select category')}
             variants={selectedCategory ? 'primary' : 'disabled'}
             onPress={handleContinueWithSelectedCategory}
           />

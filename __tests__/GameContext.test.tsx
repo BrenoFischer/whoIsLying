@@ -29,9 +29,27 @@ jest.mock('@/data/categories.json', () => ({
 
 // Helper function to create test players
 const createTestPlayers = (): Player[] => [
-  { id: '1', name: 'Player 1', gender: 'male', character: 'character1', score: 0 },
-  { id: '2', name: 'Player 2', gender: 'female', character: 'character2', score: 0 },
-  { id: '3', name: 'Player 3', gender: 'male', character: 'character3', score: 0 },
+  {
+    id: '1',
+    name: 'Player 1',
+    gender: 'male',
+    character: 'character1',
+    score: 0,
+  },
+  {
+    id: '2',
+    name: 'Player 2',
+    gender: 'female',
+    character: 'character2',
+    score: 0,
+  },
+  {
+    id: '3',
+    name: 'Player 3',
+    gender: 'male',
+    character: 'character3',
+    score: 0,
+  },
 ];
 
 // Helper function to render hook with provider
@@ -106,7 +124,7 @@ describe('GameContext', () => {
 
     it('should return different words from different categories', () => {
       const { result } = renderGameContext();
-      
+
       const word1 = result.current.getRandomWord('testCategory');
       const word2 = result.current.getRandomWord('anotherCategory');
 
@@ -212,8 +230,11 @@ describe('GameContext', () => {
         result.current.updatePlayers(testPlayers);
       });
 
-      const updatedPlayers = result.current.updatePointsToPlayer(testPlayers[0], 25);
-      
+      const updatedPlayers = result.current.updatePointsToPlayer(
+        testPlayers[0],
+        25
+      );
+
       expect(updatedPlayers[0].score).toBe(25); // 0 + 25
       expect(updatedPlayers[1].score).toBe(0); // unchanged
       expect(updatedPlayers[2].score).toBe(0); // unchanged
@@ -245,7 +266,11 @@ describe('GameContext', () => {
       expect(result.current.game.votes).toEqual([]);
       expect(result.current.game.players.every(p => p.score === 0)).toBe(true);
       expect(result.current.game.lyingPlayer).toEqual({
-        id: '', name: '', gender: '', character: '', score: 0
+        id: '',
+        name: '',
+        gender: '',
+        character: '',
+        score: 0,
       });
     });
   });
@@ -276,7 +301,9 @@ describe('GameContext', () => {
       expect(result.current.game.players).toEqual(testPlayers);
       expect(result.current.game.rounds.length).toBeGreaterThan(0);
       expect(result.current.game.lyingPlayer).toBeDefined();
-      expect(testPlayers.some(p => p.id === result.current.game.lyingPlayer.id)).toBe(true);
+      expect(
+        testPlayers.some(p => p.id === result.current.game.lyingPlayer.id)
+      ).toBe(true);
     });
 
     it('should create correct number of rounds for players', () => {
@@ -331,19 +358,21 @@ describe('GameContext', () => {
 
       // Get the current lying player and vote for them
       const currentLyingPlayer = result.current.game.lyingPlayer;
-      const voter = testPlayers[0].id === currentLyingPlayer.id ?
-        testPlayers[1] 
-      : 
-        testPlayers[0];
-      
+      const voter =
+        testPlayers[0].id === currentLyingPlayer.id
+          ? testPlayers[1]
+          : testPlayers[0];
+
       act(() => {
         result.current.addVote(voter, currentLyingPlayer);
       });
 
       expect(result.current.game.votes).toHaveLength(1);
-      
+
       // Find the voter in the updated players array
-      const updatedVoter = result.current.game.players.find(p => p.id === voter.id);
+      const updatedVoter = result.current.game.players.find(
+        p => p.id === voter.id
+      );
       expect(updatedVoter?.score).toBe(50); // Original score (0) + 50 points
     });
 
@@ -362,7 +391,8 @@ describe('GameContext', () => {
 
       // Vote for someone who is NOT the lying player
       const lyingPlayer = result.current.game.lyingPlayer;
-      const voter = lyingPlayer.id === testPlayers[0].id ? testPlayers[1] : testPlayers[0];
+      const voter =
+        lyingPlayer.id === testPlayers[0].id ? testPlayers[1] : testPlayers[0];
       const nonLyingPlayer = testPlayers.find(p => p.id !== lyingPlayer.id);
 
       if (nonLyingPlayer) {
@@ -370,7 +400,9 @@ describe('GameContext', () => {
           result.current.addVote(voter, nonLyingPlayer);
         });
 
-        const updatedVoter = result.current.game.players.find(p => p.id === voter.id);
+        const updatedVoter = result.current.game.players.find(
+          p => p.id === voter.id
+        );
         expect(updatedVoter?.score).toBe(0); // No points added
       }
     });
@@ -393,7 +425,9 @@ describe('GameContext', () => {
       expect(typeof result.current.addVote).toBe('function');
       expect(typeof result.current.updatePlayers).toBe('function');
       expect(typeof result.current.updatePointsToPlayer).toBe('function');
-      expect(typeof result.current.resetGameWithExistingPlayers).toBe('function');
+      expect(typeof result.current.resetGameWithExistingPlayers).toBe(
+        'function'
+      );
     });
   });
 
@@ -431,8 +465,11 @@ describe('GameContext', () => {
         result.current.updatePlayers(testPlayers);
       });
 
-      const updatedPlayers = result.current.updatePointsToPlayer(testPlayers[1], -5);
-      
+      const updatedPlayers = result.current.updatePointsToPlayer(
+        testPlayers[1],
+        -5
+      );
+
       expect(updatedPlayers[1].score).toBe(5); // 10 + (-5)
     });
   });

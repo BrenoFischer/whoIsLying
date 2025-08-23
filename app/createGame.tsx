@@ -20,6 +20,7 @@ import Elipse from '@/components/elipse';
 import PlayerInput from '@/components/playerInput';
 import Character from '@/components/character';
 import WithSidebar from '@/components/withSideBar';
+import { useTranslation } from '@/translations';
 
 const MAX_PLAYERS = 8;
 
@@ -35,9 +36,9 @@ function shuffleArray<T>(array: T[]): T[] {
 const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro'];
 const femaleImagesBase = ['paola', 'sara', 'luh'];
 
-
 export default function CreateGame() {
   const { createGame, game } = useContext(GameContext);
+  const { language, t } = useTranslation();
   const [playerGender, setPlayerGender] = useState('man');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [players, setPlayers] = useState<Player[]>(game.players);
@@ -46,15 +47,23 @@ export default function CreateGame() {
 
   const imagesArray = playerGender === 'man' ? maleImages : femaleImages;
   const usedCharacters = players.map(player => player.character);
-  const availableImages = imagesArray.filter(image => !usedCharacters.includes(image));
-  
+  const availableImages = imagesArray.filter(
+    image => !usedCharacters.includes(image)
+  );
+
   // Check available characters for each gender
-  const availableMaleImages = maleImages.filter(image => !usedCharacters.includes(image));
-  const availableFemaleImages = femaleImages.filter(image => !usedCharacters.includes(image));
-  
+  const availableMaleImages = maleImages.filter(
+    image => !usedCharacters.includes(image)
+  );
+  const availableFemaleImages = femaleImages.filter(
+    image => !usedCharacters.includes(image)
+  );
+
   // Determine if gender should be locked (when one gender has no available characters)
-  const shouldLockToMale = availableMaleImages.length > 0 && availableFemaleImages.length === 0;
-  const shouldLockToFemale = availableFemaleImages.length > 0 && availableMaleImages.length === 0;
+  const shouldLockToMale =
+    availableMaleImages.length > 0 && availableFemaleImages.length === 0;
+  const shouldLockToFemale =
+    availableFemaleImages.length > 0 && availableMaleImages.length === 0;
   const isGenderLocked = shouldLockToMale || shouldLockToFemale;
 
   const notAvailableToContinue =
@@ -74,12 +83,15 @@ export default function CreateGame() {
   function setNewPlayer({ id, name, gender }: Player) {
     if (players.length >= MAX_PLAYERS) return;
 
-    const selectedCharacter = availableImages.length > 0 ? availableImages[currentImageIndex] : imagesArray[0];
+    const selectedCharacter =
+      availableImages.length > 0
+        ? availableImages[currentImageIndex]
+        : imagesArray[0];
     setPlayers([
       { id, name, gender, character: selectedCharacter, score: 0 },
       ...players,
     ]);
-    
+
     // Reset to first available character after adding a player
     setCurrentImageIndex(0);
   }
@@ -100,13 +112,13 @@ export default function CreateGame() {
   }
 
   function handleCreateGame() {
-    createGame(players);
+    createGame(players, language);
     router.replace('/showWordToAll');
   }
 
   function handleChangeGender() {
     if (isGenderLocked) return;
-    
+
     setCurrentImageIndex(0);
     if (playerGender === 'man') {
       setPlayerGender('woman');
@@ -117,9 +129,11 @@ export default function CreateGame() {
 
   function handleChangeImage() {
     if (availableImages.length === 0) return;
-    
+
     const newIndex =
-      availableImages.length - 1 <= currentImageIndex ? 0 : currentImageIndex + 1;
+      availableImages.length - 1 <= currentImageIndex
+        ? 0
+        : currentImageIndex + 1;
 
     setCurrentImageIndex(newIndex);
   }
@@ -146,11 +160,12 @@ export default function CreateGame() {
                   }}
                 >
                   <Text style={styles.headerCategoryTitle}>
-                    Game {game.currentMatch} of {game.maximumMatches}
+                    {t('Game')} {game.currentMatch} {t('of')} {game.maximumMatches}
                   </Text>
                 </View>
-                <Text style={styles.title}>Add players</Text>
-                <Text style={styles.title}>(3 to 8)</Text>
+                <Text style={styles.title}>{t('Add')}</Text>
+                <Text style={styles.title}>{t('players')}</Text>
+                <Text style={styles.title}>{t('(3 to 8)')}</Text>
               </View>
               <View>
                 <View
@@ -175,10 +190,16 @@ export default function CreateGame() {
                       fontWeight: 'bold',
                     }}
                   >
-                    {currentImageIndex + 1} of {availableImages.length}
+                    {currentImageIndex + 1} {t('of')} {availableImages.length}
                   </Text>
                 </View>
-                <Character mood={availableImages.length > 0 ? availableImages[currentImageIndex] : imagesArray[0]} />
+                <Character
+                  mood={
+                    availableImages.length > 0
+                      ? availableImages[currentImageIndex]
+                      : imagesArray[0]
+                  }
+                />
               </View>
             </View>
             <View style={{ alignItems: 'center' }}>
@@ -200,7 +221,7 @@ export default function CreateGame() {
                 />
               )}
               <View style={styles.playersAddedContainer}>
-                <CustomText>Players added - {players.length}</CustomText>
+                <CustomText>{t('Players added')} - {players.length}</CustomText>
               </View>
               {players.map(player => (
                 <PlayerInput
@@ -214,12 +235,12 @@ export default function CreateGame() {
             <View style={styles.buttonContainer}>
               {notAvailableToContinue ? (
                 <Button
-                  text="Create game"
+                  text={t('Create game')}
                   onPress={handleCreateGame}
                   variants="disabled"
                 />
               ) : (
-                <Button text="Create game" onPress={handleCreateGame} />
+                <Button text={t('Create game')} onPress={handleCreateGame} />
               )}
             </View>
           </View>

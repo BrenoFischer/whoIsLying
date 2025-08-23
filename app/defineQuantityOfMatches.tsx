@@ -16,10 +16,12 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { GameContext } from '@/context/GameContext';
 import { router } from 'expo-router';
 import WithSidebar from '@/components/withSideBar';
+import { useTranslation } from '@/translations';
 
 export default function DefineQuantityOfMatches() {
   const [selectQuantity, setSelectedQuantity] = useState(1);
   const { setMaximumMatches, createNewGame } = useContext(GameContext);
+  const { t } = useTranslation();
 
   const handleContinueWithSelectedQuantity = () => {
     setMaximumMatches(selectQuantity);
@@ -48,10 +50,10 @@ export default function DefineQuantityOfMatches() {
           <View style={styles.headerContainer}>
             <View>
               <Text style={styles.pageTitle}>
-                How many matches will be played?
+                {t('How many matches will be played?')}
               </Text>
               <Text style={styles.subtitle}>
-                The one with most points after all matches is the winner!
+                {t('The one with most points after all matches is the winner!')}
               </Text>
             </View>
             <Character mood={'luh'} />
@@ -70,7 +72,7 @@ export default function DefineQuantityOfMatches() {
         </ScrollView>
         <View style={styles.buttonContainer}>
           <Button
-            text="Continue with this quantity"
+            text={t('Continue with this quantity')}
             onPress={handleContinueWithSelectedQuantity}
           />
         </View>

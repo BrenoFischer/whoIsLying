@@ -8,9 +8,11 @@ import { router } from 'expo-router';
 import { useContext } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from '@/translations';
 
 export default function Discussion() {
-  const { game } = useContext(GameContext);
+  const { game, getCurrentQuestion } = useContext(GameContext);
+  const { language, t } = useTranslation();
 
   const rounds = game.rounds;
 
@@ -65,28 +67,37 @@ export default function Discussion() {
           }}
         >
           <View style={{ marginBottom: 30 }}>
-            <Text style={styles.title}>Discussion time!</Text>
+            <Text style={styles.title}>{t('Discussion time!')}</Text>
             <Text style={styles.subtitle}>
-              Review all questions and analyse each detail that was answered
+              {t('Review all questions and analyse each detail that was answered')}
             </Text>
           </View>
           <Character mood="bothCharacter" />
         </View>
         <ScrollView>
           <View style={styles.table}>
-            {agregatedArray.map(round => {
+            {agregatedArray.map((round, index) => {
+              // Get the translated question for this specific round
+              const translatedQuestion = game.category && round.questionIndex !== undefined && round.questionSet
+                ? (() => {
+                    const categories: any = require('@/data/categories.json');
+                    const key = round.questionSet === 'first' ? 'firstSetOfQuestions' : 'secondSetOfQuestions';
+                    return categories[game.category][language][key][round.questionIndex];
+                  })()
+                : round.question;
+              
               return (
-                <View key={round.question}>
+                <View key={`${round.playerThatAnswers.id}-${index}`}>
                   <Text style={styles.playerName}>
                     {round.playerThatAnswers.name}
                   </Text>
-                  <Text style={styles.question}>{round.question}</Text>
+                  <Text style={styles.question}>{translatedQuestion}</Text>
                 </View>
               );
             })}
           </View>
           <View style={styles.buttonContainer}>
-            <Button text="Continue" onPress={handleNextPage} />
+            <Button text={t('Continue')} onPress={handleNextPage} />
           </View>
         </ScrollView>
       </SafeAreaView>

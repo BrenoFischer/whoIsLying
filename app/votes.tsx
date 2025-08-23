@@ -18,9 +18,11 @@ import Character from '@/components/character';
 import { Player } from '@/types/Player';
 import PlayerModal from '@/components/playerModal';
 import WithSidebar from '@/components/withSideBar';
+import { useTranslation } from '@/translations';
 
 export default function Votes() {
   const { game, addVote } = useContext(GameContext);
+  const { t } = useTranslation();
   const players = game.players;
   const [player, setPlayer] = useState(players[0]);
   const [playerIndex, setPlayerIndex] = useState(0);
@@ -104,7 +106,7 @@ export default function Votes() {
             marginTop: 20,
           }}
         >
-          <Text style={styles.headerCategoryTitle}>Vote</Text>
+          <Text style={styles.headerCategoryTitle}>{t('Vote')}</Text>
           <View
             style={{
               backgroundColor: colors.white[100],
@@ -115,12 +117,12 @@ export default function Votes() {
             }}
           />
           <Text style={styles.headerCategoryTitle}>
-            Player {playerIndex + 1} of {players.length}
+            {t('Player')} {playerIndex + 1} {t('of')} {players.length}
           </Text>
         </View>
         <View style={styles.headerContainer}>
           <View>
-            <Text style={styles.titleInformation}>Pass device to:</Text>
+            <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
             <Text style={styles.playerName}>{player.name}</Text>
           </View>
           <Character mood={player.character} />
@@ -134,7 +136,7 @@ export default function Votes() {
           <Text style={styles.playerNameOnTable}>
             {player.name},{' '}
             <Text style={styles.tableText}>
-              vote on the person you think is the impostor:
+              {t('vote on the person you think is the impostor:')}
             </Text>
           </Text>
           {restOfPlayer.map((p, idx) => {
@@ -150,7 +152,7 @@ export default function Votes() {
         </ScrollView>
         <View style={styles.buttonContainer}>
           <Button
-            text="Vote!"
+            text={t('Vote!')}
             onPress={handleNextPlayer}
             variants={selectedPlayer ? 'primary' : 'disabled'}
           />

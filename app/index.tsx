@@ -2,8 +2,11 @@ import { colors } from '@/styles/colors';
 import { View, Image, StyleSheet, Text } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
+import { useTranslation } from '@/translations';
 
 export default function SkillUpScreen() {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -13,10 +16,10 @@ export default function SkillUpScreen() {
           resizeMode="cover"
         />
       </View>
-      <Text style={styles.title}>Who is Lying</Text>
+      <Text style={styles.title}>{'Who is Lying'}</Text>
       <View style={styles.buttonContainer}>
         <Button
-          text="New game"
+          text={t('New game')}
           onPress={() => router.navigate('/defineQuantityOfMatches')}
         />
       </View>

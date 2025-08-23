@@ -3,17 +3,22 @@ import { Player } from '@/types/Player';
 import { Round } from '@/types/Round';
 // import questions from '@/data/questions.json';
 import allCategories from '@/data/categories.json';
-import { createContext, useState } from 'react';
+import { createContext, useState, useContext } from 'react';
+import { useTranslation, Language } from '@/translations';
+import {
+  getRandomWordIndex,
+  getQuestionByIndex,
+} from '@/utils/gameTranslations';
 
 interface GameContextType {
   game: Game;
-  createGame: (players: Player[]) => void;
+  createGame: (players: Player[], language: Language) => void;
   createNewGame: () => void;
   setMaximumMatches: (maxQtd: number) => void;
   setLyingPlayer: (players: Player[]) => Player;
   addNewMatch: () => void;
-  setGameWord: (word: string) => void;
-  getRandomWord: (category: string) => string;
+  setGameWord: (category: string, language: Language) => void;
+  getRandomWord: (category: string, language: Language) => string;
   setSelectedWord: (newWord: string) => void;
   nextRound: () => void;
   previousRound: () => void;
@@ -22,6 +27,8 @@ interface GameContextType {
   updatePlayers: (players: Player[]) => void;
   updatePointsToPlayer: (player: Player, points: number) => Player[];
   resetGameWithExistingPlayers: () => void;
+  getCurrentWord: (language: Language) => string;
+  getCurrentQuestion: (language: Language) => string;
 }
 
 export const GameContext = createContext({} as GameContextType);
@@ -38,6 +45,7 @@ export const GameContextProvider = ({
     lyingPlayer: { id: '', name: '', gender: '', character: '', score: 0 },
     category: undefined,
     word: undefined,
+    wordIndex: undefined,
     selectedWord: undefined,
     showingWordToPlayer: 0,
     votes: [],
@@ -55,18 +63,33 @@ export const GameContextProvider = ({
     return rounds;
   };
 
-  const getRandomQuestionFromSet = (setOfQuestions: string[]) => {
-    const setLength = setOfQuestions.length;
+  const getRandomQuestionFromSet = (
+    setOfQuestions: string[],
+    usedIndices: Set<number>
+  ) => {
+    const availableIndices = Array.from(
+      { length: setOfQuestions.length },
+      (_, i) => i
+    ).filter(i => !usedIndices.has(i));
 
-    const randomQuestion =
-      setOfQuestions[Math.floor(Math.random() * setLength)];
+    if (availableIndices.length === 0) {
+      usedIndices.clear();
+      return getRandomQuestionFromSet(setOfQuestions, usedIndices);
+    }
 
-    setOfQuestions = setOfQuestions.filter(q => q !== randomQuestion);
+    const randomIndex =
+      availableIndices[Math.floor(Math.random() * availableIndices.length)];
+    const randomQuestion = setOfQuestions[randomIndex];
+    usedIndices.add(randomIndex);
 
-    return { question: randomQuestion, questions: setOfQuestions };
+    return { question: randomQuestion, questionIndex: randomIndex };
   };
 
-  const setAllRounds = (newPlayers: Player[], category: string): Round[] => {
+  const setAllRounds = (
+    newPlayers: Player[],
+    category: string,
+    language: Language
+  ): Round[] => {
     //the order of questions will always follow the crescent order of Players on the array
     //a 3 player game will have 1 round of questions: A->B, B->C, C->A
     //the next round of questions will be: A->C, C->B, B->A
@@ -76,19 +99,31 @@ export const GameContextProvider = ({
     let auxRoundsArray: Round[] = [];
 
     const categories: any = allCategories;
-    let firstSetOfQuestions: string[] = categories[category].firstSetOfQuestions;
-    let secondSetOfQuestions: string[] = categories[category].secondSetOfQuestions;
+    const firstSetOfQuestions: string[] =
+      categories[category][language].firstSetOfQuestions;
+    const secondSetOfQuestions: string[] =
+      categories[category][language].secondSetOfQuestions;
 
-    //insert frist set of rounds and shuffle
+    const usedFirstIndices = new Set<number>();
+    const usedSecondIndices = new Set<number>();
+
+    //insert first set of rounds and shuffle
     for (let i = 0; i < numberOfPlayers; i++) {
       const playerThatAsks = newPlayers[i];
       const playerThatAnswers =
         i === numberOfPlayers - 1 ? newPlayers[0] : newPlayers[i + 1];
-      const set = getRandomQuestionFromSet(firstSetOfQuestions);
-      const question = set.question;
-      firstSetOfQuestions = set.questions;
+      const questionData = getRandomQuestionFromSet(
+        firstSetOfQuestions,
+        usedFirstIndices
+      );
 
-      const round: Round = { playerThatAsks, playerThatAnswers, question };
+      const round: Round = {
+        playerThatAsks,
+        playerThatAnswers,
+        question: questionData.question,
+        questionIndex: questionData.questionIndex,
+        questionSet: 'first',
+      };
 
       rounds.push(round);
     }
@@ -100,11 +135,18 @@ export const GameContextProvider = ({
       const playerThatAsks = newPlayers[i];
       const playerThatAnswers =
         i === 0 ? newPlayers[numberOfPlayers - 1] : newPlayers[i - 1];
-      const set = getRandomQuestionFromSet(secondSetOfQuestions);
-      const question = set.question;
-      secondSetOfQuestions = set.questions;
+      const questionData = getRandomQuestionFromSet(
+        secondSetOfQuestions,
+        usedSecondIndices
+      );
 
-      const round: Round = { playerThatAsks, playerThatAnswers, question };
+      const round: Round = {
+        playerThatAsks,
+        playerThatAnswers,
+        question: questionData.question,
+        questionIndex: questionData.questionIndex,
+        questionSet: 'second',
+      };
 
       auxRoundsArray.push(round);
     }
@@ -124,15 +166,15 @@ export const GameContextProvider = ({
     setGame({ ...game, currentMatch: newMatch });
   };
 
-  const getRandomWord = (category: string) => {
+  const getRandomWord = (category: string, language: Language) => {
     const categories: any = allCategories;
-    const categoryWords: string[] = categories[category].content;
+    const categoryWords: string[] = categories[category][language].content;
     return categoryWords[Math.floor(Math.random() * categoryWords.length)];
   };
 
-  const setGameWord = (category: string) => {
-    const word = getRandomWord(category);
-    setGame({ ...game, word, category });
+  const setGameWord = (category: string, language: Language) => {
+    const { index, word } = getRandomWordIndex(category, language);
+    setGame({ ...game, word, wordIndex: index, category });
   };
 
   const setSelectedWord = (newWord: string) => {
@@ -147,11 +189,12 @@ export const GameContextProvider = ({
       lyingPlayer: { id: '', name: '', gender: '', character: '', score: 0 },
       category: game.category ? game.category : '',
       word: game.word ? game.word : '',
+      wordIndex: game.wordIndex,
       selectedWord: undefined,
       showingWordToPlayer: 0,
       votes: [],
     };
-    
+
     return newGame;
   };
 
@@ -168,6 +211,7 @@ export const GameContextProvider = ({
       lyingPlayer: { id: '', name: '', gender: '', character: '', score: 0 },
       category: undefined,
       word: undefined,
+      wordIndex: undefined,
       selectedWord: undefined,
       showingWordToPlayer: 0,
       votes: [],
@@ -178,14 +222,14 @@ export const GameContextProvider = ({
     const lyingPlayer: Player =
       players[Math.floor(Math.random() * players.length)]; //get a random player to be out of the round
 
-      setGame({ ...newGame, lyingPlayer });
-      return lyingPlayer
-  }
+    setGame({ ...newGame, lyingPlayer });
+    return lyingPlayer;
+  };
 
-  const createGame = (newPlayers: Player[]) => {
+  const createGame = (newPlayers: Player[], language: Language) => {
     const newGame = resetGameWithExistingPlayers();
-    const category = game.category ? game.category : ''
-    const rounds = setAllRounds(newPlayers, category);
+    const category = game.category ? game.category : '';
+    const rounds = setAllRounds(newPlayers, category, language);
     const lyingPlayer = setLyingPlayer(newPlayers);
 
     setGame({ ...newGame, players: newPlayers, rounds, lyingPlayer });
@@ -225,21 +269,42 @@ export const GameContextProvider = ({
   const addVote = (playerThatVoted: Player, playerVoted: Player) => {
     const newVotes = [...game.votes, { playerThatVoted, playerVoted }];
 
-    if(playerThatVoted.id === game.lyingPlayer.id) {
+    if (playerThatVoted.id === game.lyingPlayer.id) {
       //the impostor does not compute points with his vote
-      setGame({...game, votes: newVotes});
+      setGame({ ...game, votes: newVotes });
       return;
     }
-  
+
     //add 3 points if player voted correctly on the impostor
     if (playerVoted.id === game.lyingPlayer.id) {
       const updatedPlayers = updatePointsToPlayer(playerThatVoted, 3);
       setGame({ ...game, votes: newVotes, players: updatedPlayers });
     } else {
-    //add 1 point to the impostor
+      //add 1 point to the impostor
       const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 1);
       setGame({ ...game, votes: newVotes, players: updatedPlayers });
     }
+  };
+
+  const getCurrentWord = (language: Language): string => {
+    if (!game.category || game.wordIndex === undefined) return '';
+    const categories: any = allCategories;
+    return categories[game.category][language].content[game.wordIndex];
+  };
+
+  const getCurrentQuestion = (language: Language): string => {
+    if (!game.category || game.rounds.length === 0) return '';
+    const currentRound = game.rounds[game.currentRound - 1];
+    if (!currentRound) return '';
+
+    const categories: any = allCategories;
+    const questionSet =
+      currentRound.questionSet === 'first'
+        ? 'firstSetOfQuestions'
+        : 'secondSetOfQuestions';
+    return categories[game.category][language][questionSet][
+      currentRound.questionIndex
+    ];
   };
 
   return (
@@ -261,6 +326,8 @@ export const GameContextProvider = ({
         updatePointsToPlayer,
         updatePlayers,
         resetGameWithExistingPlayers,
+        getCurrentWord,
+        getCurrentQuestion,
       }}
     >
       {children}
