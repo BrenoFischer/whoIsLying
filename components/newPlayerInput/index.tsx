@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import uuid from 'react-native-uuid';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
@@ -18,16 +17,12 @@ interface NewPlayerInputProps {
   setPlayer: ({ id, name }: Player) => void;
   disabled: boolean;
   currentPlayerGender: string;
-  handleChangeGender: () => void;
-  genderLocked?: boolean;
 }
 
 export default function NewPlayerInput({
   setPlayer,
   disabled,
   currentPlayerGender,
-  handleChangeGender,
-  genderLocked = false,
 }: NewPlayerInputProps) {
   const [newName, setNewName] = useState('');
   const [inputError, setInputError] = useState(false);
@@ -60,18 +55,9 @@ export default function NewPlayerInput({
       ? colors.red[100]
       : colors.orange[200];
 
-  const playerGenderIcon = currentPlayerGender === 'man' ? 'man-2' : 'woman';
-
   return (
     <>
       <View style={[styles.container, { borderColor }]}>
-        <TouchableOpacity onPress={handleChangeGender} disabled={genderLocked}>
-          <MaterialIcons
-            name={playerGenderIcon}
-            size={26}
-            color={genderLocked ? colors.gray[100] : colors.orange[200]}
-          />
-        </TouchableOpacity>
         <TextInput
           placeholder={t('Add a new name')}
           placeholderTextColor={colors.orange[200]}

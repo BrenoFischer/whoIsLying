@@ -112,7 +112,7 @@ export default function VotesResults() {
                       }}
                     >
                       <Text style={styles.votesInfo}>
-                        {t('With')} {vote.votes} {t('votes!')}
+                        {t('With')} {vote.votes} {t('votes')}!
                       </Text>
                       <Text style={styles.votesInfo}>
                         (

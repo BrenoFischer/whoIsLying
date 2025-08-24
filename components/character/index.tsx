@@ -3,9 +3,10 @@ import { Image, StyleSheet } from 'react-native';
 interface CharacterProps {
   mood: string;
   flip?: boolean;
+  size?: string;
 }
 
-export default function Character({ mood, flip = false }: CharacterProps) {
+export default function Character({ mood, flip = false, size = 'large' }: CharacterProps) {
   const characterImages = {
     paola: require('@/assets/images/paola.png'),
     breno: require('@/assets/images/breno.png'),
@@ -25,7 +26,7 @@ export default function Character({ mood, flip = false }: CharacterProps) {
   return (
     <Image
       source={characterImages[mood as keyof typeof characterImages]}
-      style={[styles.image, flip && { transform: [{ scaleX: -1 }] }]}
+      style={[styles.image, flip && { transform: [{ scaleX: -1 }] }, size === 'small' && { height: 120, width: 120 }]}
       resizeMode="cover"
     />
   );

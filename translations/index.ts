@@ -71,6 +71,7 @@ const translations = {
     'Votes for:': 'Votes for:',
     vote: 'vote',
     votes: 'votes',
+    Votes: 'Votes',
     'The real impostor was:': 'The real impostor was:',
     'Impostor, you can cough 3 times to reveal yourself': 'Impostor, you can cough 3 times to reveal yourself',
     'Impostor, you can raise your right hand to reveal yourself': 'Impostor, you can raise your right hand to reveal yourself',
@@ -86,6 +87,12 @@ const translations = {
     'The grand winners are!': 'The grand winners are!',
     'The grand winner is!': 'The grand winner is!',
     'Play one more round': 'Play one more round',
+    'Choose your character': 'Choose your character',
+    'vote on the person you think is the impostor:': 'vote on the person you think is the impostor:',
+    'The most voted player was:': 'The most voted player was:',
+    'It is a tie, the most voted players were:': 'It is a tie, the most voted players were:',
+    'With': 'With',
+    'Reveal impostor': 'Reveal impostor',
   },
   pt: {
     'Who is Lying': 'Quem Está Mentindo',
@@ -157,6 +164,7 @@ const translations = {
     'Votes for:': 'Votos para:',
     vote: 'voto',
     votes: 'votos',
+    Votes: 'Votos',
     'The real impostor was:': 'O verdadeiro impostor era:',
     'Impostor, you can cough 3 times to reveal yourself': 'Impostor, você pode tossir 3 vezes para se revelar',
     'Impostor, you can raise your right hand to reveal yourself': 'Impostor, você pode levantar a mão direita para se revelar',
@@ -172,6 +180,12 @@ const translations = {
     'The grand winners are!': 'Os grandes vencedores são!',
     'The grand winner is!': 'O grande vencedor é!',
     'Play one more round': 'Jogar mais uma rodada',
+    'Choose your character': 'Selecione o seu personagem',
+    'vote on the person you think is the impostor:': 'vote na pessoa que você pensa que é impostor:',
+    'The most voted player was:': 'A pessoa mais votada foi:',
+    'It is a tie, the most voted players were:': 'Foi um empate, as pessoas mais votadas foram:',
+    'With': 'Com',
+    'Reveal impostor': 'Revelar impostor'
   },
 };
 

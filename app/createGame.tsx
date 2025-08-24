@@ -21,6 +21,8 @@ import PlayerInput from '@/components/playerInput';
 import Character from '@/components/character';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
+import CustomModal from '@/components/modal';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const MAX_PLAYERS = 8;
 
@@ -44,12 +46,15 @@ export default function CreateGame() {
   const [players, setPlayers] = useState<Player[]>(game.players);
   const [maleImages] = useState(() => shuffleArray(maleImagesBase));
   const [femaleImages] = useState(() => shuffleArray(femaleImagesBase));
+  const [modalOpen, setModalOpen] = useState(false)
 
   const imagesArray = playerGender === 'man' ? maleImages : femaleImages;
   const usedCharacters = players.map(player => player.character);
   const availableImages = imagesArray.filter(
     image => !usedCharacters.includes(image)
   );
+
+  const playerGenderIcon = playerGender === 'man' ? 'man-2' : 'woman';
 
   // Check available characters for each gender
   const availableMaleImages = maleImages.filter(
@@ -128,14 +133,12 @@ export default function CreateGame() {
   }
 
   function handleChangeImage() {
-    if (availableImages.length === 0) return;
+    setModalOpen(true);
+  }
 
-    const newIndex =
-      availableImages.length - 1 <= currentImageIndex
-        ? 0
-        : currentImageIndex + 1;
-
-    setCurrentImageIndex(newIndex);
+  function handleSelectCharacter(index: number) {
+    setCurrentImageIndex(index);
+    setModalOpen(false);
   }
 
   return (
@@ -168,6 +171,33 @@ export default function CreateGame() {
                 <Text style={styles.title}>{t('(3 to 8)')}</Text>
               </View>
               <View>
+                <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
+                  <ScrollView style={styles.modalContainer}>
+                    <View style={styles.modalHeaderContainer}>
+                      <TouchableOpacity onPress={handleChangeGender} style={styles.genderIconContainer}>
+                        <MaterialIcons
+                          name={playerGenderIcon}
+                          size={32}
+                          color={isGenderLocked ? colors.gray[100] : colors.orange[200]}
+                        />
+                      </TouchableOpacity>
+                      <Text style={styles.modalTitle}>{t('Choose your character')}</Text>
+                    </View>
+                    <View style={styles.imagesGrid}>
+                      {
+                        availableImages.map((char, idx) => {
+                          return(
+                            <View key={char} style={styles.imageItem}>
+                              <TouchableOpacity onPress={() => handleSelectCharacter(idx)}>
+                                <Character mood={char} size='small' />
+                              </TouchableOpacity>
+                            </View>
+                          )
+                        })
+                      }
+                    </View>
+                  </ScrollView>
+                </CustomModal>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -177,7 +207,6 @@ export default function CreateGame() {
                 >
                   <TouchableOpacity onPress={handleChangeImage}>
                     <MaterialCommunityIcons
-                      style={{ left: 20 }}
                       name="image-edit"
                       size={35}
                       color={colors.black[100]}
@@ -190,7 +219,6 @@ export default function CreateGame() {
                       fontWeight: 'bold',
                     }}
                   >
-                    {currentImageIndex + 1} {t('of')} {availableImages.length}
                   </Text>
                 </View>
                 <Character
@@ -208,16 +236,12 @@ export default function CreateGame() {
                   disabled={true}
                   setPlayer={() => {}}
                   currentPlayerGender={playerGender}
-                  handleChangeGender={handleChangeGender}
-                  genderLocked={isGenderLocked}
                 />
               ) : (
                 <NewPlayerInput
                   disabled={false}
                   setPlayer={setNewPlayer}
                   currentPlayerGender={playerGender}
-                  handleChangeGender={handleChangeGender}
-                  genderLocked={isGenderLocked}
                 />
               )}
               <View style={styles.playersAddedContainer}>
@@ -254,7 +278,36 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 30,
   },
-
+  modalContainer: {
+    maxHeight: 500,
+  },
+  modalHeaderContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    position: "relative",
+    marginTop: 12
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontFamily: 'Ralway',
+  },
+  genderIconContainer: {
+    position: "absolute",
+    left: 0,
+  },
+  imagesGrid: {
+    marginTop: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
+  imageItem: {
+    width: '48%',
+    marginVertical: 5,
+    alignItems: 'center',
+  },
   headerContainer: {
     marginLeft: 30,
     marginTop: 20,
