@@ -17,6 +17,9 @@ export default function Character({ mood, flip = false }: CharacterProps) {
     fabricin: require('@/assets/images/fabricin.png'),
     gabs: require('@/assets/images/gabs.png'),
     pedro: require('@/assets/images/pedro.png'),
+    pri: require('@/assets/images/pri.png'),
+    gio: require('@/assets/images/gio.png'),
+    ginger: require('@/assets/images/ginger.png'),
   };
 
   return (
