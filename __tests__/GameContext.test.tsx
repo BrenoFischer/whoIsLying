@@ -6,24 +6,28 @@ import { Player } from '@/types/Player';
 // Mock the categories data
 jest.mock('@/data/categories.json', () => ({
   testCategory: {
-    content: ['word1', 'word2', 'word3', 'word4', 'word5'],
-    firstSetOfQuestions: [
-      'Question 1?',
-      'Question 2?',
-      'Question 3?',
-      'Question 4?',
-    ],
-    secondSetOfQuestions: [
-      'Question 5?',
-      'Question 6?',
-      'Question 7?',
-      'Question 8?',
-    ],
-  },
+    en: {
+        content: ['word1', 'word2', 'word3', 'word4', 'word5'],
+        firstSetOfQuestions: [
+          'Question 1?',
+          'Question 2?',
+          'Question 3?',
+          'Question 4?',
+        ],
+        secondSetOfQuestions: [
+          'Question 5?',
+          'Question 6?',
+          'Question 7?',
+          'Question 8?',
+        ],
+      },
+    },
   anotherCategory: {
-    content: ['apple', 'banana', 'orange'],
-    firstSetOfQuestions: ['What fruit?', 'Which one?'],
-    secondSetOfQuestions: ['How many?', 'What color?'],
+    en: {
+      content: ['apple', 'banana', 'orange'],
+      firstSetOfQuestions: ['What fruit?', 'Which one?'],
+      secondSetOfQuestions: ['How many?', 'What color?'],
+    }
   },
 }));
 
@@ -117,7 +121,7 @@ describe('GameContext', () => {
       const { result } = renderGameContext();
       const expectedWords = ['word1', 'word2', 'word3', 'word4', 'word5'];
 
-      const word = result.current.getRandomWord('testCategory');
+      const word = result.current.getRandomWord('testCategory', 'en');
 
       expect(expectedWords).toContain(word);
     });
@@ -125,8 +129,8 @@ describe('GameContext', () => {
     it('should return different words from different categories', () => {
       const { result } = renderGameContext();
 
-      const word1 = result.current.getRandomWord('testCategory');
-      const word2 = result.current.getRandomWord('anotherCategory');
+      const word1 = result.current.getRandomWord('testCategory', 'en');
+      const word2 = result.current.getRandomWord('anotherCategory', 'en');
 
       expect(['word1', 'word2', 'word3', 'word4', 'word5']).toContain(word1);
       expect(['apple', 'banana', 'orange']).toContain(word2);
@@ -291,11 +295,11 @@ describe('GameContext', () => {
 
       // First set a category and word
       act(() => {
-        result.current.setGameWord('testCategory');
+        result.current.setGameWord('testCategory', 'en');
       });
 
       act(() => {
-        result.current.createGame(testPlayers);
+        result.current.createGame(testPlayers, 'en');
       });
 
       expect(result.current.game.players).toEqual(testPlayers);
@@ -311,11 +315,11 @@ describe('GameContext', () => {
       const testPlayers = createTestPlayers();
 
       act(() => {
-        result.current.setGameWord('testCategory');
+        result.current.setGameWord('testCategory', 'en');
       });
 
       act(() => {
-        result.current.createGame(testPlayers);
+        result.current.createGame(testPlayers, 'en');
       });
 
       // Should create 2 sets of rounds (first and second set)
@@ -343,17 +347,17 @@ describe('GameContext', () => {
       });
     });
 
-    it('should add 50 points when voting correctly for the lying player', () => {
+    it('should add 3 points when voting correctly for the lying player', () => {
       const { result } = renderGameContext();
       const testPlayers = createTestPlayers();
 
       act(() => {
-        result.current.setGameWord('testCategory');
+        result.current.setGameWord('testCategory', 'en');
       });
 
       // Set lying player manually by updating the game state
       act(() => {
-        result.current.createGame(testPlayers);
+        result.current.createGame(testPlayers, 'en');
       });
 
       // Get the current lying player and vote for them
@@ -373,7 +377,42 @@ describe('GameContext', () => {
       const updatedVoter = result.current.game.players.find(
         p => p.id === voter.id
       );
-      expect(updatedVoter?.score).toBe(50); // Original score (0) + 50 points
+      expect(updatedVoter?.score).toBe(3); // Original score (0) + 3 points
+    });
+
+    it('should add 2 points when voting correctly for the secret word', () => {
+      const { result } = renderGameContext();
+      const testPlayers = createTestPlayers();
+
+      act(() => {
+        result.current.setGameWord('testCategory', 'en');
+      });
+
+      // Set lying player manually by updating the game state
+      act(() => {
+        result.current.createGame(testPlayers, 'en');
+      });
+
+      // Set vote for lying player to be the correct one
+      const secretWord = result.current.game.word
+      act(() => {
+        result.current.setSelectedWord(secretWord!);
+      });
+
+      // Check the vote for secret word, if correct, lying player scores 2pts
+      act(() => {
+        result.current.checkVoteForSecretWord();
+      });
+
+      // Get the current lying player from both the lyingPlayer object and players array
+      const currentLyingPlayer = result.current.game.lyingPlayer;
+      const lyingPlayerFromArray = result.current.game.players.find(
+        p => p.id === currentLyingPlayer.id
+      );
+
+      // Both should have the same score of 2
+      expect(currentLyingPlayer.score).toBe(2); // Original score (0) + 2 points
+      expect(lyingPlayerFromArray?.score).toBe(2); // Should also be updated in the array
     });
 
     it('should not add points when voting incorrectly', () => {
@@ -381,12 +420,12 @@ describe('GameContext', () => {
       const testPlayers = createTestPlayers();
 
       act(() => {
-        result.current.setGameWord('testCategory');
+        result.current.setGameWord('testCategory', 'en');
       });
 
       act(() => {
         result.current.updatePlayers(testPlayers);
-        result.current.createGame(testPlayers);
+        result.current.createGame(testPlayers, 'en');
       });
 
       // Vote for someone who is NOT the lying player
@@ -436,8 +475,8 @@ describe('GameContext', () => {
       const { result } = renderGameContext();
 
       act(() => {
-        result.current.setGameWord('testCategory');
-        result.current.createGame([]);
+        result.current.setGameWord('testCategory', 'en');
+        result.current.createGame([], 'en');
       });
 
       expect(result.current.game.players).toEqual([]);
@@ -449,8 +488,8 @@ describe('GameContext', () => {
       const singlePlayer = [createTestPlayers()[0]];
 
       act(() => {
-        result.current.setGameWord('testCategory');
-        result.current.createGame(singlePlayer);
+        result.current.setGameWord('testCategory', 'en');
+        result.current.createGame(singlePlayer, 'en');
       });
 
       expect(result.current.game.players).toEqual(singlePlayer);
@@ -470,7 +509,7 @@ describe('GameContext', () => {
         -5
       );
 
-      expect(updatedPlayers[1].score).toBe(5); // 10 + (-5)
+      expect(updatedPlayers[1].score).toBe(-5); // 0 + (-5)
     });
   });
 });

@@ -28,6 +28,7 @@ interface GameContextType {
   updatePointsToPlayer: (player: Player, points: number) => Player[];
   resetGameWithExistingPlayers: () => void;
   getCurrentWord: (language: Language) => string;
+  checkVoteForSecretWord: () => void;
   getCurrentQuestion: (language: Language) => string;
 }
 
@@ -171,6 +172,19 @@ export const GameContextProvider = ({
     const categoryWords: string[] = categories[category][language].content;
     return categoryWords[Math.floor(Math.random() * categoryWords.length)];
   };
+
+  const checkVoteForSecretWord = () => {
+    if(game.word === game.selectedWord) {
+      // Get the current lying player from the players array to ensure we have the latest score
+      const currentLyingPlayer = game.players.find(p => p.id === game.lyingPlayer.id);
+      if (currentLyingPlayer) {
+        const updatedPlayers = updatePointsToPlayer(currentLyingPlayer, 2);
+        // Also update the lyingPlayer object with the new score
+        const updatedLyingPlayer = updatedPlayers.find(p => p.id === game.lyingPlayer.id);
+        setGame({ ...game, players: updatedPlayers, lyingPlayer: updatedLyingPlayer || game.lyingPlayer });
+      }
+    }
+  }
 
   const setGameWord = (category: string, language: Language) => {
     const { index, word } = getRandomWordIndex(category, language);
@@ -327,6 +341,7 @@ export const GameContextProvider = ({
         updatePlayers,
         resetGameWithExistingPlayers,
         getCurrentWord,
+        checkVoteForSecretWord,
         getCurrentQuestion,
       }}
     >

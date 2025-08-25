@@ -24,7 +24,7 @@ import { useTranslation } from '@/translations';
 import CustomModal from '@/components/modal';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const MAX_PLAYERS = 8;
+const MAX_PLAYERS = 10;
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -168,7 +168,7 @@ export default function CreateGame() {
                 </View>
                 <Text style={styles.title}>{t('Add')}</Text>
                 <Text style={styles.title}>{t('players')}</Text>
-                <Text style={styles.title}>{t('(3 to 8)')}</Text>
+                <Text style={styles.title}>(3 {t('to')} {MAX_PLAYERS})</Text>
               </View>
               <View>
                 <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>

@@ -44,7 +44,7 @@ Simple to learn, tricky to master. Perfect for game nights, parties, and social 
 - **Language**: TypeScript
 - **State Management**: React Context API
 - **Navigation**: React Navigation
-- **Testing**: Jira, Jest + React Native Testing Library
+- **Testing**: Jest + React Native Testing Library, Manual Testing with Jira
 - **Code Quality**: ESLint + Prettier
 
 ---
@@ -55,6 +55,7 @@ This project follows professional software development practices with comprehens
 
 - 📖 **[Requirements & Specifications](./requirements.md)** - Detailed functional and non-functional requirements
 - 🧪 **[Test Plans & Coverage](./test_plans.md)** - Comprehensive testing strategy with 10+ test cases
+- 🤖 **[Jest Automated Tests](./jest_tests.md)** - Automated testing results with Jest & React Native Testing Library
 - 🏗️ **[Architecture Overview](./docs/ARCHITECTURE.md)** - System design and component structure - TODO
 - 🐛 **[Bug Reports & Testing Results](./docs/TESTING_RESULTS.md)** - Manual testing execution results - TODO
 
@@ -67,7 +68,7 @@ This project demonstrates comprehensive QA practices suitable for production app
 ### Testing Coverage
 
 - ✅ **10+ Test Cases** across functional and edge cases
-- ✅ **Unit Testing** with Jest for core game logic - TODO
+- ✅ **Unit Testing** with Jest for core game logic (22 automated tests, 91% pass rate)
 - ✅ **Integration Testing** for component interactions - TODO
 - ✅ **Manual Testing** protocols for user experience validation
 - ✅ **Compatibility Testing** across different device sizes

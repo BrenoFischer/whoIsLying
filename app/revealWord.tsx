@@ -11,16 +11,12 @@ import { useTranslation } from '@/translations';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
-  const { game, updatePointsToPlayer, updatePlayers, getCurrentWord } = useContext(GameContext);
+  const { game, checkVoteForSecretWord, getCurrentWord } = useContext(GameContext);
   const { language, t } = useTranslation();
 
   const handleContinue = () => {
     //if impostor got correct the secret word, it obtains 2 points
-    const currentWord = getCurrentWord(language);
-    if (game.selectedWord === currentWord) {
-      const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 2);
-      updatePlayers(updatedPlayers);
-    }
+    checkVoteForSecretWord();
 
     router.navigate('/endGame');
   };
