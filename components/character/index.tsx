@@ -6,7 +6,11 @@ interface CharacterProps {
   size?: string;
 }
 
-export default function Character({ mood, flip = false, size = 'large' }: CharacterProps) {
+export default function Character({
+  mood,
+  flip = false,
+  size = 'large',
+}: CharacterProps) {
   const characterImages = {
     paola: require('@/assets/images/paola.png'),
     breno: require('@/assets/images/breno.png'),
@@ -26,7 +30,12 @@ export default function Character({ mood, flip = false, size = 'large' }: Charac
   return (
     <Image
       source={characterImages[mood as keyof typeof characterImages]}
-      style={[styles.image, flip && { transform: [{ scaleX: -1 }] }, size === 'small' && { height: 120, width: 120 }]}
+      style={[
+        styles.image,
+        flip && { transform: [{ scaleX: -1 }] },
+        size === 'small' && { height: 120, width: 120 },
+        size === 'medium' && { height: 160, width: 160 }
+      ]}
       resizeMode="cover"
     />
   );

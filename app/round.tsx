@@ -17,7 +17,8 @@ import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 
 export default function RoundScreen() {
-  const { game, nextRound, previousRound, getCurrentQuestion } = useContext(GameContext);
+  const { game, nextRound, previousRound, getCurrentQuestion } =
+    useContext(GameContext);
   const { language, t } = useTranslation();
 
   const totalRounds = game.players.length * 2;
@@ -50,7 +51,7 @@ export default function RoundScreen() {
           height: '100%',
         }}
       >
-        <View style={{ marginLeft: 10, marginTop: 30 }}>
+        <View style={{ marginLeft: 15, marginRight: 15, marginTop: 20 }}>
           {game.currentRound !== 1 ? (
             <TouchableOpacity onPress={handlePreviousRound}>
               <Ionicons
@@ -113,16 +114,17 @@ export default function RoundScreen() {
 const styles = StyleSheet.create({
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Raleway-Medium',
     color: colors.white[100],
+    textAlign: 'center',
   },
   playerName: {
-    marginTop: 30,
+    marginTop: 10,
     marginBottom: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: 28,
     fontWeight: 'bold',
     color: colors.white[100],
     textAlign: 'center',
@@ -131,18 +133,18 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   question: {
-    fontSize: 26,
+    fontSize: 18,
     color: colors.white[100],
     fontFamily: 'Sigmar',
-    padding: 20,
+    padding: 15,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: "1%",
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
-    left: 0,
-    right: 0,
+    bottom: 40,
+    left: 20,
+    right: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },

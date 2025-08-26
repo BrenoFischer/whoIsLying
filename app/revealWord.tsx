@@ -11,7 +11,8 @@ import { useTranslation } from '@/translations';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
-  const { game, checkVoteForSecretWord, getCurrentWord } = useContext(GameContext);
+  const { game, checkVoteForSecretWord, getCurrentWord } =
+    useContext(GameContext);
   const { language, t } = useTranslation();
 
   const handleContinue = () => {
@@ -34,12 +35,14 @@ export default function RevealWord() {
           <Character mood={game.lyingPlayer.character} />
         </View>
         <View style={styles.wordVotedContainer}>
-          <Text style={styles.title}>{game.lyingPlayer.name} {t('voted for:')}</Text>
+          <Text style={styles.title}>
+            {game.lyingPlayer.name} {t('voted for:')}
+          </Text>
           <Text style={styles.word}>{game.selectedWord}</Text>
         </View>
 
         {secretWordRevealed && (
-          <View style={{ marginTop: 120 }}>
+          <View style={styles.secretWordContainer}>
             <Text style={styles.title}>{t('The secret word was:')}</Text>
             <Text style={[styles.word, { color: colors.orange[200] }]}>
               {getCurrentWord(language)}
@@ -79,8 +82,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.white[100],
   },
+  secretWordContainer: {
+    marginTop: "5%",
+  },
   word: {
-    marginTop: 20,
+    marginTop: 10,
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
@@ -89,7 +95,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 40,
     left: 0,
     right: 0,
     justifyContent: 'center',

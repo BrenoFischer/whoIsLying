@@ -46,7 +46,7 @@ export default function CreateGame() {
   const [players, setPlayers] = useState<Player[]>(game.players);
   const [maleImages] = useState(() => shuffleArray(maleImagesBase));
   const [femaleImages] = useState(() => shuffleArray(femaleImagesBase));
-  const [modalOpen, setModalOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false);
 
   const imagesArray = playerGender === 'man' ? maleImages : femaleImages;
   const usedCharacters = players.map(player => player.character);
@@ -163,38 +163,53 @@ export default function CreateGame() {
                   }}
                 >
                   <Text style={styles.headerCategoryTitle}>
-                    {t('Game')} {game.currentMatch} {t('of')} {game.maximumMatches}
+                    {t('Game')} {game.currentMatch} {t('of')}{' '}
+                    {game.maximumMatches}
                   </Text>
                 </View>
                 <Text style={styles.title}>{t('Add')}</Text>
                 <Text style={styles.title}>{t('players')}</Text>
-                <Text style={styles.title}>(3 {t('to')} {MAX_PLAYERS})</Text>
+                <Text style={styles.title}>
+                  (3 {t('to')} {MAX_PLAYERS})
+                </Text>
               </View>
               <View>
-                <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
+                <CustomModal
+                  modalVisible={modalOpen}
+                  setModalVisible={setModalOpen}
+                >
                   <ScrollView style={styles.modalContainer}>
                     <View style={styles.modalHeaderContainer}>
-                      <TouchableOpacity onPress={handleChangeGender} style={styles.genderIconContainer}>
+                      <TouchableOpacity
+                        onPress={handleChangeGender}
+                        style={styles.genderIconContainer}
+                      >
                         <MaterialIcons
                           name={playerGenderIcon}
                           size={32}
-                          color={isGenderLocked ? colors.gray[100] : colors.orange[200]}
+                          color={
+                            isGenderLocked
+                              ? colors.gray[100]
+                              : colors.orange[200]
+                          }
                         />
                       </TouchableOpacity>
-                      <Text style={styles.modalTitle}>{t('Choose your character')}</Text>
+                      <Text style={styles.modalTitle}>
+                        {t('Choose your character')}
+                      </Text>
                     </View>
                     <View style={styles.imagesGrid}>
-                      {
-                        availableImages.map((char, idx) => {
-                          return(
-                            <View key={char} style={styles.imageItem}>
-                              <TouchableOpacity onPress={() => handleSelectCharacter(idx)}>
-                                <Character mood={char} size='small' />
-                              </TouchableOpacity>
-                            </View>
-                          )
-                        })
-                      }
+                      {availableImages.map((char, idx) => {
+                        return (
+                          <View key={char} style={styles.imageItem}>
+                            <TouchableOpacity
+                              onPress={() => handleSelectCharacter(idx)}
+                            >
+                              <Character mood={char} size="small" />
+                            </TouchableOpacity>
+                          </View>
+                        );
+                      })}
                     </View>
                   </ScrollView>
                 </CustomModal>
@@ -218,8 +233,7 @@ export default function CreateGame() {
                       color: colors.white[100],
                       fontWeight: 'bold',
                     }}
-                  >
-                  </Text>
+                  ></Text>
                 </View>
                 <Character
                   mood={
@@ -245,7 +259,9 @@ export default function CreateGame() {
                 />
               )}
               <View style={styles.playersAddedContainer}>
-                <CustomText>{t('Players added')} - {players.length}</CustomText>
+                <CustomText>
+                  {t('Players added')} - {players.length}
+                </CustomText>
               </View>
               {players.map(player => (
                 <PlayerInput
@@ -276,61 +292,66 @@ export default function CreateGame() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30,
+    marginTop: 20,
   },
   modalContainer: {
-    maxHeight: 500,
+    maxHeight: 400,
   },
   modalHeaderContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    position: "relative",
-    marginTop: 12
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    position: 'relative',
+    marginTop: 10,
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Ralway',
   },
   genderIconContainer: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
   },
   imagesGrid: {
-    marginTop: 20,
+    marginTop: 15,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
   },
   imageItem: {
     width: '48%',
-    marginVertical: 5,
+    marginVertical: 3,
     alignItems: 'center',
   },
   headerContainer: {
-    marginLeft: 30,
-    marginTop: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 15,
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
 
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Raleway-Medium',
   },
 
   title: {
     fontFamily: 'Ralway',
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: 'bold',
   },
 
   playersAddedContainer: {
-    marginTop: 90,
+    marginTop: 60,
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 30,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });

@@ -115,17 +115,19 @@ export default function Words() {
         <View style={styles.topContainer}>
           <Character mood={impostorPlayer.character} />
         </View>
-        <View style={styles.table}>
+        <ScrollView style={styles.table}>
           <Text style={styles.playerNameOnTable}>
             {impostorPlayer.name},{' '}
             <Text style={styles.tableText}>
               {t('vote on the secret word you think is the correct one:')}
             </Text>
           </Text>
-          {allWords.map(w => {
-            return <WordVoteOption key={w} word={w} />;
-          })}
-        </View>
+          <View style={styles.allWordsContainer}>
+            {allWords.map(w => {
+              return <WordVoteOption key={w} word={w} />;
+            })}
+          </View>
+        </ScrollView>
         <View style={styles.buttonContainer}>
           <Button
             text={t('Vote!')}
@@ -143,19 +145,20 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   tableText: {
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Raleway',
     color: colors.black[100],
   },
   playerNameOnTable: {
     fontFamily: 'Ralway',
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   table: {
-    padding: 20,
-    marginHorizontal: 25,
+    padding: 15,
+    marginHorizontal: 15,
+    maxHeight: '45%',
     backgroundColor: colors.white[100],
     borderRadius: 10,
     shadowColor: '#000',
@@ -167,8 +170,11 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
+  allWordsContainer: {
+    marginBottom: "15%"
+  },
   wordContainer: {
-    width: 300,
+    width: "100%",
     alignItems: 'center',
     borderWidth: 2,
     borderRadius: 10,
@@ -180,15 +186,16 @@ const styles = StyleSheet.create({
   },
   wordOption: {
     fontFamily: 'Ralway',
-    fontSize: 20,
+    fontSize: 15,
     color: colors.black[200],
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 40,
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 100,
   },
 });

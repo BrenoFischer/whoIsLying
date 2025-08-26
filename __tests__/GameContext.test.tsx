@@ -7,27 +7,27 @@ import { Player } from '@/types/Player';
 jest.mock('@/data/categories.json', () => ({
   testCategory: {
     en: {
-        content: ['word1', 'word2', 'word3', 'word4', 'word5'],
-        firstSetOfQuestions: [
-          'Question 1?',
-          'Question 2?',
-          'Question 3?',
-          'Question 4?',
-        ],
-        secondSetOfQuestions: [
-          'Question 5?',
-          'Question 6?',
-          'Question 7?',
-          'Question 8?',
-        ],
-      },
+      content: ['word1', 'word2', 'word3', 'word4', 'word5'],
+      firstSetOfQuestions: [
+        'Question 1?',
+        'Question 2?',
+        'Question 3?',
+        'Question 4?',
+      ],
+      secondSetOfQuestions: [
+        'Question 5?',
+        'Question 6?',
+        'Question 7?',
+        'Question 8?',
+      ],
     },
+  },
   anotherCategory: {
     en: {
       content: ['apple', 'banana', 'orange'],
       firstSetOfQuestions: ['What fruit?', 'Which one?'],
       secondSetOfQuestions: ['How many?', 'What color?'],
-    }
+    },
   },
 }));
 
@@ -394,7 +394,7 @@ describe('GameContext', () => {
       });
 
       // Set vote for lying player to be the correct one
-      const secretWord = result.current.game.word
+      const secretWord = result.current.game.word;
       act(() => {
         result.current.setSelectedWord(secretWord!);
       });

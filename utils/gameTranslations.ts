@@ -7,6 +7,13 @@ export const getWordByIndex = (
   language: Language
 ): string => {
   const categories: any = allCategories;
+
+  if (!categories[category]?.[language]?.content) {
+    throw new Error(
+      `Content not found for category "${category}" and language "${language}"`
+    );
+  }
+
   return categories[category][language].content[index];
 };
 
@@ -19,6 +26,13 @@ export const getQuestionByIndex = (
   const categories: any = allCategories;
   const key =
     questionSet === 'first' ? 'firstSetOfQuestions' : 'secondSetOfQuestions';
+
+  if (!categories[category]?.[language]?.[key]) {
+    throw new Error(
+      `Questions not found for category "${category}", language "${language}", and question set "${questionSet}"`
+    );
+  }
+
   return categories[category][language][key][index];
 };
 
@@ -27,6 +41,23 @@ export const getRandomWordIndex = (
   language: Language
 ): { index: number; word: string } => {
   const categories: any = allCategories;
+
+  if (!categories[category]) {
+    throw new Error(`Category "${category}" not found`);
+  }
+
+  if (!categories[category][language]) {
+    throw new Error(
+      `Language "${language}" not found for category "${category}"`
+    );
+  }
+
+  if (!categories[category][language].content) {
+    throw new Error(
+      `Content not found for category "${category}" and language "${language}"`
+    );
+  }
+
   const words = categories[category][language].content;
   const index = Math.floor(Math.random() * words.length);
   return { index, word: words[index] };

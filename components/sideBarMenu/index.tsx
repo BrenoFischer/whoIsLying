@@ -21,7 +21,9 @@ import { Language, useTranslation } from '@/translations';
 export default function SidebarMenu() {
   const [visible, setVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [clickedLanguage, setClickedLanguage] = useState<Language | undefined>(undefined);
+  const [clickedLanguage, setClickedLanguage] = useState<Language | undefined>(
+    undefined
+  );
   const [languageModalOpen, setLanguageModalOpen] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
@@ -43,13 +45,13 @@ export default function SidebarMenu() {
   const clickSetLanguage = (lan: Language) => {
     setLanguageModalOpen(true);
     setClickedLanguage(lan);
-  }
+  };
 
   const handleChangeLanguage = () => {
     setLanguage(clickedLanguage!);
     setLanguageModalOpen(false);
     handleStartNewGame();
-  }
+  };
 
   return (
     <>
@@ -155,7 +157,9 @@ export default function SidebarMenu() {
                       {t('Do you want to change the language?')}
                     </Text>
                     <Text style={styles.altText}>
-                      {t('Note that this will start a new game to be effective.')}
+                      {t(
+                        'Note that this will start a new game to be effective.'
+                      )}
                     </Text>
                   </View>
                 </View>
@@ -268,8 +272,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     top: 50,
-    right: 20,
+    right: 10,
     zIndex: 100,
+    backgroundColor: colors.background[100],
+    borderRadius: 20,
+    padding: 5,
   },
   languageContainer: {
     marginBottom: 30,

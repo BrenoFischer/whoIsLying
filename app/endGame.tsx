@@ -25,30 +25,24 @@ export default function EndGame() {
   }) {
     return (
       <View style={styles.playerCard}>
-        <View style={styles.headerContainer}>
-          <View style={{ alignItems: 'center' }}>
-            <View
-              style={{
-                justifyContent: 'center',
-                flexDirection: 'row',
-                gap: 10,
-              }}
-            >
-              <Text style={styles.index}>{index + 1}</Text>
-              <Text style={styles.playerName}>{player.name}</Text>
-            </View>
-            <Character mood={player.character} />
-          </View>
           <View
             style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              maxWidth: 150,
+              marginLeft: 10,
+              flexDirection: 'row',
+              gap: 10,
             }}
           >
+            <Text style={styles.index}>{index + 1}</Text>
+            <Text style={styles.playerName}>{player.name}</Text>
+          </View>
+        <View style={styles.headerContainer}>
+          <Character mood={player.character} />
+          <View
+            style={styles.textContainer}
+          >
             <Text style={styles.playerScore}>
-              {player.score} <Text style={styles.playerPointsText}>{t('points')}</Text>
+              {player.score}{' '}
+              <Text style={styles.playerPointsText}>{t('points')}</Text>
             </Text>
           </View>
         </View>
@@ -114,6 +108,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.white[100],
   },
+  textContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    maxWidth: 150,
+  },
   index: {
     fontFamily: 'Ralway',
     fontSize: 40,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 40,
     left: 0,
     right: 0,
     justifyContent: 'center',

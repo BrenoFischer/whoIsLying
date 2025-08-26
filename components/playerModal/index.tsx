@@ -17,7 +17,10 @@ export default function PlayerModal({
   player,
 }: PlayerModalProps) {
   const { language, t } = useTranslation();
-  const buttonText = t("I'm") + (language === 'en' ? ' ' : player.gender === 'woman' ? ' a ' : ' o ') + player.name
+  const buttonText =
+    t("I'm") +
+    (language === 'en' ? ' ' : player.gender === 'woman' ? ' a ' : ' o ') +
+    player.name;
 
   return (
     <Modal
@@ -43,7 +46,9 @@ export default function PlayerModal({
         <View style={styles.modalView}>
           <View>
             <View>
-              <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
+              <Text style={styles.titleInformation}>
+                {t('Pass device to:')}
+              </Text>
               <Text style={styles.modalPlayerName}>{player.name}</Text>
             </View>
             <Character mood={player.character} />

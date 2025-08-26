@@ -102,7 +102,9 @@ export default function SelectCategory() {
                 {t('Questions will be based on the selected category')}
               </Text>
             </View>
-            <Character mood={'bothCharacter'} />
+            <View style={styles.charContainer}>
+              <Character mood={'bothCharacter'} size='medium' />
+            </View>
           </View>
           <View style={styles.categoriesContainer}>
             {Object.keys(categories).map(category => {
@@ -124,41 +126,49 @@ export default function SelectCategory() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 50,
+    paddingVertical: 30,
     textAlign: 'center',
     maxHeight: '84%',
+    position: "relative"
   },
   headerContainer: {
-    marginLeft: 30,
-    flexDirection: 'row',
+    marginLeft: "6%",
+    marginTop: 30,
+    marginBottom: 40
+  },
+  charContainer: {
+    position: "absolute",
+    right: "1%"
   },
   pageTitle: {
     fontFamily: 'Ralway',
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: 'bold',
-    maxWidth: 200,
+    maxWidth: '50%',
     marginVertical: 10,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Raleway-Medium',
-    maxWidth: 190,
+    maxWidth: '50%',
   },
   categoriesContainer: {
-    rowGap: 40,
-    paddingTop: 70,
+    rowGap: 20,
+    paddingTop: 50,
     paddingHorizontal: 20,
     height: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignContent: 'flex-start',
   },
   categoryCardContainer: {
-    width: 150,
-    height: 200,
-    paddingVertical: 22,
+    width: '25%',
+    minWidth: 140,
+    maxWidth: 180,
+    height: 150,
+    paddingVertical: 18,
     backgroundColor: colors.orange[100],
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -168,17 +178,23 @@ const styles = StyleSheet.create({
     borderTopWidth: 4,
     borderLeftWidth: 4,
     borderColor: 'white',
+    marginBottom: 20,
   },
   categoryTitle: {
     fontFamily: 'Raleway-Medium',
     textTransform: 'capitalize',
-    fontSize: 20,
+    fontSize: 18,
+    textAlign: 'center',
   },
   categoryImage: {
-    height: 100,
+    height: 80,
+    width: 80,
+    resizeMode: 'contain',
   },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });

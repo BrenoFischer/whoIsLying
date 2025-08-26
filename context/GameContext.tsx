@@ -174,17 +174,25 @@ export const GameContextProvider = ({
   };
 
   const checkVoteForSecretWord = () => {
-    if(game.word === game.selectedWord) {
+    if (game.word === game.selectedWord) {
       // Get the current lying player from the players array to ensure we have the latest score
-      const currentLyingPlayer = game.players.find(p => p.id === game.lyingPlayer.id);
+      const currentLyingPlayer = game.players.find(
+        p => p.id === game.lyingPlayer.id
+      );
       if (currentLyingPlayer) {
         const updatedPlayers = updatePointsToPlayer(currentLyingPlayer, 2);
         // Also update the lyingPlayer object with the new score
-        const updatedLyingPlayer = updatedPlayers.find(p => p.id === game.lyingPlayer.id);
-        setGame({ ...game, players: updatedPlayers, lyingPlayer: updatedLyingPlayer || game.lyingPlayer });
+        const updatedLyingPlayer = updatedPlayers.find(
+          p => p.id === game.lyingPlayer.id
+        );
+        setGame({
+          ...game,
+          players: updatedPlayers,
+          lyingPlayer: updatedLyingPlayer || game.lyingPlayer,
+        });
       }
     }
-  }
+  };
 
   const setGameWord = (category: string, language: Language) => {
     const { index, word } = getRandomWordIndex(category, language);

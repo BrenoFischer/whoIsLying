@@ -45,7 +45,7 @@ export default function DefineQuantityOfMatches() {
           overflow: 'hidden',
         }}
       >
-        <Elipse top={-90} />
+        <Elipse top={-150} />
         <ScrollView style={styles.container}>
           <View style={styles.headerContainer}>
             <View>
@@ -56,7 +56,9 @@ export default function DefineQuantityOfMatches() {
                 {t('The one with most points after all matches is the winner!')}
               </Text>
             </View>
-            <Character mood={'luh'} />
+            <View style={styles.charContainer}>
+              <Character mood={'luh'} />
+            </View>
           </View>
           <View style={styles.quantityContainer}>
             <TouchableOpacity onPress={() => handleChangeQuantity(-1)}>
@@ -83,37 +85,43 @@ export default function DefineQuantityOfMatches() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 50,
+    paddingVertical: 30,
     textAlign: 'center',
     maxHeight: '84%',
+    position: "relative"
   },
   headerContainer: {
-    marginLeft: 30,
-    flexDirection: 'row',
+    marginLeft: 20,
+  },
+  charContainer: {
+    position: "absolute",
+    top: 0,
+    right: -30
   },
   pageTitle: {
     fontFamily: 'Ralway',
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: 'bold',
-    maxWidth: 200,
+    maxWidth: '50%',
     marginVertical: 10,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Raleway-Medium',
-    maxWidth: 190,
+    maxWidth: '50%',
   },
   quantityContainer: {
-    marginTop: 80,
+    marginTop: 60,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 30,
+    gap: 20,
+    paddingHorizontal: 20,
   },
   quantityCardContainer: {
-    width: 150,
-    height: 200,
-    paddingVertical: 22,
+    width: 120,
+    height: 160,
+    paddingVertical: 18,
     backgroundColor: colors.orange[100],
     justifyContent: 'center',
     alignItems: 'center',
@@ -125,11 +133,13 @@ const styles = StyleSheet.create({
     borderColor: 'white',
   },
   quantity: {
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: 'bold',
   },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });

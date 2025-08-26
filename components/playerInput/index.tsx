@@ -103,7 +103,8 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   container: {
-    width: 300,
+    width: '90%',
+    maxWidth: 280,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
@@ -113,9 +114,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background[100],
   },
   textInput: {
-    width: 200,
-    paddingVertical: 20,
-    marginLeft: 20,
+    flex: 1,
+    paddingVertical: 18,
+    marginLeft: 15,
+    marginRight: 50,
     fontSize: 15,
     color: colors.white[100],
   },

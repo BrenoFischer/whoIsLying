@@ -48,11 +48,13 @@ export default function VotesResults() {
 
   function PlayerCard(vote: VotesByPlayerType) {
     return (
-      <View style={{ flexDirection: 'row', gap: 30 }}>
+      <View style={{ flexDirection: 'row', gap: "1%" }}>
         <Character mood={vote.player.character} />
-        <View style={{ justifyContent: 'center' }}>
+        <View style={{ justifyContent: 'center', maxWidth: "40%" }}>
           <Text style={styles.allPlayersName}>{vote.player.name}</Text>
-          <Text style={styles.allPlayersInfo}>{t('Votes')}: {vote.votes}</Text>
+          <Text style={styles.allPlayersInfo}>
+            {t('Votes')}: {vote.votes}
+          </Text>
           {vote.votes > 0 && (
             <View style={{ maxWidth: 140 }}>
               <Text style={styles.allPlayersInfoVotes}>
@@ -188,7 +190,7 @@ const styles = StyleSheet.create({
   },
   votesInfo: {
     fontFamily: 'Raleway-Medium',
-    fontSize: 20,
+    fontSize: 18,
     color: colors.black[200],
   },
   allPlayersText: {

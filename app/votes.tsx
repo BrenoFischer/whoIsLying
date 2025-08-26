@@ -125,7 +125,7 @@ export default function Votes() {
             <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
             <Text style={styles.playerName}>{player.name}</Text>
           </View>
-          <Character mood={player.character} />
+          <Character mood={player.character} size="medium" />
         </View>
         <PlayerModal
           player={player}
@@ -165,50 +165,52 @@ export default function Votes() {
 const styles = StyleSheet.create({
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Raleway-Medium',
   },
   headerContainer: {
-    marginLeft: 30,
-    marginTop: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 15,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   titleInformation: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: 32,
     fontWeight: 'bold',
     color: colors.white[100],
   },
   playerNameOnTable: {
     fontFamily: 'Ralway',
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   tableText: {
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Raleway',
     color: colors.black[100],
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
-    left: 0,
-    right: 0,
+    bottom: 40,
+    left: 20,
+    right: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   table: {
-    padding: 20,
-    marginHorizontal: 25,
-    maxHeight: 380,
+    padding: 15,
+    marginHorizontal: 15,
+    maxHeight: '45%',
     backgroundColor: colors.white[100],
     borderRadius: 10,
     shadowColor: '#000',
@@ -222,15 +224,15 @@ const styles = StyleSheet.create({
   },
   modalPlayerName: {
     fontFamily: 'Ralway',
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   modalView: {
-    margin: 20,
+    margin: 15,
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+    padding: 25,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -242,19 +244,20 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   container: {
-    width: 300,
+    width: '100%',
     alignItems: 'center',
     borderWidth: 2,
     borderRadius: 10,
     borderColor: colors.orange[200],
-    marginTop: 15,
-    paddingHorizontal: 10,
-    paddingVertical: 9,
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
     backgroundColor: colors.white[100],
   },
   playerOptionName: {
     fontFamily: 'Ralway',
-    fontSize: 20,
+    fontSize: 15,
     color: colors.black[200],
+    textAlign: 'center',
   },
 });

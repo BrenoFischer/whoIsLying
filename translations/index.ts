@@ -38,33 +38,43 @@ const translations = {
     animals: 'Animals',
     Game: 'Game',
     of: 'of',
-    'Add': 'Add',
-    'players': 'players',
-    'to': 'to',
+    Add: 'Add',
+    players: 'players',
+    to: 'to',
     'Players added': 'Players added',
     'Create game': 'Create game',
     Round: 'Round',
     Category: 'Category',
     asks: 'asks',
     Continue: 'Continue',
-    'Do you want to change the language?': 'Do you want to change the language?',
-    'Note that this will start a new game to be effective.': 'Note that this will start a new game to be effective.',
-    'Change language and start a new game': 'Change language and start a new game',
-    'Do you want to delete this player from the list?': 'Do you want to delete this player from the list?',
-    'All points the player currently has will be lost.': 'All points the player currently has will be lost.',
+    'Do you want to change the language?':
+      'Do you want to change the language?',
+    'Note that this will start a new game to be effective.':
+      'Note that this will start a new game to be effective.',
+    'Change language and start a new game':
+      'Change language and start a new game',
+    'Do you want to delete this player from the list?':
+      'Do you want to delete this player from the list?',
+    'All points the player currently has will be lost.':
+      'All points the player currently has will be lost.',
     Confirm: 'Confirm',
     Cancel: 'Cancel',
     'Add a new name': 'Add a new name',
-    'A name should contain at least 1 character.': 'A name should contain at least 1 character.',
+    'A name should contain at least 1 character.':
+      'A name should contain at least 1 character.',
     Player: 'Player',
     'Pass device to:': 'Pass device to:',
-    'You will be the impostor this round!': 'You will be the impostor this round!',
-    "Pretend you know the word and try to discover it based on people's answers.": "Pretend you know the word and try to discover it based on people's answers.",
-    'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.': 'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.',
+    'You will be the impostor this round!':
+      'You will be the impostor this round!',
+    "Pretend you know the word and try to discover it based on people's answers.":
+      "Pretend you know the word and try to discover it based on people's answers.",
+    'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.':
+      'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.',
     'Tap to reveal': 'Tap to reveal',
     'Got it!': 'Got it!',
     'Discussion time!': 'Discussion time!',
-    'Review all questions and analyse each detail that was answered': 'Review all questions and analyse each detail that was answered',
+    'Review all questions and analyse each detail that was answered':
+      'Review all questions and analyse each detail that was answered',
     "I'm": "I'm",
     'Who will become the impostor?': 'Who will become the impostor?',
     'Tap to vote!': 'Tap to vote!',
@@ -73,25 +83,31 @@ const translations = {
     votes: 'votes',
     Votes: 'Votes',
     'The real impostor was:': 'The real impostor was:',
-    'Impostor, you can cough 3 times to reveal yourself': 'Impostor, you can cough 3 times to reveal yourself',
-    'Impostor, you can raise your right hand to reveal yourself': 'Impostor, you can raise your right hand to reveal yourself',
-    'Impostor, you can stand up to reveal yourself': 'Impostor, you can stand up to reveal yourself',
+    'Impostor, you can cough 3 times to reveal yourself':
+      'Impostor, you can cough 3 times to reveal yourself',
+    'Impostor, you can raise your right hand to reveal yourself':
+      'Impostor, you can raise your right hand to reveal yourself',
+    'Impostor, you can stand up to reveal yourself':
+      'Impostor, you can stand up to reveal yourself',
     'Done it': 'Done it',
-    'vote on the secret word you think is the correct one:': 'vote on the secret word you think is the correct one:',
+    'vote on the secret word you think is the correct one:':
+      'vote on the secret word you think is the correct one:',
     'Vote!': 'Vote!',
     'voted for:': 'voted for:',
     'The secret word was:': 'The secret word was:',
     'Reveal secret word': 'Reveal secret word',
-    'Scores': 'Scores',
+    Scores: 'Scores',
     points: 'points',
     'The grand winners are!': 'The grand winners are!',
     'The grand winner is!': 'The grand winner is!',
     'Play one more round': 'Play one more round',
     'Choose your character': 'Choose your character',
-    'vote on the person you think is the impostor:': 'vote on the person you think is the impostor:',
+    'vote on the person you think is the impostor:':
+      'vote on the person you think is the impostor:',
     'The most voted player was:': 'The most voted player was:',
-    'It is a tie, the most voted players were:': 'It is a tie, the most voted players were:',
-    'With': 'With',
+    'It is a tie, the most voted players were:':
+      'It is a tie, the most voted players were:',
+    With: 'With',
     'Reveal impostor': 'Reveal impostor',
   },
   pt: {
@@ -131,9 +147,9 @@ const translations = {
     animals: 'Animais',
     Game: 'Jogo',
     of: 'de',
-    'Add': 'Adicionar',
-    'players': 'jogadores',
-    'to': 'a',
+    Add: 'Adicionar',
+    players: 'jogadores',
+    to: 'a',
     'Players added': 'Jogadores adicionados',
     'Create game': 'Criar jogo',
     Round: 'Rodada',
@@ -141,23 +157,31 @@ const translations = {
     asks: 'pergunta para',
     Continue: 'Continuar',
     'Do you want to change the language?': 'Você deseja mudar o idioma?',
-    'Note that this will start a new game to be effective': 'Note que isso irá iniciar um novo jogo para efetivar a mudança.',
+    'Note that this will start a new game to be effective':
+      'Note que isso irá iniciar um novo jogo para efetivar a mudança.',
     'Change and start a new game': 'Mudar idioma e começar novo jogo',
-    'Do you want to delete this player from the list?': 'Você quer deletar este jogador da lista?',
-    'All points the player currently has will be lost.': 'Todos os pontos que o jogador tem atualmente serão perdidos.',
+    'Do you want to delete this player from the list?':
+      'Você quer deletar este jogador da lista?',
+    'All points the player currently has will be lost.':
+      'Todos os pontos que o jogador tem atualmente serão perdidos.',
     Confirm: 'Confirmar',
     Cancel: 'Cancelar',
     'Add a new name': 'Adicione um novo nome',
-    'A name should contain at least 1 character.': 'Um nome deve conter pelo menos 1 caractere.',
+    'A name should contain at least 1 character.':
+      'Um nome deve conter pelo menos 1 caractere.',
     Player: 'Jogador',
     'Pass device to:': 'Passe o celular para:',
-    'You will be the impostor this round!': 'Você será o impostor desta rodada!',
-    "Pretend you know the word and try to discover it based on people's answers.": 'Finja que conhece a palavra e tente descobri-la baseado nas respostas das pessoas.',
-    'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.': 'Responda às perguntas baseado nesta palavra, mas certifique-se de não facilitar para o impostor descobri-la.',
+    'You will be the impostor this round!':
+      'Você será o impostor desta rodada!',
+    "Pretend you know the word and try to discover it based on people's answers.":
+      'Finja que conhece a palavra e tente descobri-la baseado nas respostas das pessoas.',
+    'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.':
+      'Responda às perguntas baseado nesta palavra, mas certifique-se de não facilitar para o impostor descobri-la.',
     'Tap to reveal': 'Toque para revelar',
     'Got it!': 'Entendido!',
     'Discussion time!': 'Hora da discussão!',
-    'Review all questions and analyse each detail that was answered': 'Revise todas as perguntas e analise cada detalhe que foi respondido',
+    'Review all questions and analyse each detail that was answered':
+      'Revise todas as perguntas e analise cada detalhe que foi respondido',
     "I'm": 'Eu sou',
     'Who will become the impostor?': 'Quem será o impostor?',
     'Tap to vote!': 'Toque para votar!',
@@ -166,26 +190,32 @@ const translations = {
     votes: 'votos',
     Votes: 'Votos',
     'The real impostor was:': 'O verdadeiro impostor era:',
-    'Impostor, you can cough 3 times to reveal yourself': 'Impostor, você pode tossir 3 vezes para se revelar',
-    'Impostor, you can raise your right hand to reveal yourself': 'Impostor, você pode levantar a mão direita para se revelar',
-    'Impostor, you can stand up to reveal yourself': 'Impostor, você pode ficar em pé para se revelar',
+    'Impostor, you can cough 3 times to reveal yourself':
+      'Impostor, você pode tossir 3 vezes para se revelar',
+    'Impostor, you can raise your right hand to reveal yourself':
+      'Impostor, você pode levantar a mão direita para se revelar',
+    'Impostor, you can stand up to reveal yourself':
+      'Impostor, você pode ficar em pé para se revelar',
     'Done it': 'Feito',
-    'vote on the secret word you think is the correct one:': 'vote na palavra secreta que você acha que é a correta:',
+    'vote on the secret word you think is the correct one:':
+      'vote na palavra secreta que você acha que é a correta:',
     'Vote!': 'Votar!',
     'voted for:': 'votou em:',
     'The secret word was:': 'A palavra secreta era:',
     'Reveal secret word': 'Revelar palavra secreta',
-    'Scores': 'Pontuações',
+    Scores: 'Pontuações',
     points: 'pontos',
     'The grand winners are!': 'Os grandes vencedores são!',
     'The grand winner is!': 'O grande vencedor é!',
     'Play one more round': 'Jogar mais uma rodada',
     'Choose your character': 'Selecione o seu personagem',
-    'vote on the person you think is the impostor:': 'vote na pessoa que você pensa que é impostor:',
+    'vote on the person you think is the impostor:':
+      'vote na pessoa que você pensa que é impostor:',
     'The most voted player was:': 'A pessoa mais votada foi:',
-    'It is a tie, the most voted players were:': 'Foi um empate, as pessoas mais votadas foram:',
-    'With': 'Com',
-    'Reveal impostor': 'Revelar impostor'
+    'It is a tie, the most voted players were:':
+      'Foi um empate, as pessoas mais votadas foram:',
+    With: 'Com',
+    'Reveal impostor': 'Revelar impostor',
   },
 };
 

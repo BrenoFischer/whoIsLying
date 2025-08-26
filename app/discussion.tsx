@@ -58,7 +58,7 @@ export default function Discussion() {
           height: '100%',
         }}
       >
-        <Elipse left={10} />
+        <Elipse left={-20} />
         <View
           style={{
             alignItems: 'center',
@@ -69,23 +69,33 @@ export default function Discussion() {
           <View style={{ marginBottom: 30 }}>
             <Text style={styles.title}>{t('Discussion time!')}</Text>
             <Text style={styles.subtitle}>
-              {t('Review all questions and analyse each detail that was answered')}
+              {t(
+                'Review all questions and analyse each detail that was answered'
+              )}
             </Text>
           </View>
-          <Character mood="bothCharacter" />
+          <Character mood="bothCharacter" size='medium' />
         </View>
         <ScrollView>
           <View style={styles.table}>
             {agregatedArray.map((round, index) => {
               // Get the translated question for this specific round
-              const translatedQuestion = game.category && round.questionIndex !== undefined && round.questionSet
-                ? (() => {
-                    const categories: any = require('@/data/categories.json');
-                    const key = round.questionSet === 'first' ? 'firstSetOfQuestions' : 'secondSetOfQuestions';
-                    return categories[game.category][language][key][round.questionIndex];
-                  })()
-                : round.question;
-              
+              const translatedQuestion =
+                game.category &&
+                round.questionIndex !== undefined &&
+                round.questionSet
+                  ? (() => {
+                      const categories: any = require('@/data/categories.json');
+                      const key =
+                        round.questionSet === 'first'
+                          ? 'firstSetOfQuestions'
+                          : 'secondSetOfQuestions';
+                      return categories[game.category][language][key][
+                        round.questionIndex
+                      ];
+                    })()
+                  : round.question;
+
               return (
                 <View key={`${round.playerThatAnswers.id}-${index}`}>
                   <Text style={styles.playerName}>
@@ -107,7 +117,7 @@ export default function Discussion() {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 35,
+    fontSize: 30,
     maxWidth: 250,
     fontFamily: 'Raleway',
     fontWeight: 'bold',

@@ -100,7 +100,9 @@ export default function EndOfMatches() {
         <>
           <View>
             <View style={{ marginBottom: 30 }}>
-              <Text style={styles.titleInformation}>{t('Do you want to:')}</Text>
+              <Text style={styles.titleInformation}>
+                {t('Do you want to:')}
+              </Text>
             </View>
           </View>
           <Character mood="bothCharacter" />

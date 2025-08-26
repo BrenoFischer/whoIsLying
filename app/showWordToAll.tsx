@@ -19,7 +19,8 @@ import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 
 export default function ShowWordToAll() {
-  const { game, showWordToNextPlayer, getCurrentWord } = useContext(GameContext);
+  const { game, showWordToNextPlayer, getCurrentWord } =
+    useContext(GameContext);
   const { language, t } = useTranslation();
   const [wordRevealed, setWordRevealed] = useState(false);
   const [displayWord, setDisplayWord] = useState('');
@@ -34,8 +35,12 @@ export default function ShowWordToAll() {
       ? t('You will be the impostor this round!')
       : getCurrentWord(language);
     const subtitle = playerIsLying
-      ? t("Pretend you know the word and try to discover it based on people's answers.")
-      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.');
+      ? t(
+          "Pretend you know the word and try to discover it based on people's answers."
+        )
+      : t(
+          'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.'
+        );
     setDisplayWord(word || '');
     setDisplaySubtitle(subtitle || '');
     setWordRevealed(true);
@@ -69,14 +74,15 @@ export default function ShowWordToAll() {
           modalVisible && { opacity: 0.1 },
         ]}
       >
-        <Elipse top={-30} left={-30} />
+        <Elipse top={-60} left={-30} />
         <View
           style={{
             alignItems: 'center',
             flexDirection: 'row',
             marginBottom: 12,
-            marginLeft: 30,
-            marginTop: 50,
+            marginLeft: 15,
+            marginRight: 15,
+            marginTop: 30,
           }}
         >
           <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
@@ -100,7 +106,8 @@ export default function ShowWordToAll() {
             }}
           />
           <Text style={styles.headerCategoryTitle}>
-            {t('Player')} {game.showingWordToPlayer + 1} {t('of')} {game.players.length}
+            {t('Player')} {game.showingWordToPlayer + 1} {t('of')}{' '}
+            {game.players.length}
           </Text>
         </View>
         <View style={styles.headerContainer}>
@@ -150,44 +157,48 @@ const styles = StyleSheet.create({
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Raleway-Medium',
+    textAlign: 'center',
   },
   titleInformation: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: 32,
     fontWeight: 'bold',
     color: colors.white[100],
   },
   secretWordContainer: {
-    marginTop: 150,
+    marginTop: 100,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
   secretWord: {
     color: colors.white[100],
-    fontSize: 30,
-    paddingHorizontal: 25,
+    fontSize: 26,
+    textAlign: 'center',
+    paddingHorizontal: 15,
   },
   subtitle: {
     fontFamily: 'Ralway',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: 'bold',
     color: colors.orange[200],
-    paddingHorizontal: 28,
-    marginTop: 30,
+    paddingHorizontal: 15,
+    marginTop: 10,
+    textAlign: 'center',
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
-    left: 0,
-    right: 0,
+    bottom: 40,
+    left: 20,
+    right: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
