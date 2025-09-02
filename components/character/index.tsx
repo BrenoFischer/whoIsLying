@@ -24,7 +24,12 @@ export default function Character({
     pedro: require('@/assets/images/pedro.png'),
     pri: require('@/assets/images/pri.png'),
     gio: require('@/assets/images/gio.png'),
+    eighties: require('@/assets/images/80s.png'),
     ginger: require('@/assets/images/ginger.png'),
+    bday: require('@/assets/images/bday.png'),
+    highlight: require('@/assets/images/highlight.png'),
+    rock: require('@/assets/images/rock.png'),
+    surfer: require('@/assets/images/surfer.png'),
   };
 
   return (

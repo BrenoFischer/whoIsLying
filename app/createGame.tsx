@@ -35,8 +35,8 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro'];
-const femaleImagesBase = ['paola', 'sara', 'luh', 'pri', 'gio', 'ginger'];
+const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro', 'bday', 'rock'];
+const femaleImagesBase = ['paola', 'sara', 'luh', 'pri', 'gio', 'ginger', 'eighties', 'highlight', 'surfer'];
 
 export default function CreateGame() {
   const { createGame, game } = useContext(GameContext);
