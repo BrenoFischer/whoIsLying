@@ -1,4 +1,4 @@
-import { Alert, Modal, StyleSheet, View } from 'react-native';
+import { Alert, DimensionValue, Modal, StyleSheet, View } from 'react-native';
 import { colors } from '@/styles/colors';
 import { ReactNode } from 'react';
 
@@ -6,12 +6,14 @@ interface ModalProps {
   modalVisible: boolean;
   setModalVisible: (modalVisible: boolean) => void;
   children: ReactNode;
+  fixedHeight?: DimensionValue
 }
 
 export default function CustomModal({
   modalVisible,
   setModalVisible,
   children,
+  fixedHeight
 }: ModalProps) {
   return (
     <Modal
@@ -34,7 +36,7 @@ export default function CustomModal({
           alignItems: 'center',
         }}
       >
-        <View style={styles.modalView}>{children}</View>
+        <View style={[styles.modalView, fixedHeight ? { height: fixedHeight } : undefined]}>{children}</View>
       </View>
     </Modal>
   );

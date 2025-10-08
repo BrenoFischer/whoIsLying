@@ -17,10 +17,191 @@ import { useNavigation } from 'expo-router';
 import { useAppReset } from '@/context/AppResetContext';
 import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
+import AntDesign from '@expo/vector-icons/AntDesign';
+
+
+interface HowToPlayProps {
+  showHowToPlay: boolean;
+  setShowHowToPlay: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
+  const [slide, setSlide] = useState(0);
+  const totalSlides = 7
+  const { t, language, setLanguage } = useTranslation();
+
+  if(!showHowToPlay) return;
+
+  const handleChangeSlide = (amount: number) => {
+    const newSlide = slide + amount;
+    if(newSlide >= totalSlides) return;
+    if(newSlide < 0) return;
+
+    setSlide(newSlide)
+  }
+
+  const slides = [
+    //Slide 1
+    <View>
+      <View style={{marginBottom: 20, alignItems: "center"}}>
+        <Character mood="slide1" />
+      </View>
+      <Text style={styles.subtitleBlack}>{t('All players except')}{' '}
+      <Text style={styles.specialText}>{t('one')}</Text>{' '}
+      {t('receives a')}{' '}<Text style={styles.specialText}>{t('secret word')}</Text></Text>
+      <Text style={styles.subtitleBlack}>{t('One random player is the')}{' '}
+      <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+      {t('for the round.')}
+      </Text>
+    </View>,
+
+    //Slide 2
+    <View>
+      <View style={{marginBottom: 20, alignItems: "center"}}>
+        <Character mood="slide2" />
+      </View>
+      <Text style={styles.subtitleBlack}><Text style={styles.specialText}>{t('Questions')}</Text>{' '}
+      {t('are asked between players.')}{' '}</Text>
+      <Text style={styles.subtitleBlack}>{t('Can you')}{' '}
+      <Text style={styles.specialText}>{t('identify')}</Text>{' '}
+      {t('who is')}{' '}
+      <Text style={styles.specialText}>{t('pretending')}</Text>{' '}
+      {t('to know the word? Will the')}{' '}
+      <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+      {t('be able to guess what the secret')}{' '}
+      <Text style={styles.specialText}>{t('word')}</Text> {t('is?')}</Text>
+    </View>,
+
+    //Slide 3
+    <View>
+      <View style={{marginBottom: 20, alignItems: "center"}}>
+        <Character mood="slide3" />
+      </View>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>1.{' '}</Text>{t('Choose a category for the')}{' '}
+        <Text style={styles.specialText}>{t('secret word')}{' '}</Text>{t('(e.g. Animals, Foods)')}.
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        {t('Questions will be based on the selected category')}.
+      </Text>
+            <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>2.{' '}</Text>{t('Enter the names of')}{' '}
+        <Text style={styles.specialText}>{t('all players')}</Text>{' '}{t('who will participate')}.{' '}
+      </Text>
+      <Text style={styles.subtitleBlack}>{t('Each player will have a unique character')}.</Text>
+    </View>,
+
+    //Slide 4
+    <View>
+      <View style={{marginBottom: 20, alignItems: "center"}}>
+        <Character mood="slide4" />
+      </View>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>3.{' '}</Text>{t('Each player will see either the secret word or a message indicating they are')}
+        {' '}
+        <Text style={styles.specialText}>{t('the impostor')}</Text>.
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>4.{' '}</Text>{t('Players ask each other')}{' '}
+        <Text style={styles.specialText}>{t('questions')},{' '}</Text>{t('based on the secret word')}.
+      </Text>
+    </View>,
+
+    //Slide 5
+    <View>
+      <View style={{marginBottom: 20, alignItems: "center"}}>
+        <Character mood="slide5" />
+      </View>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>5.{' '}</Text>{t('A round of')}{' '}
+        <Text style={styles.specialText}>{t('discussion')}{' '}</Text>
+        {t('may be needed — share your thoughts')}!
+        </Text>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>6.{' '}</Text>{t('Each player')}{' '}
+        <Text style={styles.specialText}>{t('votes')}{' '}</Text>
+        {t('for who they think the impostor is')}.
+      </Text>
+    </View>,
+
+    //Slide 6
+    <View>
+      <View style={{marginBottom: 20, alignItems: "center"}}>
+        <Character mood="slide6" />
+      </View>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>7.{' '}</Text>{t('The')}{' '}
+        <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+        {t('is revealed after all votes are counted')}.
+        </Text>
+        <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>8.{' '}</Text>{t("Now it's the")}{' '}
+        <Text style={styles.specialText}>{t("impostor's")}{' '}</Text>
+        {t("turn to guess the secret word")}.
+        </Text>
+    </View>,
+
+    //Slide 7
+    <View>
+      <View style={{marginBottom: 20, alignItems: "center"}}>
+        <Character mood="slide7" />
+      </View>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>9.</Text>{' '}
+        <Text style={styles.specialText}>{t("Scores")}</Text>{' '}
+        {t("are calculated as follows")}:
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>9.1.</Text>{t("Voted on the impostor")}{' '}
+        <Text style={styles.specialText}>+3{' '}{t('points')}</Text>.
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>9.2.</Text>{t("The impostor receives")}{' '}
+        <Text style={styles.specialText}>+1{' '}{t('point')}{' '}</Text>{t('for every vote not on him')}.
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>9.3.</Text>{t("The impostor receives")}{' '}
+        <Text style={styles.specialText}>+2{' '}{t('points')}{' '}</Text>{t('if correctly guessed the secret word')}.
+      </Text> 
+    </View>,
+  ]
+
+  return(
+    <CustomModal
+      setModalVisible={setShowHowToPlay}
+      modalVisible={showHowToPlay}
+      fixedHeight={"70%"}
+    >
+        <View style={{ minWidth: "100%" }}>
+          <View style={{marginBottom: 20, alignSelf: "flex-end"}}>
+            <TouchableOpacity onPress={() => {setShowHowToPlay(false);}}>
+              <Ionicons name="close" size={28} color={colors.orange[200]} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {slides[slide]}
+
+        <View style={{position: "absolute", bottom: "5%",flexDirection: 'row', gap: 15}}>
+            <TouchableOpacity onPress={()=>{ handleChangeSlide(-1) }}>
+              <Ionicons name="arrow-back-outline" size={28} color={colors.orange[200]} />
+            </TouchableOpacity>
+            <Text style={styles.titleInformation}>
+              {slide + 1}/{totalSlides}
+            </Text>
+            <TouchableOpacity onPress={()=>{ handleChangeSlide(1) }}>
+              <Ionicons name="arrow-forward-outline" size={28} color={colors.orange[200]} />
+            </TouchableOpacity>
+          </View>
+    </CustomModal>
+  );
+}
+
 
 export default function SidebarMenu() {
   const [visible, setVisible] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [newGameModalOpen, setNewGameModalOpen] = useState(false);
+  const [howToPlayModalOpen, setHowToPlayModalOpen] = useState(false);
   const [clickedLanguage, setClickedLanguage] = useState<Language | undefined>(
     undefined
   );
@@ -32,7 +213,7 @@ export default function SidebarMenu() {
   const toggleMenu = () => setVisible(!visible);
 
   const handleStartNewGame = () => {
-    setModalOpen(!modalOpen);
+    setNewGameModalOpen(!newGameModalOpen);
     resetApp();
     navigation.dispatch(
       CommonActions.reset({
@@ -43,6 +224,7 @@ export default function SidebarMenu() {
   };
 
   const clickSetLanguage = (lan: Language) => {
+    if(lan === language) return;
     setLanguageModalOpen(true);
     setClickedLanguage(lan);
   };
@@ -69,7 +251,9 @@ export default function SidebarMenu() {
         </View>
         <View style={styles.backdrop}>
           <ScrollView style={styles.sidebar}>
-            <Character mood="umpa" />
+            <View style={{alignSelf: "center"}}>
+              <Character mood="umpa" />
+            </View>
             <View style={styles.languageContainer}>
               <Text style={styles.languageLabel}>Language / Idioma:</Text>
               <View style={styles.languageButtons}>
@@ -112,14 +296,14 @@ export default function SidebarMenu() {
               <Button
                 text={t('Start a new game')}
                 onPress={() => {
-                  setModalOpen(true);
+                  setNewGameModalOpen(true);
                 }}
               />
             </View>
 
             <CustomModal
-              setModalVisible={setModalOpen}
-              modalVisible={modalOpen}
+              setModalVisible={setNewGameModalOpen}
+              modalVisible={newGameModalOpen}
             >
               <>
                 <View>
@@ -139,7 +323,7 @@ export default function SidebarMenu() {
                     text={t('Continue with current game')}
                     variants="secondary"
                     onPress={() => {
-                      setModalOpen(false);
+                      setNewGameModalOpen(false);
                     }}
                   />
                 </View>
@@ -152,25 +336,34 @@ export default function SidebarMenu() {
             >
               <>
                 <View>
+                  <View style={{marginBottom: 15, alignSelf: "flex-end"}}>
+                    <TouchableOpacity onPress={() => {setLanguageModalOpen(false);}}>
+                      <Ionicons name="close" size={28} color={colors.orange[200]} />
+                    </TouchableOpacity>
+                  </View>
                   <View style={{ marginBottom: 30 }}>
                     <Text style={styles.titleInformation}>
-                      {t('Do you want to change the language?')}
+                      {language === 'en' ? 
+                        'Você deseja mudar o idioma?'
+                        : 
+                        'Do you want to change the language?'}
                     </Text>
                     <Text style={styles.altText}>
-                      {t(
-                        'Note that this will start a new game to be effective.'
-                      )}
+                      {language === 'en' ? 
+                        'Note que isso irá iniciar um novo jogo para efetivar a mudança.'
+                        : 
+                        'Note that this will start a new game to be effective.'}
                     </Text>
                   </View>
                 </View>
                 <Character mood="bothCharacter" />
                 <View style={{ gap: 40 }}>
                   <Button
-                    text={t('Change language and start a new game')}
+                    text={language === 'en' ? 'Mudar idioma e iniciar novo jogo': 'Change language and start a new game'}
                     onPress={handleChangeLanguage}
                   />
                   <Button
-                    text={t('Continue with current game')}
+                    text={language === 'en' ? 'Continuar jogo atual ': 'Continue with current game'}
                     variants="secondary"
                     onPress={() => {
                       setLanguageModalOpen(false);
@@ -180,85 +373,15 @@ export default function SidebarMenu() {
               </>
             </CustomModal>
 
-            <Text style={styles.menuItem}>{t('📖 How to Play')}</Text>
-            <Text style={styles.subtitle}>
-              <Text style={styles.specialText}>{t('All players')}</Text>{' '}
-              {t('except')} <Text style={styles.specialText}>{t('one')}</Text>{' '}
-              {t('receive a secret')}{' '}
-              <Text style={styles.specialText}>{t('word')}</Text>.{' '}
-              {t('One random player is the')}{' '}
-              <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
-              {t('for the round.')}
-              <Text style={styles.specialText}>{t('Questions')}</Text>{' '}
-              {t('are asked between players. Can you')}{' '}
-              <Text style={styles.specialText}>{t('identify')}</Text>{' '}
-              {t('who is')}{' '}
-              <Text style={styles.specialText}>{t('pretending')}</Text>{' '}
-              {t('to know the word? Will the')}{' '}
-              <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
-              {t('be able to guess what the secret')}{' '}
-              <Text style={styles.specialText}>{t('word')}</Text> {t('is?')}
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>1.</Text> Enter the names of{' '}
-              <Text style={styles.specialText}>all players</Text> who will
-              participate.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>2.</Text> Choose a category for
-              the <Text style={styles.specialText}>secret word</Text> (e.g.,
-              Animals, Foods).
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>3.</Text> Each player will see
-              either the secret word or a message indicating they are{' '}
-              <Text style={styles.specialText}>the impostor</Text>.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>4.</Text> Players ask each other{' '}
-              <Text style={styles.specialText}>questions</Text> based on the
-              secret word.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>5.</Text> A round of{' '}
-              <Text style={styles.specialText}>discussion</Text> may be
-              needed—share your thoughts!
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>6.</Text> Each player{' '}
-              <Text style={styles.specialText}>votes</Text> for who they think
-              the impostor is.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>7.</Text> The{' '}
-              <Text style={styles.specialText}>impostor</Text> is revealed after
-              all votes are counted.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>8.</Text> Now it's the{' '}
-              <Text style={styles.specialText}>impostor's</Text> turn to guess
-              the secret word.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>9.</Text>{' '}
-              <Text style={styles.specialText}>Scores</Text> are calculated as
-              follows:
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>9.1.</Text> If you voted for the
-              impostor <Text style={styles.specialText}>+3 points</Text>.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>9.2.</Text> If you are the
-              impostor you receive{' '}
-              <Text style={styles.specialText}>+1 point</Text> for every vote
-              not on you.
-            </Text>
-            <Text style={styles.text}>
-              <Text style={styles.specialText}>9.3.</Text> If you are the
-              impostor and correctly guessed the secret word{' '}
-              <Text style={styles.specialText}>+2 point</Text>.
-            </Text>
+            <View style={styles.startNewGameContainer}>
+              <Button
+                text={t('Como jogar')}
+                onPress={() => { setHowToPlayModalOpen(true) }}
+              />
+            </View>
+
+            <HowToPlay setShowHowToPlay={setHowToPlayModalOpen} showHowToPlay={howToPlayModalOpen} />
+
             <View style={{ marginBottom: 150 }} />
           </ScrollView>
         </View>
@@ -279,11 +402,12 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   languageContainer: {
-    marginBottom: 30,
+    marginVertical: 20,
     alignItems: 'center',
   },
   languageLabel: {
     fontFamily: 'Raleway',
+    fontWeight: "bold",
     fontSize: 16,
     color: colors.white[100],
     marginBottom: 10,
@@ -312,7 +436,8 @@ const styles = StyleSheet.create({
     color: colors.background[100],
   },
   startNewGameContainer: {
-    marginBottom: 50,
+    marginVertical: "4%",
+    alignSelf: "center",
   },
   backdrop: {
     flex: 1,
@@ -359,5 +484,11 @@ const styles = StyleSheet.create({
   specialText: {
     color: colors.orange[200],
     fontWeight: 'bold',
+  },
+  subtitleBlack: {
+    fontFamily: 'Raleway',
+    fontSize: 16,
+    color: colors.black[100],
+    marginBottom: 12,
   },
 });

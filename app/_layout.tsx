@@ -4,7 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GameContextProvider } from '@/context/GameContext';
-import { AppResetProvider } from '@/context/AppResetContext'; // <-- Add this
+import { AppResetProvider } from '@/context/AppResetContext';
+import '@/translations/i18n';
 
 SplashScreen.preventAutoHideAsync();
 

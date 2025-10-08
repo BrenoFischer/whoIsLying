@@ -35,7 +35,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro', 'bday', 'rock'];
+const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro', 'bday', 'rock', 'ber'];
 const femaleImagesBase = ['paola', 'sara', 'luh', 'pri', 'gio', 'ginger', 'eighties', 'highlight', 'surfer'];
 
 export default function CreateGame() {

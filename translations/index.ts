@@ -1,243 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useTranslation as useI18nextTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const translations = {
-  en: {
-    'Who is Lying': 'Who is Lying',
-    'New game': 'New game',
-    'Start a new game': 'Start a new game',
-    'Start a fresh new game': 'Start a fresh new game',
-    'Continue with current game': 'Continue with current game',
-    'Do you want to:': 'Do you want to:',
-    '📖 How to Play': '📖 How to Play',
-    'All players': 'All players',
-    except: 'except',
-    one: 'one',
-    'receive a secret': 'receive a secret',
-    word: 'word',
-    'One random player is the': 'One random player is the',
-    impostor: 'impostor',
-    'for the round.': 'for the round.',
-    Questions: 'Questions',
-    'are asked between players. Can you': 'are asked between players. Can you',
-    identify: 'identify',
-    'who is': 'who is',
-    pretending: 'pretending',
-    'to know the word? Will the': 'to know the word? Will the',
-    'be able to guess what the secret': 'be able to guess what the secret',
-    'is?': 'is?',
-    Categories: 'Categories',
-    'Questions will be based on the selected category':
-      'Questions will be based on the selected category',
-    'Select category': 'Select category',
-    'How many matches will be played?': 'How many matches will be played?',
-    'The one with most points after all matches is the winner!':
-      'The one with most points after all matches is the winner!',
-    'Continue with this quantity': 'Continue with this quantity',
-    foods: 'Foods',
-    animals: 'Animals',
-    Game: 'Game',
-    of: 'of',
-    Add: 'Add',
-    players: 'players',
-    to: 'to',
-    'Players added': 'Players added',
-    'Create game': 'Create game',
-    Round: 'Round',
-    Category: 'Category',
-    asks: 'asks',
-    Continue: 'Continue',
-    'Do you want to change the language?':
-      'Do you want to change the language?',
-    'Note that this will start a new game to be effective.':
-      'Note that this will start a new game to be effective.',
-    'Change language and start a new game':
-      'Change language and start a new game',
-    'Do you want to delete this player from the list?':
-      'Do you want to delete this player from the list?',
-    'All points the player currently has will be lost.':
-      'All points the player currently has will be lost.',
-    Confirm: 'Confirm',
-    Cancel: 'Cancel',
-    'Add a new name': 'Add a new name',
-    'A name should contain at least 1 character.':
-      'A name should contain at least 1 character.',
-    Player: 'Player',
-    'Pass device to:': 'Pass device to:',
-    'You will be the impostor this round!':
-      'You will be the impostor this round!',
-    "Pretend you know the word and try to discover it based on people's answers.":
-      "Pretend you know the word and try to discover it based on people's answers.",
-    'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.':
-      'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.',
-    'Tap to reveal': 'Tap to reveal',
-    'Got it!': 'Got it!',
-    'Discussion time!': 'Discussion time!',
-    'Review all questions and analyse each detail that was answered':
-      'Review all questions and analyse each detail that was answered',
-    "I'm": "I'm",
-    'Who will become the impostor?': 'Who will become the impostor?',
-    'Tap to vote!': 'Tap to vote!',
-    'Votes for:': 'Votes for:',
-    vote: 'vote',
-    votes: 'votes',
-    Votes: 'Votes',
-    'The real impostor was:': 'The real impostor was:',
-    'Impostor, you can cough 3 times to reveal yourself':
-      'Impostor, you can cough 3 times to reveal yourself',
-    'Impostor, you can raise your right hand to reveal yourself':
-      'Impostor, you can raise your right hand to reveal yourself',
-    'Impostor, you can stand up to reveal yourself':
-      'Impostor, you can stand up to reveal yourself',
-    'Done it': 'Done it',
-    'vote on the secret word you think is the correct one:':
-      'vote on the secret word you think is the correct one:',
-    'Vote!': 'Vote!',
-    'voted for:': 'voted for:',
-    'The secret word was:': 'The secret word was:',
-    'Reveal secret word': 'Reveal secret word',
-    Scores: 'Scores',
-    points: 'points',
-    'The grand winners are!': 'The grand winners are!',
-    'The grand winner is!': 'The grand winner is!',
-    'Play one more round': 'Play one more round',
-    'Choose your character': 'Choose your character',
-    'vote on the person you think is the impostor:':
-      'vote on the person you think is the impostor:',
-    'The most voted player was:': 'The most voted player was:',
-    'It is a tie, the most voted players were:':
-      'It is a tie, the most voted players were:',
-    With: 'With',
-    'Reveal impostor': 'Reveal impostor',
-  },
-  pt: {
-    'Who is Lying': 'Quem Está Mentindo',
-    'New game': 'Novo jogo',
-    'Start a new game': 'Iniciar novo jogo',
-    'Start a fresh new game': 'Começar novo jogo',
-    'Continue with current game': 'Continuar jogo atual',
-    'Do you want to:': 'Você quer:',
-    '📖 How to Play': '📖 Como Jogar',
-    'All players': 'Todos os jogadores',
-    except: 'exceto',
-    one: 'um',
-    'receive a secret': 'recebem uma',
-    word: 'palavra',
-    'One random player is the': 'Um jogador aleatório é o',
-    impostor: 'impostor',
-    'for the round.': 'da rodada.',
-    Questions: 'Perguntas',
-    'are asked between players. Can you':
-      'são feitas entre os jogadores. Você consegue',
-    identify: 'identificar',
-    'who is': 'quem está',
-    pretending: 'fingindo',
-    'to know the word? Will the': 'conhecer a palavra? O',
-    'be able to guess what the secret': 'conseguirá adivinhar qual é a',
-    'is?': '?',
-    Categories: 'Categorias',
-    'Questions will be based on the selected category':
-      'As perguntas serão baseadas na categoria selecionada',
-    'Select category': 'Selecionar categoria',
-    'How many matches will be played?': 'Quantas partidas serão jogadas?',
-    'The one with most points after all matches is the winner!':
-      'Quem tiver mais pontos após todas as partidas é o vencedor!',
-    'Continue with this quantity': 'Continuar com essa quantidade',
-    foods: 'Comidas',
-    animals: 'Animais',
-    Game: 'Jogo',
-    of: 'de',
-    Add: 'Adicionar',
-    players: 'jogadores',
-    to: 'a',
-    'Players added': 'Jogadores adicionados',
-    'Create game': 'Criar jogo',
-    Round: 'Rodada',
-    Category: 'Categoria',
-    asks: 'pergunta para',
-    Continue: 'Continuar',
-    'Do you want to change the language?': 'Você deseja mudar o idioma?',
-    'Note that this will start a new game to be effective':
-      'Note que isso irá iniciar um novo jogo para efetivar a mudança.',
-    'Change and start a new game': 'Mudar idioma e começar novo jogo',
-    'Do you want to delete this player from the list?':
-      'Você quer deletar este jogador da lista?',
-    'All points the player currently has will be lost.':
-      'Todos os pontos que o jogador tem atualmente serão perdidos.',
-    Confirm: 'Confirmar',
-    Cancel: 'Cancelar',
-    'Add a new name': 'Adicione um novo nome',
-    'A name should contain at least 1 character.':
-      'Um nome deve conter pelo menos 1 caractere.',
-    Player: 'Jogador',
-    'Pass device to:': 'Passe o celular para:',
-    'You will be the impostor this round!':
-      'Você será o impostor desta rodada!',
-    "Pretend you know the word and try to discover it based on people's answers.":
-      'Finja que conhece a palavra e tente descobri-la baseado nas respostas das pessoas.',
-    'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.':
-      'Responda às perguntas baseado nesta palavra, mas certifique-se de não facilitar para o impostor descobri-la.',
-    'Tap to reveal': 'Toque para revelar',
-    'Got it!': 'Entendido!',
-    'Discussion time!': 'Hora da discussão!',
-    'Review all questions and analyse each detail that was answered':
-      'Revise todas as perguntas e analise cada detalhe que foi respondido',
-    "I'm": 'Eu sou',
-    'Who will become the impostor?': 'Quem será o impostor?',
-    'Tap to vote!': 'Toque para votar!',
-    'Votes for:': 'Votos para:',
-    vote: 'voto',
-    votes: 'votos',
-    Votes: 'Votos',
-    'The real impostor was:': 'O verdadeiro impostor era:',
-    'Impostor, you can cough 3 times to reveal yourself':
-      'Impostor, você pode tossir 3 vezes para se revelar',
-    'Impostor, you can raise your right hand to reveal yourself':
-      'Impostor, você pode levantar a mão direita para se revelar',
-    'Impostor, you can stand up to reveal yourself':
-      'Impostor, você pode ficar em pé para se revelar',
-    'Done it': 'Feito',
-    'vote on the secret word you think is the correct one:':
-      'vote na palavra secreta que você acha que é a correta:',
-    'Vote!': 'Votar!',
-    'voted for:': 'votou em:',
-    'The secret word was:': 'A palavra secreta era:',
-    'Reveal secret word': 'Revelar palavra secreta',
-    Scores: 'Pontuações',
-    points: 'pontos',
-    'The grand winners are!': 'Os grandes vencedores são!',
-    'The grand winner is!': 'O grande vencedor é!',
-    'Play one more round': 'Jogar mais uma rodada',
-    'Choose your character': 'Selecione o seu personagem',
-    'vote on the person you think is the impostor:':
-      'vote na pessoa que você pensa que é impostor:',
-    'The most voted player was:': 'A pessoa mais votada foi:',
-    'It is a tie, the most voted players were:':
-      'Foi um empate, as pessoas mais votadas foram:',
-    With: 'Com',
-    'Reveal impostor': 'Revelar impostor',
-  },
-};
+import i18n from './i18n';
 
 export type Language = 'en' | 'pt';
 
 export function useTranslation() {
-  const [language, setLang] = useState<Language>('en');
+  const { t } = useI18nextTranslation();
   const [isLoaded, setIsLoaded] = useState(false);
+  const language = i18n.language as Language;
 
   useEffect(() => {
     AsyncStorage.getItem('language').then(lang => {
-      if (lang === 'pt' || lang === 'en') setLang(lang);
+      if (lang === 'pt' || lang === 'en') {
+        i18n.changeLanguage(lang);
+      }
       setIsLoaded(true);
     });
   }, []);
 
   const setLanguage = async (lang: Language) => {
     await AsyncStorage.setItem('language', lang);
-    setLang(lang);
+    await i18n.changeLanguage(lang);
   };
-
-  const t = (key: string) => (translations[language] as any)[key] || key;
 
   return { t, language, setLanguage, isLoaded };
 }
