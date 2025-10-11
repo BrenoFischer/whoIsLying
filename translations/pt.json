@@ -32,6 +32,8 @@
   "Continue with this quantity": "Continuar com essa quantidade",
   "foods": "Comidas",
   "animals": "Animais",
+  "foodsDescription": "Cada jogador - menos um - recebe um alimento como palavra secreta",
+  "animalsDescription": "Cada jogador - menos um - recebe um animal como palavra secreta",
   "Game": "Jogo",
   "of": "de",
   "Add": "Adicionar",

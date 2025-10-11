@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useContext } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function EndGame() {
   const { game, addNewMatch } = useContext(GameContext);
@@ -27,9 +28,9 @@ export default function EndGame() {
       <View style={styles.playerCard}>
           <View
             style={{
-              marginLeft: 10,
+              marginLeft: scale(10),
               flexDirection: 'row',
-              gap: 10,
+              gap: scale(10),
             }}
           >
             <Text style={styles.index}>{index + 1}</Text>
@@ -69,7 +70,7 @@ export default function EndGame() {
         height: '100%',
       }}
     >
-      <ScrollView style={{ marginBottom: 120 }}>
+      <ScrollView style={{ marginBottom: verticalScale(120) }}>
         <Text style={styles.title}>{t('Scores')}:</Text>
         {sortedWinningPlayers.map((p, idx) => {
           return <PlayerWithScore key={p.id} player={p} index={idx} />;
@@ -87,16 +88,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: moderateScale(20),
     color: colors.orange[200],
-    marginTop: 40,
+    marginTop: verticalScale(40),
   },
   playerCard: {
     backgroundColor: colors.orange[200],
-    marginHorizontal: 13,
-    borderRadius: 10,
-    marginVertical: 20,
-    paddingTop: 20,
+    marginHorizontal: scale(13),
+    borderRadius: moderateScale(10),
+    marginVertical: verticalScale(20),
+    paddingTop: verticalScale(20),
   },
   headerContainer: {
     flexDirection: 'row',
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.white[100],
   },
@@ -112,26 +113,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    maxWidth: 150,
+    maxWidth: scale(150),
   },
   index: {
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.black[200],
   },
   playerScore: {
     fontFamily: 'Ralway',
-    fontSize: 30,
+    fontSize: moderateScale(30),
     fontWeight: 'bold',
   },
   playerPointsText: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
     fontWeight: 'normal',
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 40,
+    bottom: verticalScale(40),
     left: 0,
     right: 0,
     justifyContent: 'center',

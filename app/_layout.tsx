@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GameContextProvider } from '@/context/GameContext';
 import { AppResetProvider } from '@/context/AppResetContext';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '@/translations/i18n';
 
 SplashScreen.preventAutoHideAsync();
@@ -26,15 +27,17 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <AppResetProvider>
-      <GameContextProvider>
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
-      </GameContextProvider>
-    </AppResetProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AppResetProvider>
+        <GameContextProvider>
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          />
+        </GameContextProvider>
+      </AppResetProvider>
+    </GestureHandlerRootView>
   );
 }

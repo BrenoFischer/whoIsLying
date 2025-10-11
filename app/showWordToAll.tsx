@@ -17,6 +17,7 @@ import Elipse from '@/components/elipse';
 import PlayerModal from '@/components/playerModal';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function ShowWordToAll() {
   const { game, showWordToNextPlayer, getCurrentWord } =
@@ -74,35 +75,35 @@ export default function ShowWordToAll() {
           modalVisible && { opacity: 0.1 },
         ]}
       >
-        <Elipse top={-60} left={-30} />
+        <Elipse top={verticalScale(-60)} left={scale(-30)} />
         <View
           style={{
             alignItems: 'center',
             flexDirection: 'row',
-            marginBottom: 12,
-            marginLeft: 15,
-            marginRight: 15,
-            marginTop: 30,
+            marginBottom: verticalScale(12),
+            marginLeft: scale(15),
+            marginRight: scale(15),
+            marginTop: verticalScale(30),
           }}
         >
           <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
           <View
             style={{
               backgroundColor: colors.white[100],
-              width: 8,
-              height: 8,
+              width: scale(8),
+              height: verticalScale(8),
               borderRadius: '50%',
-              marginHorizontal: 8,
+              marginHorizontal: scale(8),
             }}
           />
           <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
           <View
             style={{
               backgroundColor: colors.white[100],
-              width: 8,
-              height: 8,
+              width: scale(8),
+              height: verticalScale(8),
               borderRadius: '50%',
-              marginHorizontal: 8,
+              marginHorizontal: scale(8),
             }}
           />
           <Text style={styles.headerCategoryTitle}>
@@ -144,77 +145,77 @@ export default function ShowWordToAll() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginLeft: 30,
-    marginTop: 20,
+    marginLeft: scale(30),
+    marginTop: verticalScale(20),
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   modalPlayerName: {
     fontFamily: 'Ralway',
-    fontSize: 25,
+    fontSize: moderateScale(25),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontFamily: 'Raleway-Medium',
     textAlign: 'center',
   },
   titleInformation: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 32,
+    fontSize: moderateScale(32),
     fontWeight: 'bold',
     color: colors.white[100],
   },
   secretWordContainer: {
-    marginTop: 100,
+    marginTop: verticalScale(100),
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: scale(20),
   },
   secretWord: {
     color: colors.white[100],
-    fontSize: 26,
+    fontSize: moderateScale(26),
     textAlign: 'center',
-    paddingHorizontal: 15,
+    paddingHorizontal: scale(15),
   },
   subtitle: {
     fontFamily: 'Ralway',
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontWeight: 'bold',
     color: colors.orange[200],
-    paddingHorizontal: 15,
-    marginTop: 10,
+    paddingHorizontal: scale(15),
+    marginTop: verticalScale(10),
     textAlign: 'center',
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 40,
-    left: 20,
-    right: 20,
+    bottom: verticalScale(40),
+    left: scale(20),
+    right: scale(20),
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: scale(20),
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: moderateScale(20),
+    padding: scale(35),
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: moderateScale(4),
     elevation: 5,
   },
 });

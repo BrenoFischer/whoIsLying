@@ -19,6 +19,7 @@ import { Player } from '@/types/Player';
 import PlayerModal from '@/components/playerModal';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function Votes() {
   const { game, addVote } = useContext(GameContext);
@@ -60,10 +61,8 @@ export default function Votes() {
 
   function PlayerVoteOption({
     player,
-    isLastPlayer,
   }: {
     player: Player;
-    isLastPlayer: boolean;
   }) {
     const isPlayerSelected =
       selectedPlayer === undefined ? false : player.id === selectedPlayer.id;
@@ -72,8 +71,7 @@ export default function Votes() {
       <TouchableOpacity
         onPress={() => handleSelectPlayer(player)}
         style={[
-          styles.container,
-          isLastPlayer && { marginBottom: 50 },
+          styles.playerOption,
           isPlayerSelected && { backgroundColor: colors.orange[200] },
         ]}
       >
@@ -91,29 +89,29 @@ export default function Votes() {
           {
             backgroundColor: colors.background[100],
             overflow: 'hidden',
-            height: '100%',
+            flex: 1,
           },
           modalVisible && { opacity: 0.1 },
         ]}
       >
-        <Elipse top={-30} left={-30} />
+        <Elipse top={verticalScale(-30)} left={scale(-30)} />
         <View
           style={{
             alignItems: 'center',
             flexDirection: 'row',
-            marginVertical: 12,
-            marginLeft: 30,
-            marginTop: 20,
+            marginVertical: verticalScale(12),
+            marginLeft: scale(30),
+            marginTop: verticalScale(20),
           }}
         >
           <Text style={styles.headerCategoryTitle}>{t('Vote')}</Text>
           <View
             style={{
               backgroundColor: colors.white[100],
-              width: 8,
-              height: 8,
+              width: scale(8),
+              height: verticalScale(8),
               borderRadius: '50%',
-              marginHorizontal: 8,
+              marginHorizontal: scale(8),
             }}
           />
           <Text style={styles.headerCategoryTitle}>
@@ -132,24 +130,26 @@ export default function Votes() {
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
         />
-        <ScrollView style={styles.table}>
-          <Text style={styles.playerNameOnTable}>
-            {player.name},{' '}
-            <Text style={styles.tableText}>
-              {t('vote on the person you think is the impostor:')}
+        <View style={styles.tableContainer}>
+          <ScrollView style={styles.table}>
+            <Text style={styles.playerNameOnTable}>
+              {player.name},{' '}
+              <Text style={styles.tableText}>
+                {t('vote on the person you think is the impostor:')}
+              </Text>
             </Text>
-          </Text>
-          {restOfPlayer.map((p, idx) => {
-            const isLastPlayer = idx === restOfPlayer.length - 1;
-            return (
-              <PlayerVoteOption
-                key={p.id}
-                player={p}
-                isLastPlayer={isLastPlayer}
-              />
-            );
-          })}
-        </ScrollView>
+            <View style={styles.restOfPlayerContainer}>
+              {restOfPlayer.map((p) => {
+                return (
+                  <PlayerVoteOption
+                    key={p.id}
+                    player={p}
+                  />
+                );
+              })}
+            </View>
+          </ScrollView>
+        </View>
         <View style={styles.buttonContainer}>
           <Button
             text={t('Vote!')}
@@ -165,98 +165,104 @@ export default function Votes() {
 const styles = StyleSheet.create({
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontFamily: 'Raleway-Medium',
   },
   headerContainer: {
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 15,
+    marginLeft: scale(20),
+    marginRight: scale(20),
+    marginTop: verticalScale(15),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
   titleInformation: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 32,
+    fontSize: moderateScale(32),
     fontWeight: 'bold',
     color: colors.white[100],
   },
   playerNameOnTable: {
     fontFamily: 'Ralway',
-    fontSize: 24,
+    fontSize: moderateScale(24),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   tableText: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontFamily: 'Raleway',
     color: colors.black[100],
   },
   buttonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     position: 'absolute',
     bottom: 40,
     left: 20,
     right: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  tableContainer: {
+    maxHeight: '45%',
+    marginHorizontal: scale(15),
+    flexShrink: 1,
   },
   table: {
-    padding: 15,
-    marginHorizontal: 15,
-    maxHeight: '45%',
+    padding: scale(15),
     backgroundColor: colors.white[100],
-    borderRadius: 10,
+    borderRadius: moderateScale(10),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.25,
-    shadowRadius: 8,
+    shadowRadius: moderateScale(8),
     elevation: 5,
   },
   modalPlayerName: {
     fontFamily: 'Ralway',
-    fontSize: 22,
+    fontSize: moderateScale(22),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   modalView: {
-    margin: 15,
+    margin: scale(15),
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 25,
+    borderRadius: moderateScale(20),
+    padding: scale(25),
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: moderateScale(4),
     elevation: 5,
   },
-  container: {
+  restOfPlayerContainer: {
+    marginVertical: verticalScale(30),
+    gap: verticalScale(10),
+  },
+  playerOption: {
     width: '100%',
     alignItems: 'center',
-    borderWidth: 2,
-    borderRadius: 10,
+    borderWidth: scale(2),
+    borderRadius: moderateScale(10),
     borderColor: colors.orange[200],
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
+    paddingHorizontal: scale(15),
+    paddingVertical: verticalScale(12),
     backgroundColor: colors.white[100],
   },
   playerOptionName: {
     fontFamily: 'Ralway',
-    fontSize: 15,
+    fontSize: moderateScale(15),
     color: colors.black[200],
     textAlign: 'center',
   },

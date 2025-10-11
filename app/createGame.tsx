@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { Player } from '@/types/Player';
 import NewPlayerInput from '@/components/newPlayerInput';
@@ -159,7 +160,7 @@ export default function CreateGame() {
                   style={{
                     alignItems: 'center',
                     flexDirection: 'row',
-                    marginVertical: 12,
+                    marginVertical: verticalScale(12),
                   }}
                 >
                   <Text style={styles.headerCategoryTitle}>
@@ -229,7 +230,7 @@ export default function CreateGame() {
                   </TouchableOpacity>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: moderateScale(16),
                       color: colors.white[100],
                       fontWeight: 'bold',
                     }}
@@ -292,20 +293,20 @@ export default function CreateGame() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    marginTop: verticalScale(20),
   },
   modalContainer: {
-    maxHeight: 400,
+    maxHeight: verticalScale(400),
   },
   modalHeaderContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     position: 'relative',
-    marginTop: 10,
+    marginTop: verticalScale(10),
   },
   modalTitle: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontFamily: 'Ralway',
   },
   genderIconContainer: {
@@ -313,21 +314,21 @@ const styles = StyleSheet.create({
     left: 0,
   },
   imagesGrid: {
-    marginTop: 15,
+    marginTop: verticalScale(15),
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 5,
+    paddingHorizontal: scale(5),
   },
   imageItem: {
     width: '48%',
-    marginVertical: 3,
+    marginVertical: verticalScale(3),
     alignItems: 'center',
   },
   headerContainer: {
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 15,
+    marginLeft: scale(20),
+    marginRight: scale(20),
+    marginTop: verticalScale(15),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -335,23 +336,23 @@ const styles = StyleSheet.create({
 
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontFamily: 'Raleway-Medium',
   },
 
   title: {
     fontFamily: 'Ralway',
-    fontSize: 26,
+    fontSize: moderateScale(26),
     fontWeight: 'bold',
   },
 
   playersAddedContainer: {
-    marginTop: 60,
+    marginTop: verticalScale(60),
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: 30,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    marginTop: verticalScale(30),
+    paddingHorizontal: scale(20),
+    paddingBottom: verticalScale(20),
   },
 });

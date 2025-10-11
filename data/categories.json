@@ -1,5 +1,6 @@
 {
   "foods": {
+    "available": true,
     "en": {
       "content": [
         "Strogonoff",
@@ -134,6 +135,7 @@
     }
   },
   "animals": {
+    "available": true,
     "en": {
       "content": [
         "Lion",
@@ -260,6 +262,141 @@
         "Como você explicaria este animal para alguém que nunca o viu?",
         "Se você pudesse se transformar neste animal por um dia, o que faria?",
         "Que pessoa famosa combinaria melhor com a personalidade deste animal?"
+      ]
+    }
+  },
+  "halloween": {
+    "available": false,
+    "en": {
+      "content": [
+        "Strogonoff",
+        "Cabbage",
+        "Fried chicken",
+        "Vanilla ice cream",
+        "Corn with butter",
+        "Creme brulee",
+        "Rice",
+        "Beans",
+        "Vegan burger",
+        "Bacon burger",
+        "Milkshake",
+        "Brocolli Pizza",
+        "Caesar Salad",
+        "Carrot Soup",
+        "Beef Lasagna",
+        "Vegan Lasagna",
+        "French fries with cheddar",
+        "Sushi"
+      ],
+      "firstSetOfQuestions": [
+        "Does this food have a strong smell that you can recognize immediately?",
+        "Would this food still taste good if it were reheated the next day?",
+        "Is this something you'd probably share with friends or keep for yourself?",
+        "Could this food be made at home easily?",
+        "Does it have multiple colors?",
+        "Would it be considered a healthy choice?",
+        "Could it be eaten without utensils while walking?",
+        "Is it commonly served in restaurants?",
+        "Does it usually require cooking before eating?",
+        "Is it made from animal products?",
+        "Can it be stored for more than a week without spoiling?",
+        "Is it typically eaten as a main course?",
+        "Does it contain dairy?",
+        "Is it usually served in a bowl or plate?",
+        "Would it be considered a comfort food?",
+        "Does it contain bread or dough?",
+        "Is it more popular in summer than in winter?",
+        "Can it be spicy?",
+        "Does it have a crunchy texture?",
+        "Would children usually enjoy eating it?"
+      ],
+      "secondSetOfQuestions": [
+        "Would you usually eat this with a fork, spoon, or just your hands?",
+        "If this food were served at a fancy restaurant, how might it be presented?",
+        "What unusual ingredient could be added to this food to surprise someone?",
+        "If you could invent a new flavor for this food, what would it be?",
+        "Is it something you might find at a street food market? Describe the setting.",
+        "If this food were a holiday tradition, what would people do to celebrate it?",
+        "Is it more popular in a specific country? Which country and why?",
+        "What drink would pair perfectly with this food?",
+        "Would this food be better for a romantic date or a family gathering?",
+        "If this food were a music genre, which one would it be and why?",
+        "What superpower would you get after eating this food?",
+        "Describe the texture of this food without naming it.",
+        "What kind of event would this food be perfect for?",
+        "If you could only eat this food for a week, how would you prepare it differently each day?",
+        "What's the funniest or weirdest memory you have related to eating this food?",
+        "If this food could talk, what would its personality be like?",
+        "How would you describe this food to someone who has never seen it?",
+        "If you had to make this food from scratch, what would be the hardest step?",
+        "What celebrity would you invite to eat this food with you?",
+        "If this food were an animal, which one would it be?"
+      ]
+    },
+    "pt": {
+      "content": [
+        "Strogonoff",
+        "Repolho",
+        "Frango frito",
+        "Sorvete de baunilha",
+        "Milho com manteiga",
+        "Creme brulee",
+        "Arroz",
+        "Feijão",
+        "Hambúrguer vegano",
+        "Hambúrguer com bacon",
+        "Milkshake",
+        "Pizza de brócolis",
+        "Salada Caesar",
+        "Sopa de cenoura",
+        "Lasanha de carne",
+        "Lasanha vegana",
+        "Batata frita com cheddar",
+        "Sushi"
+      ],
+      "firstSetOfQuestions": [
+        "Esta comida tem um cheiro forte que você reconhece imediatamente?",
+        "Esta comida ainda teria bom gosto se fosse reaquecida no dia seguinte?",
+        "É algo que você provavelmente compartilharia com amigos ou guardaria para você?",
+        "Esta comida poderia ser feita em casa facilmente?",
+        "Tem múltiplas cores?",
+        "Seria considerada uma escolha saudável?",
+        "Poderia ser comida sem utensílios enquanto caminha?",
+        "É comumente servida em restaurantes?",
+        "Geralmente requer cozimento antes de comer?",
+        "É feita de produtos animais?",
+        "Pode ser armazenada por mais de uma semana sem estragar?",
+        "É tipicamente comida como prato principal?",
+        "Contém laticínios?",
+        "É geralmente servida em uma tigela ou prato?",
+        "Seria considerada uma comida de conforto?",
+        "Contém pão ou massa?",
+        "É mais popular no verão do que no inverno?",
+        "Pode ser picante?",
+        "Tem uma textura crocante?",
+        "As crianças geralmente gostam de comer isso?"
+      ],
+      "secondSetOfQuestions": [
+        "Você normalmente comeria isso com garfo, colher ou apenas com as mãos?",
+        "Se esta comida fosse servida em um restaurante chique, como seria apresentada?",
+        "Que ingrediente incomum poderia ser adicionado a esta comida para surpreender alguém?",
+        "Se você pudesse inventar um novo sabor para esta comida, qual seria?",
+        "É algo que você poderia encontrar em um mercado de comida de rua? Descreva o ambiente.",
+        "Se esta comida fosse uma tradição de feriado, o que as pessoas fariam para celebrá-la?",
+        "É mais popular em um país específico? Qual país e por quê?",
+        "Que bebida combinaria perfeitamente com esta comida?",
+        "Esta comida seria melhor para um encontro romântico ou uma reunião familiar?",
+        "Se esta comida fosse um gênero musical, qual seria e por quê?",
+        "Que superpoder você ganharia depois de comer esta comida?",
+        "Descreva a textura desta comida sem nomeá-la.",
+        "Para que tipo de evento esta comida seria perfeita?",
+        "Se você só pudesse comer esta comida por uma semana, como a prepararia de forma diferente a cada dia?",
+        "Qual é a memória mais engraçada ou estranha que você tem relacionada a comer esta comida?",
+        "Se esta comida pudesse falar, como seria sua personalidade?",
+        "Como você descreveria esta comida para alguém que nunca a viu?",
+        "Se você tivesse que fazer esta comida do zero, qual seria o passo mais difícil?",
+        "Que celebridade você convidaria para comer esta comida com você?",
+        "Se esta comida fosse um animal, qual seria?"
       ]
     }
   }

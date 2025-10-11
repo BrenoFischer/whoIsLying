@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import uuid from 'react-native-uuid';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
@@ -88,28 +89,28 @@ export default function NewPlayerInput({
 const styles = StyleSheet.create({
   container: {
     width: '90%',
-    maxWidth: 280,
+    maxWidth: scale(280),
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 2,
-    borderRadius: 10,
-    paddingHorizontal: 10,
+    borderWidth: scale(2),
+    borderRadius: moderateScale(10),
+    paddingHorizontal: scale(10),
     backgroundColor: colors.background[100],
   },
   textInput: {
     flex: 1,
-    paddingVertical: 18,
-    marginLeft: 15,
-    marginRight: 50,
-    fontSize: 15,
+    paddingVertical: verticalScale(18),
+    marginLeft: scale(15),
+    marginRight: scale(50),
+    fontSize: moderateScale(15),
     color: colors.white[100],
   },
   iconContainer: {
     position: 'absolute',
-    right: 10,
+    right: scale(10),
   },
   error: {
     color: colors.red[100],
-    marginTop: 10,
+    marginTop: verticalScale(10),
   },
 });

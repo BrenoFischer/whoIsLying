@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useContext, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function RevealImpostor() {
   const { t } = useTranslation();
@@ -75,7 +76,7 @@ export default function RevealImpostor() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 50,
+    marginTop: verticalScale(50),
     justifyContent: 'space-between',
     height: '90%',
   },
@@ -83,23 +84,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: moderateScale(20),
     color: colors.orange[200],
   },
   randomPhrase: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    paddingHorizontal: 25,
-    fontSize: 35,
+    paddingHorizontal: scale(25),
+    fontSize: moderateScale(35),
     color: colors.white[100],
   },
   playerCard: {
     backgroundColor: colors.white[100],
-    marginHorizontal: 30,
-    borderRadius: 10,
-    marginVertical: 20,
-    paddingTop: 20,
+    marginHorizontal: scale(30),
+    borderRadius: moderateScale(10),
+    marginVertical: verticalScale(20),
+    paddingTop: verticalScale(20),
   },
   playerCardHeaderContainer: {
     flexDirection: 'row',
@@ -107,10 +108,10 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.orange[200],
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
   },
   buttonContainer: {
     justifyContent: 'center',

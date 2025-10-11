@@ -15,6 +15,7 @@ import Character from '@/components/character';
 import Discussion from './discussion';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function RoundScreen() {
   const { game, nextRound, previousRound, getCurrentQuestion } =
@@ -51,24 +52,24 @@ export default function RoundScreen() {
           height: '100%',
         }}
       >
-        <View style={{ marginLeft: 15, marginRight: 15, marginTop: 20 }}>
+        <View style={{ marginLeft: scale(15), marginRight: scale(15), marginTop: verticalScale(20) }}>
           {game.currentRound !== 1 ? (
             <TouchableOpacity onPress={handlePreviousRound}>
               <Ionicons
                 name="arrow-back"
-                size={24}
+                size={moderateScale(24)}
                 color={colors.orange[200]}
               />
             </TouchableOpacity>
           ) : (
-            <View style={{ height: 24 }} />
+            <View style={{ height: verticalScale(24) }} />
           )}
 
           <View
             style={{
               alignItems: 'center',
               flexDirection: 'row',
-              marginVertical: 12,
+              marginVertical: verticalScale(12),
             }}
           >
             <Text style={styles.headerCategoryTitle}>
@@ -77,10 +78,10 @@ export default function RoundScreen() {
             <View
               style={{
                 backgroundColor: colors.orange[200],
-                width: 8,
-                height: 8,
+                width: scale(8),
+                height: verticalScale(8),
                 borderRadius: '50%',
-                marginHorizontal: 8,
+                marginHorizontal: scale(8),
               }}
             />
             <Text style={styles.headerCategoryTitle}>
@@ -114,17 +115,17 @@ export default function RoundScreen() {
 const styles = StyleSheet.create({
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontFamily: 'Raleway-Medium',
     color: colors.white[100],
     textAlign: 'center',
   },
   playerName: {
-    marginTop: 10,
-    marginBottom: 10,
-    paddingHorizontal: 15,
+    marginTop: verticalScale(10),
+    marginBottom: verticalScale(10),
+    paddingHorizontal: scale(15),
     fontFamily: 'Ralway',
-    fontSize: 28,
+    fontSize: moderateScale(28),
     fontWeight: 'bold',
     color: colors.white[100],
     textAlign: 'center',
@@ -133,18 +134,18 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   question: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     color: colors.white[100],
     fontFamily: 'Sigmar',
-    padding: 15,
+    padding: scale(15),
     textAlign: 'center',
     marginTop: "1%",
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 40,
-    left: 20,
-    right: 20,
+    bottom: verticalScale(40),
+    left: scale(20),
+    right: scale(20),
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -1,13 +1,15 @@
 import { colors } from '@/styles/colors';
 import { StyleSheet } from 'react-native';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export const styles = StyleSheet.create({
   buttonStyle: {
-    padding: "4%",
-    borderRadius: 4,
-    minWidth: 200,
+    paddingVertical: verticalScale(12),
+    paddingHorizontal: scale(20),
+    borderRadius: moderateScale(4),
+    minWidth: scale(200),
     maxWidth: '90%',
-    minHeight: 50,
+    minHeight: verticalScale(50),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -16,19 +18,19 @@ export const styles = StyleSheet.create({
   },
   primaryButtonText: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: colors.black[200],
     fontFamily: 'Raleway',
     fontWeight: 'bold',
   },
   secondaryButton: {
     backgroundColor: colors.white[100],
-    borderWidth: 3,
+    borderWidth: scale(3),
     borderColor: colors.orange[200],
   },
   secondaryButtonText: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: colors.black[200],
     fontFamily: 'Raleway',
     fontWeight: 'bold',
@@ -38,7 +40,7 @@ export const styles = StyleSheet.create({
   },
   disabledButtonText: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.gray[300],

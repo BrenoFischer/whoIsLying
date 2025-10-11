@@ -11,6 +11,7 @@ import { useAppReset } from '@/context/AppResetContext';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function EndOfMatches() {
   const navigation = useNavigation();
@@ -99,14 +100,14 @@ export default function EndOfMatches() {
       <CustomModal setModalVisible={setModalOpen} modalVisible={modalOpen}>
         <>
           <View>
-            <View style={{ marginBottom: 30 }}>
+            <View style={{ marginBottom: verticalScale(30) }}>
               <Text style={styles.titleInformation}>
                 {t('Do you want to:')}
               </Text>
             </View>
           </View>
           <Character mood="bothCharacter" />
-          <View style={{ gap: 40 }}>
+          <View style={{ gap: verticalScale(40) }}>
             <Button
               text={t('Play one more round')}
               onPress={handlePlayerOneMoreRound}
@@ -127,28 +128,28 @@ export default function EndOfMatches() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 100,
+    marginTop: verticalScale(100),
     height: '90%',
   },
   title: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: moderateScale(20),
     color: colors.orange[200],
   },
   titleInformation: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
   playerCard: {
     backgroundColor: colors.white[100],
-    marginHorizontal: 30,
-    borderRadius: 10,
-    marginVertical: 20,
-    paddingTop: 20,
+    marginHorizontal: scale(30),
+    borderRadius: moderateScale(10),
+    marginVertical: verticalScale(20),
+    paddingTop: verticalScale(20),
   },
   playerCardHeaderContainer: {
     flexDirection: 'row',
@@ -156,14 +157,14 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.orange[200],
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: verticalScale(60),
     left: 0,
     right: 0,
     justifyContent: 'center',

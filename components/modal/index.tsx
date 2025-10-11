@@ -1,6 +1,7 @@
 import { Alert, DimensionValue, Modal, StyleSheet, View } from 'react-native';
 import { colors } from '@/styles/colors';
 import { ReactNode } from 'react';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 interface ModalProps {
   modalVisible: boolean;
@@ -44,18 +45,18 @@ export default function CustomModal({
 
 const styles = StyleSheet.create({
   modalView: {
-    margin: 20,
+    margin: scale(20),
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: moderateScale(20),
+    padding: scale(35),
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: moderateScale(4),
     elevation: 5,
   },
 });

@@ -8,6 +8,7 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomModal from '@/components/modal';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/styles/colors';
@@ -43,7 +44,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
   const slides = [
     //Slide 1
     <View>
-      <View style={{marginBottom: 20, alignItems: "center"}}>
+      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
         <Character mood="slide1" />
       </View>
       <Text style={styles.subtitleBlack}>{t('All players except')}{' '}
@@ -57,7 +58,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 2
     <View>
-      <View style={{marginBottom: 20, alignItems: "center"}}>
+      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
         <Character mood="slide2" />
       </View>
       <Text style={styles.subtitleBlack}><Text style={styles.specialText}>{t('Questions')}</Text>{' '}
@@ -74,7 +75,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 3
     <View>
-      <View style={{marginBottom: 20, alignItems: "center"}}>
+      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
         <Character mood="slide3" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -93,7 +94,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 4
     <View>
-      <View style={{marginBottom: 20, alignItems: "center"}}>
+      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
         <Character mood="slide4" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -109,7 +110,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 5
     <View>
-      <View style={{marginBottom: 20, alignItems: "center"}}>
+      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
         <Character mood="slide5" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -126,7 +127,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 6
     <View>
-      <View style={{marginBottom: 20, alignItems: "center"}}>
+      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
         <Character mood="slide6" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -143,7 +144,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 7
     <View>
-      <View style={{marginBottom: 20, alignItems: "center"}}>
+      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
         <Character mood="slide7" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -162,7 +163,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
       <Text style={styles.subtitleBlack}>
         <Text style={styles.specialText}>9.3.</Text>{t("The impostor receives")}{' '}
         <Text style={styles.specialText}>+2{' '}{t('points')}{' '}</Text>{t('if correctly guessed the secret word')}.
-      </Text> 
+      </Text>
     </View>,
   ]
 
@@ -170,27 +171,33 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
     <CustomModal
       setModalVisible={setShowHowToPlay}
       modalVisible={showHowToPlay}
-      fixedHeight={"70%"}
+      fixedHeight="85%"
     >
         <View style={{ minWidth: "100%" }}>
-          <View style={{marginBottom: 20, alignSelf: "flex-end"}}>
+          <View style={{marginBottom: verticalScale(20), alignSelf: "flex-end"}}>
             <TouchableOpacity onPress={() => {setShowHowToPlay(false);}}>
-              <Ionicons name="close" size={28} color={colors.orange[200]} />
+              <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
         </View>
-        
-        {slides[slide]}
 
-        <View style={{position: "absolute", bottom: "5%",flexDirection: 'row', gap: 15}}>
+        <ScrollView
+          style={{ flex: 1, width: "100%" }}
+          contentContainerStyle={{ paddingBottom: verticalScale(60) }}
+          showsVerticalScrollIndicator={true}
+        >
+          {slides[slide]}
+        </ScrollView>
+
+        <View style={{position: "absolute", bottom: "2%",flexDirection: 'row', gap: scale(15)}}>
             <TouchableOpacity onPress={()=>{ handleChangeSlide(-1) }}>
-              <Ionicons name="arrow-back-outline" size={28} color={colors.orange[200]} />
+              <Ionicons name="arrow-back-outline" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
             <Text style={styles.titleInformation}>
               {slide + 1}/{totalSlides}
             </Text>
             <TouchableOpacity onPress={()=>{ handleChangeSlide(1) }}>
-              <Ionicons name="arrow-forward-outline" size={28} color={colors.orange[200]} />
+              <Ionicons name="arrow-forward-outline" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
     </CustomModal>
@@ -307,14 +314,14 @@ export default function SidebarMenu() {
             >
               <>
                 <View>
-                  <View style={{ marginBottom: 30 }}>
+                  <View style={{ marginBottom: verticalScale(30) }}>
                     <Text style={styles.titleInformation}>
                       {t('Do you want to:')}
                     </Text>
                   </View>
                 </View>
                 <Character mood="bothCharacter" />
-                <View style={{ gap: 40 }}>
+                <View style={{ gap: verticalScale(40) }}>
                   <Button
                     text={t('Start a fresh new game')}
                     onPress={handleStartNewGame}
@@ -336,28 +343,28 @@ export default function SidebarMenu() {
             >
               <>
                 <View>
-                  <View style={{marginBottom: 15, alignSelf: "flex-end"}}>
+                  <View style={{marginBottom: verticalScale(15), alignSelf: "flex-end"}}>
                     <TouchableOpacity onPress={() => {setLanguageModalOpen(false);}}>
-                      <Ionicons name="close" size={28} color={colors.orange[200]} />
+                      <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
                     </TouchableOpacity>
                   </View>
-                  <View style={{ marginBottom: 30 }}>
+                  <View style={{ marginBottom: verticalScale(30) }}>
                     <Text style={styles.titleInformation}>
-                      {language === 'en' ? 
+                      {language === 'en' ?
                         'Você deseja mudar o idioma?'
-                        : 
+                        :
                         'Do you want to change the language?'}
                     </Text>
                     <Text style={styles.altText}>
-                      {language === 'en' ? 
+                      {language === 'en' ?
                         'Note que isso irá iniciar um novo jogo para efetivar a mudança.'
-                        : 
+                        :
                         'Note that this will start a new game to be effective.'}
                     </Text>
                   </View>
                 </View>
                 <Character mood="bothCharacter" />
-                <View style={{ gap: 40 }}>
+                <View style={{ gap: verticalScale(40) }}>
                   <Button
                     text={language === 'en' ? 'Mudar idioma e iniciar novo jogo': 'Change language and start a new game'}
                     onPress={handleChangeLanguage}
@@ -382,7 +389,7 @@ export default function SidebarMenu() {
 
             <HowToPlay setShowHowToPlay={setHowToPlayModalOpen} showHowToPlay={howToPlayModalOpen} />
 
-            <View style={{ marginBottom: 150 }} />
+            <View style={{ marginBottom: verticalScale(150) }} />
           </ScrollView>
         </View>
       </Modal>
@@ -394,33 +401,33 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
-    top: 50,
-    right: 10,
+    top: verticalScale(50),
+    right: scale(10),
     zIndex: 100,
     backgroundColor: colors.background[100],
-    borderRadius: 20,
-    padding: 5,
+    borderRadius: moderateScale(20),
+    padding: scale(5),
   },
   languageContainer: {
-    marginVertical: 20,
+    marginVertical: verticalScale(20),
     alignItems: 'center',
   },
   languageLabel: {
     fontFamily: 'Raleway',
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: colors.white[100],
-    marginBottom: 10,
+    marginBottom: verticalScale(10),
   },
   languageButtons: {
     flexDirection: 'row',
-    gap: 10,
+    gap: scale(10),
   },
   langButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
+    paddingHorizontal: scale(15),
+    paddingVertical: verticalScale(8),
+    borderRadius: moderateScale(20),
+    borderWidth: scale(1),
     borderColor: colors.orange[200],
   },
   activeLangButton: {
@@ -428,7 +435,7 @@ const styles = StyleSheet.create({
   },
   langText: {
     fontFamily: 'Raleway',
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
@@ -444,42 +451,42 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   titleInformation: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
   altText: {
-    marginTop: 10,
+    marginTop: verticalScale(10),
     fontFamily: 'Raleway',
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   sidebar: {
     width: width,
     backgroundColor: colors.background[100],
-    padding: 40,
-    paddingTop: 80,
+    padding: scale(40),
+    paddingTop: verticalScale(80),
     elevation: 5,
   },
   menuItem: {
     fontFamily: 'Sigmar',
     color: colors.orange[200],
-    fontSize: 25,
-    marginVertical: 15,
+    fontSize: moderateScale(25),
+    marginVertical: verticalScale(15),
   },
   subtitle: {
     fontFamily: 'Raleway',
-    fontSize: 18,
+    fontSize: moderateScale(18),
     color: colors.white[100],
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
   },
   text: {
     fontFamily: 'Raleway',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: colors.white[100],
-    marginBottom: 5,
+    marginBottom: verticalScale(5),
   },
   specialText: {
     color: colors.orange[200],
@@ -487,8 +494,8 @@ const styles = StyleSheet.create({
   },
   subtitleBlack: {
     fontFamily: 'Raleway',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: colors.black[100],
-    marginBottom: 12,
+    marginBottom: verticalScale(12),
   },
 });

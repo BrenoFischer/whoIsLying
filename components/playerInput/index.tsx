@@ -7,6 +7,7 @@ import {
   Text,
 } from 'react-native';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
@@ -90,40 +91,40 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: moderateScale(20),
   },
   modalText: {
-    marginTop: 20,
+    marginTop: verticalScale(20),
     textAlign: 'center',
   },
   modalButtonsContainer: {
-    marginTop: 50,
+    marginTop: verticalScale(50),
     justifyContent: 'space-around',
     alignItems: 'center',
-    gap: 20,
+    gap: verticalScale(20),
   },
   container: {
     width: '90%',
-    maxWidth: 280,
+    maxWidth: scale(280),
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 2,
-    borderRadius: 10,
-    marginTop: 10,
-    paddingHorizontal: 10,
+    borderWidth: scale(2),
+    borderRadius: moderateScale(10),
+    marginTop: verticalScale(10),
+    paddingHorizontal: scale(10),
     backgroundColor: colors.background[100],
   },
   textInput: {
     flex: 1,
-    paddingVertical: 18,
-    marginLeft: 15,
-    marginRight: 50,
-    fontSize: 15,
+    paddingVertical: verticalScale(18),
+    marginLeft: scale(15),
+    marginRight: scale(50),
+    fontSize: moderateScale(15),
     color: colors.white[100],
   },
   iconContainer: {
     position: 'absolute',
-    right: 10,
+    right: scale(10),
   },
   errorContainer: {
     backgroundColor: 'red',

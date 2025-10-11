@@ -1,4 +1,5 @@
 import { Image, StyleSheet } from 'react-native';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 interface CharacterProps {
   mood: string;
@@ -46,8 +47,8 @@ export default function Character({
       style={[
         styles.image,
         flip && { transform: [{ scaleX: -1 }] },
-        size === 'small' && { height: 120, width: 120 },
-        size === 'medium' && { height: 160, width: 160 }
+        size === 'small' && { height: scale(120), width: scale(120) },
+        size === 'medium' && { height: scale(150), width: scale(150) }
       ]}
       resizeMode="cover"
     />
@@ -56,7 +57,7 @@ export default function Character({
 
 const styles = StyleSheet.create({
   image: {
-    height: 200,
-    width: 200,
+    height: scale(180),
+    width: scale(180),
   },
 });

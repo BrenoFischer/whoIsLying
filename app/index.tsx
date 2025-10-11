@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, Text } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function SkillUpScreen() {
   const { t } = useTranslation();
@@ -37,32 +38,32 @@ const styles = StyleSheet.create({
   },
 
   logoContainer: {
-    height: 150,
-    marginTop: 80,
+    height: verticalScale(150),
+    marginTop: verticalScale(80),
   },
 
   icon: {
     flex: 1,
-    width: 80,
-    height: 80,
+    width: scale(80),
+    height: scale(80),
     resizeMode: 'contain',
   },
 
   title: {
     fontFamily: 'Sigmar',
     fontWeight: 'bold',
-    fontSize: 28,
+    fontSize: moderateScale(28),
     color: colors.orange[200],
     textTransform: 'uppercase',
     textAlign: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: scale(20),
   },
 
   buttonContainer: {
     position: 'absolute',
-    bottom: 80,
-    left: 20,
-    right: 20,
+    bottom: verticalScale(80),
+    left: scale(20),
+    right: scale(20),
     justifyContent: 'center',
     alignItems: 'center',
   },

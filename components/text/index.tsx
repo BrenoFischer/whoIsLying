@@ -1,6 +1,7 @@
 import { colors } from '@/styles/colors';
 import React from 'react';
 import { Text, StyleSheet, TextProps, TextStyle } from 'react-native';
+import { moderateScale } from 'react-native-size-matters';
 
 type Variant = 'body' | 'title' | 'subtitle' | 'caption' | 'error';
 
@@ -16,10 +17,10 @@ export default function CustomText({
   variant = 'body',
   ...props
 }: CustomTextProps) {
-  let fontSize = 14;
+  let fontSize = moderateScale(14);
 
   if (variant === 'title') {
-    fontSize = 30;
+    fontSize = moderateScale(30);
   }
 
   return (

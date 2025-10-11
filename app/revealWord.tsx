@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import { useContext, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
@@ -69,33 +70,33 @@ export default function RevealWord() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 50,
+    marginTop: verticalScale(50),
   },
   wordVotedContainer: {
-    paddingVertical: 30,
+    paddingVertical: verticalScale(30),
     backgroundColor: colors.orange[200],
   },
   title: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: moderateScale(20),
     color: colors.white[100],
   },
   secretWordContainer: {
     marginTop: "5%",
   },
   word: {
-    marginTop: 10,
+    marginTop: verticalScale(10),
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 35,
+    fontSize: moderateScale(35),
     color: colors.black[100],
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 40,
+    bottom: verticalScale(40),
     left: 0,
     right: 0,
     justifyContent: 'center',

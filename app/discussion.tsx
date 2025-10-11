@@ -9,6 +9,7 @@ import { useContext } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function Discussion() {
   const { game, getCurrentQuestion } = useContext(GameContext);
@@ -58,15 +59,15 @@ export default function Discussion() {
           height: '100%',
         }}
       >
-        <Elipse left={-20} />
+        <Elipse left={scale(-20)} />
         <View
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            marginTop: 60,
+            marginTop: verticalScale(60),
           }}
         >
-          <View style={{ marginBottom: 30 }}>
+          <View style={{ marginBottom: verticalScale(30) }}>
             <Text style={styles.title}>{t('Discussion time!')}</Text>
             <Text style={styles.subtitle}>
               {t(
@@ -117,45 +118,45 @@ export default function Discussion() {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 30,
-    maxWidth: 250,
+    fontSize: moderateScale(30),
+    maxWidth: scale(250),
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontFamily: 'Raleway-Medium',
-    maxWidth: 250,
+    maxWidth: scale(250),
   },
   table: {
-    gap: 10,
-    padding: 20,
-    marginHorizontal: 25,
-    marginBottom: 200,
+    gap: verticalScale(10),
+    padding: scale(20),
+    marginHorizontal: scale(25),
+    marginBottom: verticalScale(200),
     backgroundColor: colors.white[100],
-    borderRadius: 10,
+    borderRadius: moderateScale(10),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.25,
-    shadowRadius: 8,
+    shadowRadius: moderateScale(8),
     elevation: 5,
   },
   playerName: {
-    fontSize: 17,
+    fontSize: moderateScale(17),
     fontFamily: 'Sigmar',
     color: colors.orange[200],
   },
   question: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontFamily: 'Raleway-Medium',
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: verticalScale(60),
     left: 0,
     right: 0,
     justifyContent: 'center',

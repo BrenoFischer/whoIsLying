@@ -17,6 +17,7 @@ import { GameContext } from '@/context/GameContext';
 import { router } from 'expo-router';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function DefineQuantityOfMatches() {
   const [selectQuantity, setSelectedQuantity] = useState(1);
@@ -45,7 +46,7 @@ export default function DefineQuantityOfMatches() {
           overflow: 'hidden',
         }}
       >
-        <Elipse top={-150} />
+        <Elipse top={verticalScale(-150)} />
         <ScrollView style={styles.container}>
           <View style={styles.headerContainer}>
             <View>
@@ -62,13 +63,13 @@ export default function DefineQuantityOfMatches() {
           </View>
           <View style={styles.quantityContainer}>
             <TouchableOpacity onPress={() => handleChangeQuantity(-1)}>
-              <Entypo name="minus" size={40} color={colors.orange[200]} />
+              <Entypo name="minus" size={moderateScale(40)} color={colors.orange[200]} />
             </TouchableOpacity>
             <View style={styles.quantityCardContainer}>
               <Text style={styles.quantity}>{selectQuantity}</Text>
             </View>
             <TouchableOpacity onPress={() => handleChangeQuantity(1)}>
-              <FontAwesome6 name="add" size={40} color={colors.orange[200]} />
+              <FontAwesome6 name="add" size={moderateScale(40)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -85,61 +86,61 @@ export default function DefineQuantityOfMatches() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 30,
+    paddingVertical: verticalScale(30),
     textAlign: 'center',
     maxHeight: '84%',
     position: "relative"
   },
   headerContainer: {
-    marginLeft: 20,
+    marginLeft: scale(20),
   },
   charContainer: {
     position: "absolute",
     top: 0,
-    right: -30
+    right: scale(-30)
   },
   pageTitle: {
     fontFamily: 'Ralway',
-    fontSize: 26,
+    fontSize: moderateScale(26),
     fontWeight: 'bold',
     maxWidth: '50%',
-    marginVertical: 10,
+    marginVertical: verticalScale(10),
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     fontFamily: 'Raleway-Medium',
     maxWidth: '50%',
   },
   quantityContainer: {
-    marginTop: 60,
+    marginTop: verticalScale(60),
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 20,
-    paddingHorizontal: 20,
+    gap: scale(20),
+    paddingHorizontal: scale(20),
   },
   quantityCardContainer: {
-    width: 120,
-    height: 160,
-    paddingVertical: 18,
+    width: scale(120),
+    height: verticalScale(160),
+    paddingVertical: verticalScale(18),
     backgroundColor: colors.orange[100],
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
-    borderBottomWidth: 7,
-    borderEndWidth: 7,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
+    borderRadius: moderateScale(20),
+    borderBottomWidth: scale(7),
+    borderEndWidth: scale(7),
+    borderTopWidth: scale(4),
+    borderLeftWidth: scale(4),
     borderColor: 'white',
   },
   quantity: {
-    fontSize: 26,
+    fontSize: moderateScale(26),
     fontWeight: 'bold',
   },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: scale(20),
+    paddingBottom: verticalScale(20),
   },
 });

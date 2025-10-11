@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import { useContext } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 type VotesByPlayerType = {
   player: Player;
@@ -16,7 +17,7 @@ type VotesByPlayerType = {
 };
 
 export default function VotesResults() {
-  const { game, updatePointsToPlayer, updatePlayers } = useContext(GameContext);
+  const { game } = useContext(GameContext);
   const { t } = useTranslation();
 
   const votesByPlayer: VotesByPlayerType[] = game.players.map(p => {
@@ -48,7 +49,7 @@ export default function VotesResults() {
 
   function PlayerCard(vote: VotesByPlayerType) {
     return (
-      <View style={{ flexDirection: 'row', gap: "1%" }}>
+      <View style={{ flexDirection: 'row', gap: scale(4) }}>
         <Character mood={vote.player.character} />
         <View style={{ justifyContent: 'center', maxWidth: "40%" }}>
           <Text style={styles.allPlayersName}>{vote.player.name}</Text>
@@ -56,7 +57,7 @@ export default function VotesResults() {
             {t('Votes')}: {vote.votes}
           </Text>
           {vote.votes > 0 && (
-            <View style={{ maxWidth: 140 }}>
+            <View style={{ maxWidth: scale(140) }}>
               <Text style={styles.allPlayersInfoVotes}>
                 (
                 {vote.playersThatVoted.map((p, idx) => {
@@ -90,7 +91,7 @@ export default function VotesResults() {
           height: '100%',
         }}
       >
-        <ScrollView style={{ marginBottom: 20 }}>
+        <ScrollView style={{ marginBottom: verticalScale(20) }}>
           <View style={styles.mostVotedPlayerContainer}>
             <Text style={styles.mostVotedPlayerText}>
               {isTied
@@ -110,7 +111,7 @@ export default function VotesResults() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexWrap: 'wrap',
-                        maxWidth: 150,
+                        maxWidth: scale(150),
                       }}
                     >
                       <Text style={styles.votesInfo}>
@@ -147,9 +148,11 @@ export default function VotesResults() {
             })}
           </View>
           <Text style={styles.allPlayersText}>{t('All players')}:</Text>
-          {votesByPlayer.map(vote => {
-            return <PlayerCard {...vote} key={vote.player.id} />;
-          })}
+          <View style={styles.allPlayersContainer}>
+            {votesByPlayer.map(vote => {
+              return <PlayerCard {...vote} key={vote.player.id} />;
+            })}
+          </View>
         </ScrollView>
         <View style={styles.buttonContainer}>
           <Button text={t('Reveal impostor')} onPress={handleContinue} />
@@ -161,15 +164,15 @@ export default function VotesResults() {
 
 const styles = StyleSheet.create({
   mostVotedPlayerContainer: {
-    marginTop: 40,
-    marginBottom: 50,
+    marginTop: verticalScale(40),
+    marginBottom: verticalScale(50),
   },
   playerCard: {
     backgroundColor: colors.orange[200],
-    marginHorizontal: 13,
-    borderRadius: 10,
-    marginVertical: 20,
-    paddingTop: 20,
+    marginHorizontal: scale(13),
+    borderRadius: moderateScale(10),
+    marginVertical: verticalScale(20),
+    paddingTop: verticalScale(20),
   },
   headerContainer: {
     flexDirection: 'row',
@@ -179,49 +182,53 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: moderateScale(20),
     color: colors.orange[200],
+    marginHorizontal: scale(4),
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: 40,
+    fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.white[100],
   },
   votesInfo: {
     fontFamily: 'Raleway-Medium',
-    fontSize: 18,
+    fontSize: moderateScale(18),
     color: colors.black[200],
+  },
+  allPlayersContainer: {
+    gap: verticalScale(10),
   },
   allPlayersText: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: moderateScale(20),
     color: colors.orange[200],
-    marginBottom: 50,
+    marginBottom: verticalScale(50),
   },
   allPlayersName: {
     color: colors.orange[200],
     fontFamily: 'Ralway',
-    fontSize: 30,
+    fontSize: moderateScale(30),
     fontWeight: 'bold',
   },
   allPlayersInfo: {
     color: colors.white[100],
     fontFamily: 'Ralway',
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: 'bold',
   },
   allPlayersInfoVotes: {
     color: colors.orange[200],
     fontFamily: 'Ralway',
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: 'bold',
   },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: verticalScale(30),
   },
 });

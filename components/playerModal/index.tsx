@@ -1,4 +1,5 @@
 import { Alert, Modal, StyleSheet, Text, View } from 'react-native';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Character from '../character';
 import Button from '../button';
 import { colors } from '@/styles/colors';
@@ -68,27 +69,27 @@ export default function PlayerModal({
 const styles = StyleSheet.create({
   modalPlayerName: {
     fontFamily: 'Ralway',
-    fontSize: 25,
+    fontSize: moderateScale(25),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   modalView: {
-    margin: 20,
+    margin: scale(20),
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: moderateScale(20),
+    padding: scale(35),
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: moderateScale(4),
     elevation: 5,
   },
   titleInformation: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],

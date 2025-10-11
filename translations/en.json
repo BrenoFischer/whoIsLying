@@ -58,6 +58,8 @@
   "Continue with this quantity": "Continue with this quantity",
   "foods": "Foods",
   "animals": "Animals",
+  "foodsDescription": "Each player - except one - gets a food as their secret word",
+  "animalsDescription": "Each player  - except one - receives an animal as their secret word",
   "Game": "Game",
   "of": "of",
   "Add": "Add",

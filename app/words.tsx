@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function Words() {
   const [modalVisible, setModalVisible] = useState(true);
@@ -102,7 +103,7 @@ export default function Words() {
           {
             backgroundColor: colors.background[100],
             overflow: 'hidden',
-            height: '100%',
+            flex: 1,
           },
           modalVisible && { opacity: 0.1 },
         ]}
@@ -113,21 +114,23 @@ export default function Words() {
           setModalVisible={setModalVisible}
         />
         <View style={styles.topContainer}>
-          <Character mood={impostorPlayer.character} />
+          <Character mood={impostorPlayer.character} size='medium' />
         </View>
-        <ScrollView style={styles.table}>
-          <Text style={styles.playerNameOnTable}>
-            {impostorPlayer.name},{' '}
-            <Text style={styles.tableText}>
-              {t('vote on the secret word you think is the correct one:')}
+        <View style={styles.tableContainer}>
+          <ScrollView style={styles.table}>
+            <Text style={styles.playerNameOnTable}>
+              {impostorPlayer.name},{' '}
+              <Text style={styles.tableText}>
+                {t('vote on the secret word you think is the correct one:')}
+              </Text>
             </Text>
-          </Text>
-          <View style={styles.allWordsContainer}>
-            {allWords.map(w => {
-              return <WordVoteOption key={w} word={w} />;
-            })}
-          </View>
-        </ScrollView>
+            <View style={styles.allWordsContainer}>
+              {allWords.map(w => {
+                return <WordVoteOption key={w} word={w} />;
+              })}
+            </View>
+          </ScrollView>
+        </View>
         <View style={styles.buttonContainer}>
           <Button
             text={t('Vote!')}
@@ -142,60 +145,62 @@ export default function Words() {
 
 const styles = StyleSheet.create({
   topContainer: {
-    marginTop: 40,
+    marginTop: verticalScale(40),
   },
   tableText: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontFamily: 'Raleway',
     color: colors.black[100],
   },
   playerNameOnTable: {
     fontFamily: 'Ralway',
-    fontSize: 24,
+    fontSize: moderateScale(24),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
+  tableContainer: {
+    maxHeight: '60%',
+    marginHorizontal: scale(15),
+    flexShrink: 1,
+  },
   table: {
-    padding: 15,
-    marginHorizontal: 15,
-    maxHeight: '45%',
+    padding: scale(15),
     backgroundColor: colors.white[100],
-    borderRadius: 10,
+    borderRadius: moderateScale(10),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.25,
-    shadowRadius: 8,
+    shadowRadius: moderateScale(8),
     elevation: 5,
   },
   allWordsContainer: {
-    marginBottom: "15%"
+    marginVertical: verticalScale(10),
+    gap: verticalScale(10),
   },
   wordContainer: {
     width: "100%",
     alignItems: 'center',
-    borderWidth: 2,
-    borderRadius: 10,
+    borderWidth: scale(2),
+    borderRadius: moderateScale(10),
     borderColor: colors.orange[200],
-    marginTop: 15,
-    paddingHorizontal: 10,
-    paddingVertical: 9,
+    paddingHorizontal: scale(10),
+    paddingVertical: verticalScale(9),
     backgroundColor: colors.white[100],
   },
   wordOption: {
     fontFamily: 'Ralway',
-    fontSize: 15,
+    fontSize: moderateScale(15),
     color: colors.black[200],
   },
   buttonContainer: {
-    position: 'absolute',
-    bottom: 40,
-    left: 0,
-    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 100,
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
   },
 });
