@@ -75,7 +75,7 @@ export default function Discussion() {
               )}
             </Text>
           </View>
-          <Character mood="bothCharacter" size='medium' />
+          <Character mood="bothCharacter" size='small' />
         </View>
         <ScrollView>
           <View style={styles.table}>

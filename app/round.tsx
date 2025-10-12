@@ -11,6 +11,7 @@ import Button from '@/components/button';
 import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Character from '@/components/character';
 import Discussion from './discussion';
 import WithSidebar from '@/components/withSideBar';
@@ -52,19 +53,7 @@ export default function RoundScreen() {
           height: '100%',
         }}
       >
-        <View style={{ marginLeft: scale(15), marginRight: scale(15), marginTop: verticalScale(20) }}>
-          {game.currentRound !== 1 ? (
-            <TouchableOpacity onPress={handlePreviousRound}>
-              <Ionicons
-                name="arrow-back"
-                size={moderateScale(24)}
-                color={colors.orange[200]}
-              />
-            </TouchableOpacity>
-          ) : (
-            <View style={{ height: verticalScale(24) }} />
-          )}
-
+        <View style={{ marginLeft: scale(15), marginRight: scale(15), marginTop: verticalScale(30) }}>
           <View
             style={{
               alignItems: 'center',
@@ -106,6 +95,19 @@ export default function RoundScreen() {
         <Text style={styles.question}>{question}</Text>
         <View style={styles.buttonContainer}>
           <Button text={t('Continue')} onPress={handleNextRound} />
+          <View style={styles.arrowButtonContainer}>
+            {game.currentRound !== 1 ? (
+              <TouchableOpacity onPress={handlePreviousRound}>
+                <AntDesign
+                  name="left"
+                  size={moderateScale(24)}
+                  color={colors.orange[200]}
+                />
+              </TouchableOpacity>
+            ) : (
+              <View style={{ height: verticalScale(24) }} />
+            )}
+          </View>
         </View>
       </SafeAreaView>
     </WithSidebar>
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Sigmar',
     padding: scale(15),
     textAlign: 'center',
-    marginTop: "1%",
+    marginTop: scale(50),
   },
   buttonContainer: {
     position: 'absolute',
@@ -149,4 +151,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  arrowButtonContainer: {
+    position: 'absolute',
+    left: scale(5)
+  }
 });

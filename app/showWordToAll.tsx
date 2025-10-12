@@ -75,7 +75,7 @@ export default function ShowWordToAll() {
           modalVisible && { opacity: 0.1 },
         ]}
       >
-        <Elipse top={verticalScale(-60)} left={scale(-30)} />
+        <Elipse top={verticalScale(-100)} left={scale(-30)} />
         <View
           style={{
             alignItems: 'center',

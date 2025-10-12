@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginLeft: scale(20),
+    marginTop: scale(35),
   },
   charContainer: {
     position: "absolute",
