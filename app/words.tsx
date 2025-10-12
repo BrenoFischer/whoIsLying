@@ -84,7 +84,7 @@ export default function Words() {
   const handleContinue = () => {
     setSelectedWord(newSelectedWord);
     setAllWords([]);
-    router.push('/revealWord');
+    router.replace('/revealWord');
   };
 
   useEffect(() => {

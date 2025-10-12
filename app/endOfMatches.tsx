@@ -91,7 +91,7 @@ export default function EndOfMatches() {
         ) : (
           <Text style={styles.title}>{t('The grand winner is!')}</Text>
         )}
-        <ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           {allWinners.map(p => {
             return <PlayerCard player={p} key={p.id} />;
           })}
@@ -127,8 +127,11 @@ export default function EndOfMatches() {
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: verticalScale(120),
+  },
   headerContainer: {
-    marginTop: verticalScale(100),
+    marginTop: verticalScale(50),
     height: '90%',
   },
   title: {
@@ -164,10 +167,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(60),
+    bottom: verticalScale(20),
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(20),
+    paddingBottom: verticalScale(20),
+    backgroundColor: colors.background[100],
   },
 });

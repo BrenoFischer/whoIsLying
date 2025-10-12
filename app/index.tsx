@@ -21,7 +21,7 @@ export default function SkillUpScreen() {
       <View style={styles.buttonContainer}>
         <Button
           text={t('New game')}
-          onPress={() => router.navigate('/defineQuantityOfMatches')}
+          onPress={() => router.replace('/defineQuantityOfMatches')}
         />
       </View>
     </View>

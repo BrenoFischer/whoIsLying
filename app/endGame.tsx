@@ -55,10 +55,10 @@ export default function EndGame() {
     const currentMatch = game.currentMatch;
 
     if (currentMatch >= game.maximumMatches) {
-      router.navigate('/endOfMatches');
+      router.replace('/endOfMatches');
     } else {
       addNewMatch();
-      router.navigate('/selectCategory');
+      router.replace('/selectCategory');
     }
   };
 
@@ -70,7 +70,7 @@ export default function EndGame() {
         height: '100%',
       }}
     >
-      <ScrollView style={{ marginBottom: verticalScale(120) }}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>{t('Scores')}:</Text>
         {sortedWinningPlayers.map((p, idx) => {
           return <PlayerWithScore key={p.id} player={p} index={idx} />;
@@ -84,6 +84,9 @@ export default function EndGame() {
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: verticalScale(120),
+  },
   title: {
     textAlign: 'center',
     fontFamily: 'Raleway',
@@ -132,10 +135,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(40),
+    bottom: verticalScale(20),
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(20),
+    paddingBottom: verticalScale(20),
+    backgroundColor: colors.background[100],
   },
 });

@@ -47,7 +47,7 @@ export default function DefineQuantityOfMatches() {
         }}
       >
         <Elipse top={verticalScale(-150)} />
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
           <View style={styles.headerContainer}>
             <View>
               <Text style={styles.pageTitle}>
@@ -72,7 +72,7 @@ export default function DefineQuantityOfMatches() {
               <FontAwesome6 name="add" size={moderateScale(40)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
         <View style={styles.buttonContainer}>
           <Button
             text={t('Continue with this quantity')}
@@ -139,9 +139,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: verticalScale(60),
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingBottom: verticalScale(20),
   },
 });

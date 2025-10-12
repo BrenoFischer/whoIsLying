@@ -18,6 +18,7 @@ import PlayerModal from '@/components/playerModal';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import Dot from '@/components/dot';
 
 export default function ShowWordToAll() {
   const { game, showWordToNextPlayer, getCurrentWord } =
@@ -59,7 +60,7 @@ export default function ShowWordToAll() {
       setDisplayWord('');
       setDisplaySubtitle('');
       setModalVisible(true);
-      router.navigate('/showWordToAll');
+      router.replace('/showWordToAll');
     }
   }
 
@@ -87,25 +88,9 @@ export default function ShowWordToAll() {
           }}
         >
           <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
-          <View
-            style={{
-              backgroundColor: colors.white[100],
-              width: scale(8),
-              height: verticalScale(8),
-              borderRadius: '50%',
-              marginHorizontal: scale(8),
-            }}
-          />
+          <Dot color={colors.white[100]} />
           <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
-          <View
-            style={{
-              backgroundColor: colors.white[100],
-              width: scale(8),
-              height: verticalScale(8),
-              borderRadius: '50%',
-              marginHorizontal: scale(8),
-            }}
-          />
+          <Dot color={colors.white[100]} />
           <Text style={styles.headerCategoryTitle}>
             {t('Player')} {game.showingWordToPlayer + 1} {t('of')}{' '}
             {game.players.length}

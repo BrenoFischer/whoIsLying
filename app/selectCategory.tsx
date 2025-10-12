@@ -43,7 +43,7 @@ export default function SelectCategory() {
 
   const handleContinueWithSelectedCategory = () => {
     setGameWord(selectedCategory, language);
-    router.replace('/createGame');
+    router.push('/createGame');
   };
 
   const handleCarouselIndexChange = (index: number) => {
@@ -110,13 +110,6 @@ export default function SelectCategory() {
         <View style={styles.container}>
           <View style={styles.headerContainer}>
             <View>
-              <TouchableOpacity
-                onPress={() => {
-                  router.back();
-                }}
-              >
-                <Ionicons name="arrow-back" size={24} color="black" />
-              </TouchableOpacity>
               <Text style={styles.pageTitle}>{t('Categories')}</Text>
               <Text style={styles.subtitle}>
                 {t('Questions will be based on the selected category')}

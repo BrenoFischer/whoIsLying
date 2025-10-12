@@ -20,7 +20,7 @@ export default function RevealWord() {
     //if impostor got correct the secret word, it obtains 2 points
     checkVoteForSecretWord();
 
-    router.navigate('/endGame');
+    router.replace('/endGame');
   };
 
   return (

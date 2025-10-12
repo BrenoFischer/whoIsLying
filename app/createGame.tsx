@@ -23,7 +23,8 @@ import Character from '@/components/character';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import CustomModal from '@/components/modal';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Dot from '@/components/dot';
 
 const MAX_PLAYERS = 10;
 
@@ -151,8 +152,8 @@ export default function CreateGame() {
           height: '100%',
         }}
       >
-        <Elipse top={-30} />
-        <ScrollView>
+        <Elipse top={-80} />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.container}>
             <View style={styles.headerContainer}>
               <View>
@@ -160,19 +161,36 @@ export default function CreateGame() {
                   style={{
                     alignItems: 'center',
                     flexDirection: 'row',
-                    marginVertical: verticalScale(12),
+                    marginBottom: verticalScale(20),
+                    gap: scale(5),
                   }}
                 >
-                  <Text style={styles.headerCategoryTitle}>
-                    {t('Game')} {game.currentMatch} {t('of')}{' '}
-                    {game.maximumMatches}
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.back();
+                    }}
+                  >
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                  </TouchableOpacity>
+                  <View>
+                    <Text style={styles.headerCategoryTitle}>
+                      {t('Game')} {game.currentMatch} {t('of')}{' '}
+                      {game.maximumMatches}
+                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                      <Text style={styles.headerCategoryTitle}>Category</Text>
+                      <Dot color={colors.white[100]} />
+                      <Text style={styles.headerCategoryTitle}>{game.category}</Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={{ marginTop: verticalScale(10) }}>
+                  <Text style={styles.title}>{t('Add')}</Text>
+                  <Text style={styles.title}>{t('players')}</Text>
+                  <Text style={styles.title}>
+                    (3 {t('to')} {MAX_PLAYERS})
                   </Text>
                 </View>
-                <Text style={styles.title}>{t('Add')}</Text>
-                <Text style={styles.title}>{t('players')}</Text>
-                <Text style={styles.title}>
-                  (3 {t('to')} {MAX_PLAYERS})
-                </Text>
               </View>
               <View>
                 <CustomModal
@@ -216,33 +234,33 @@ export default function CreateGame() {
                 </CustomModal>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
                     alignItems: 'center',
+                    gap: verticalScale(8),
                   }}
                 >
-                  <TouchableOpacity onPress={handleChangeImage}>
+                  <TouchableOpacity
+                    onPress={handleChangeImage}
+                    style={styles.changeCharacterButton}
+                  >
                     <MaterialCommunityIcons
-                      name="image-edit"
-                      size={35}
-                      color={colors.black[100]}
+                      name="shuffle-variant"
+                      size={moderateScale(24)}
+                      color={colors.background[100]}
+                    />
+                    <Text style={styles.changeCharacterText}>
+                      {t('Change')}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleChangeImage}>
+                    <Character
+                      mood={
+                        availableImages.length > 0
+                          ? availableImages[currentImageIndex]
+                          : imagesArray[0]
+                      }
                     />
                   </TouchableOpacity>
-                  <Text
-                    style={{
-                      fontSize: moderateScale(16),
-                      color: colors.white[100],
-                      fontWeight: 'bold',
-                    }}
-                  ></Text>
                 </View>
-                <Character
-                  mood={
-                    availableImages.length > 0
-                      ? availableImages[currentImageIndex]
-                      : imagesArray[0]
-                  }
-                />
               </View>
             </View>
             <View style={{ alignItems: 'center' }}>
@@ -273,25 +291,28 @@ export default function CreateGame() {
                 />
               ))}
             </View>
-            <View style={styles.buttonContainer}>
-              {notAvailableToContinue ? (
-                <Button
-                  text={t('Create game')}
-                  onPress={handleCreateGame}
-                  variants="disabled"
-                />
-              ) : (
-                <Button text={t('Create game')} onPress={handleCreateGame} />
-              )}
-            </View>
           </View>
         </ScrollView>
+        <View style={styles.buttonContainer}>
+          {notAvailableToContinue ? (
+            <Button
+              text={t('Create game')}
+              onPress={handleCreateGame}
+              variants="disabled"
+            />
+          ) : (
+            <Button text={t('Create game')} onPress={handleCreateGame} />
+          )}
+        </View>
       </SafeAreaView>
     </WithSidebar>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: verticalScale(120),
+  },
   container: {
     marginTop: verticalScale(20),
   },
@@ -328,7 +349,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginLeft: scale(20),
     marginRight: scale(20),
-    marginTop: verticalScale(15),
+    marginTop: verticalScale(30),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -350,9 +371,32 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(60),
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: verticalScale(20),
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: verticalScale(30),
     paddingHorizontal: scale(20),
+    paddingTop: verticalScale(20),
     paddingBottom: verticalScale(20),
+    backgroundColor: colors.background[100],
+  },
+  changeCharacterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(5),
+    paddingHorizontal: scale(6),
+    paddingVertical: verticalScale(2),
+    backgroundColor: colors.orange[200],
+    borderRadius: moderateScale(20),
+    borderWidth: scale(2),
+    borderColor: colors.background[100],
+  },
+  changeCharacterText: {
+    fontSize: moderateScale(12),
+    fontFamily: 'Raleway',
+    fontWeight: "bold",
+    color: colors.background[100],
   },
 });

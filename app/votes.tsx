@@ -20,6 +20,7 @@ import PlayerModal from '@/components/playerModal';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import Dot from '@/components/dot';
 
 export default function Votes() {
   const { game, addVote } = useContext(GameContext);
@@ -105,15 +106,7 @@ export default function Votes() {
           }}
         >
           <Text style={styles.headerCategoryTitle}>{t('Vote')}</Text>
-          <View
-            style={{
-              backgroundColor: colors.white[100],
-              width: scale(8),
-              height: verticalScale(8),
-              borderRadius: '50%',
-              marginHorizontal: scale(8),
-            }}
-          />
+          <Dot color={colors.white[100]} />
           <Text style={styles.headerCategoryTitle}>
             {t('Player')} {playerIndex + 1} {t('of')} {players.length}
           </Text>

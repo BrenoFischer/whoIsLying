@@ -17,6 +17,7 @@ import Discussion from './discussion';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import Dot from '@/components/dot';
 
 export default function RoundScreen() {
   const { game, nextRound, previousRound, getCurrentQuestion } =
@@ -36,12 +37,10 @@ export default function RoundScreen() {
 
   const handleNextRound = () => {
     nextRound();
-    router.navigate('/round');
   };
 
   const handlePreviousRound = () => {
     previousRound();
-    router.navigate('/round');
   };
 
   return (
@@ -64,18 +63,16 @@ export default function RoundScreen() {
             <Text style={styles.headerCategoryTitle}>
               {t('Round')} {game.currentRound} {t('of')} {totalRounds}
             </Text>
-            <View
-              style={{
-                backgroundColor: colors.orange[200],
-                width: scale(8),
-                height: verticalScale(8),
-                borderRadius: '50%',
-                marginHorizontal: scale(8),
-              }}
-            />
-            <Text style={styles.headerCategoryTitle}>
-              {t('Category')}: {t(game.category || '')}
-            </Text>
+            <Dot color={colors.orange[200]} />
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.headerCategoryTitle}>
+                {t('Category')}
+              </Text>
+              <Dot color={colors.orange[200]} />
+              <Text style={styles.headerCategoryTitle}>
+                {t(game.category || '')}
+              </Text>
+            </View>
           </View>
         </View>
 

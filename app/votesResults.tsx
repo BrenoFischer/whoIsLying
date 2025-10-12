@@ -79,7 +79,7 @@ export default function VotesResults() {
   const isTied = highestVoted.length > 1;
 
   const handleContinue = () => {
-    router.navigate('/revealImpostor');
+    router.replace('/revealImpostor');
   };
 
   return (
@@ -91,7 +91,7 @@ export default function VotesResults() {
           height: '100%',
         }}
       >
-        <ScrollView style={{ marginBottom: verticalScale(20) }}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.mostVotedPlayerContainer}>
             <Text style={styles.mostVotedPlayerText}>
               {isTied
@@ -163,6 +163,9 @@ export default function VotesResults() {
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: verticalScale(120),
+  },
   mostVotedPlayerContainer: {
     marginTop: verticalScale(40),
     marginBottom: verticalScale(50),
@@ -227,8 +230,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: verticalScale(20),
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: verticalScale(30),
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(20),
+    paddingBottom: verticalScale(20),
+    backgroundColor: colors.background[100],
   },
 });

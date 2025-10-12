@@ -45,7 +45,7 @@ export default function Discussion() {
   };
 
   const handleNextPage = () => {
-    router.navigate('/votes');
+    router.replace('/votes');
   };
 
   const agregatedArray = agregateByPlayer();
@@ -75,9 +75,9 @@ export default function Discussion() {
               )}
             </Text>
           </View>
-          <Character mood="bothCharacter" size='small' />
+          {/* <Character mood="bothCharacter" size='small' /> */}
         </View>
-        <ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.table}>
             {agregatedArray.map((round, index) => {
               // Get the translated question for this specific round
@@ -107,16 +107,19 @@ export default function Discussion() {
               );
             })}
           </View>
-          <View style={styles.buttonContainer}>
-            <Button text={t('Continue')} onPress={handleNextPage} />
-          </View>
         </ScrollView>
+        <View style={styles.buttonContainer}>
+          <Button text={t('Continue')} onPress={handleNextPage} />
+        </View>
       </SafeAreaView>
     </WithSidebar>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: verticalScale(120),
+  },
   title: {
     fontSize: moderateScale(30),
     maxWidth: scale(250),
@@ -133,7 +136,7 @@ const styles = StyleSheet.create({
     gap: verticalScale(10),
     padding: scale(20),
     marginHorizontal: scale(25),
-    marginBottom: verticalScale(200),
+    marginBottom: verticalScale(15),
     backgroundColor: colors.white[100],
     borderRadius: moderateScale(10),
     shadowColor: '#000',
@@ -156,10 +159,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(60),
+    bottom: verticalScale(20),
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(20),
+    paddingBottom: verticalScale(20),
+    backgroundColor: colors.background[100],
   },
 });

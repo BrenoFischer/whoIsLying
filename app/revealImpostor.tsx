@@ -51,11 +51,14 @@ export default function RevealImpostor() {
       >
         <View style={styles.headerContainer}>
           <Text style={styles.title}>{t('The real impostor was:')}</Text>
+        </View>
+        <View style={styles.cardContainer}>
           {nextReveal ? (
-            <PlayerCard />
-          ) : (
-            <Text style={styles.randomPhrase}>{randomPhrase}</Text>
-          )}
+              <PlayerCard />
+            ) : (
+              <Text style={styles.randomPhrase}>{randomPhrase}</Text>
+            )}
+        </View>
           <View style={styles.buttonContainer}>
             {nextReveal ? (
               <Button
@@ -68,7 +71,6 @@ export default function RevealImpostor() {
               <Button text={t('Done it')} onPress={() => setNextReveal(true)} />
             )}
           </View>
-        </View>
       </SafeAreaView>
     </WithSidebar>
   );
@@ -78,7 +80,9 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginTop: verticalScale(50),
     justifyContent: 'space-between',
-    height: '90%',
+  },
+  cardContainer: {
+    marginTop: verticalScale(80),
   },
   title: {
     textAlign: 'center',
@@ -114,6 +118,10 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(20),
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: verticalScale(40),
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
