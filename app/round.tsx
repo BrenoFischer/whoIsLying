@@ -8,9 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Button from '@/components/button';
-import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Character from '@/components/character';
 import Discussion from './discussion';
@@ -22,7 +20,7 @@ import Dot from '@/components/dot';
 export default function RoundScreen() {
   const { game, nextRound, previousRound, getCurrentQuestion } =
     useContext(GameContext);
-  const { language, t } = useTranslation();
+  const { t } = useTranslation();
 
   const totalRounds = game.players.length * 2;
 
@@ -33,7 +31,7 @@ export default function RoundScreen() {
   const round = game.rounds[game.currentRound - 1];
   const playerThatAsks = round.playerThatAsks;
   const playerThatAnswers = round.playerThatAnswers;
-  const question = getCurrentQuestion(language);
+  const question = t(getCurrentQuestion(), { ns: 'categories' });
 
   const handleNextRound = () => {
     nextRound();

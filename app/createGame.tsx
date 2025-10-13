@@ -178,9 +178,9 @@ export default function CreateGame() {
                       {game.maximumMatches}
                     </Text>
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
-                      <Text style={styles.headerCategoryTitle}>Category</Text>
+                      <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
                       <Dot color={colors.white[100]} />
-                      <Text style={styles.headerCategoryTitle}>{game.category}</Text>
+                      <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
                     </View>
                   </View>
                 </View>

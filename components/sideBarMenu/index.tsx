@@ -18,7 +18,6 @@ import { useNavigation } from 'expo-router';
 import { useAppReset } from '@/context/AppResetContext';
 import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
-import AntDesign from '@expo/vector-icons/AntDesign';
 
 
 interface HowToPlayProps {
@@ -209,10 +208,6 @@ export default function SidebarMenu() {
   const [visible, setVisible] = useState(false);
   const [newGameModalOpen, setNewGameModalOpen] = useState(false);
   const [howToPlayModalOpen, setHowToPlayModalOpen] = useState(false);
-  const [clickedLanguage, setClickedLanguage] = useState<Language | undefined>(
-    undefined
-  );
-  const [languageModalOpen, setLanguageModalOpen] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
 
@@ -230,16 +225,9 @@ export default function SidebarMenu() {
     );
   };
 
-  const clickSetLanguage = (lan: Language) => {
+  const handleChangeLanguage = (lan: Language) => {
     if(lan === language) return;
-    setLanguageModalOpen(true);
-    setClickedLanguage(lan);
-  };
-
-  const handleChangeLanguage = () => {
-    setLanguage(clickedLanguage!);
-    setLanguageModalOpen(false);
-    handleStartNewGame();
+    setLanguage(lan);
   };
 
   return (
@@ -269,7 +257,7 @@ export default function SidebarMenu() {
                     styles.langButton,
                     language === 'en' && styles.activeLangButton,
                   ]}
-                  onPress={() => clickSetLanguage('en')}
+                  onPress={() => handleChangeLanguage('en')}
                 >
                   <Text
                     style={[
@@ -285,7 +273,7 @@ export default function SidebarMenu() {
                     styles.langButton,
                     language === 'pt' && styles.activeLangButton,
                   ]}
-                  onPress={() => clickSetLanguage('pt')}
+                  onPress={() => handleChangeLanguage('pt')}
                 >
                   <Text
                     style={[
@@ -331,49 +319,6 @@ export default function SidebarMenu() {
                     variants="secondary"
                     onPress={() => {
                       setNewGameModalOpen(false);
-                    }}
-                  />
-                </View>
-              </>
-            </CustomModal>
-
-            <CustomModal
-              setModalVisible={setLanguageModalOpen}
-              modalVisible={languageModalOpen}
-            >
-              <>
-                <View>
-                  <View style={{marginBottom: verticalScale(15), alignSelf: "flex-end"}}>
-                    <TouchableOpacity onPress={() => {setLanguageModalOpen(false);}}>
-                      <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{ marginBottom: verticalScale(30) }}>
-                    <Text style={styles.titleInformation}>
-                      {language === 'en' ?
-                        'Você deseja mudar o idioma?'
-                        :
-                        'Do you want to change the language?'}
-                    </Text>
-                    <Text style={styles.altText}>
-                      {language === 'en' ?
-                        'Note que isso irá iniciar um novo jogo para efetivar a mudança.'
-                        :
-                        'Note that this will start a new game to be effective.'}
-                    </Text>
-                  </View>
-                </View>
-                <Character mood="bothCharacter" />
-                <View style={{ gap: verticalScale(40) }}>
-                  <Button
-                    text={language === 'en' ? 'Mudar idioma e iniciar novo jogo': 'Change language and start a new game'}
-                    onPress={handleChangeLanguage}
-                  />
-                  <Button
-                    text={language === 'en' ? 'Continuar jogo atual ': 'Continue with current game'}
-                    variants="secondary"
-                    onPress={() => {
-                      setLanguageModalOpen(false);
                     }}
                   />
                 </View>

@@ -143,7 +143,7 @@ export default function SelectCategory() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: verticalScale(30),
+    paddingVertical: verticalScale(20),
     flex: 1,
     position: "relative"
   },

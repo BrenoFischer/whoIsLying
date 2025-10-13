@@ -14,7 +14,7 @@ export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
   const { game, checkVoteForSecretWord, getCurrentWord } =
     useContext(GameContext);
-  const { language, t } = useTranslation();
+  const { t } = useTranslation();
 
   const handleContinue = () => {
     //if impostor got correct the secret word, it obtains 2 points
@@ -39,14 +39,14 @@ export default function RevealWord() {
           <Text style={styles.title}>
             {game.lyingPlayer.name} {t('voted for:')}
           </Text>
-          <Text style={styles.word}>{game.selectedWord}</Text>
+          <Text style={styles.word}>{t(game.selectedWord || '', { ns: 'categories' })}</Text>
         </View>
 
         {secretWordRevealed && (
           <View style={styles.secretWordContainer}>
             <Text style={styles.title}>{t('The secret word was:')}</Text>
             <Text style={[styles.word, { color: colors.orange[200] }]}>
-              {getCurrentWord(language)}
+              {t(getCurrentWord(), { ns: 'categories' })}
             </Text>
           </View>
         )}

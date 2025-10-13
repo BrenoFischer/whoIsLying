@@ -1,13 +1,10 @@
 import { GameContext } from '@/context/GameContext';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
   SafeAreaView,
   View,
-  Modal,
-  Alert,
-  Pressable,
 } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
@@ -23,42 +20,45 @@ import Dot from '@/components/dot';
 export default function ShowWordToAll() {
   const { game, showWordToNextPlayer, getCurrentWord } =
     useContext(GameContext);
-  const { language, t } = useTranslation();
+  const { t } = useTranslation();
   const [wordRevealed, setWordRevealed] = useState(false);
-  const [displayWord, setDisplayWord] = useState('');
-  const [displaySubtitle, setDisplaySubtitle] = useState('');
+  const [isLyingPlayer, setIsLyingPlayer] = useState(false);
+  const [rawWord, setRawWord] = useState('');
   const [modalVisible, setModalVisible] = useState(true);
 
   const currentPlayer = game.players[game.showingWordToPlayer];
 
+  // Translate during render so it reacts to language changes
+  const displayWord = wordRevealed
+    ? isLyingPlayer
+      ? t('You will be the impostor this round!')
+      : rawWord ? t(rawWord, { ns: 'categories' }) : ''
+    : '';
+
+  const displaySubtitle = wordRevealed
+    ? isLyingPlayer
+      ? t("Pretend you know the word and try to discover it based on people's answers.")
+      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.')
+    : '';
+
   function handleRevealWord() {
     const playerIsLying = game.lyingPlayer.id === currentPlayer.id;
-    const word = playerIsLying
-      ? t('You will be the impostor this round!')
-      : getCurrentWord(language);
-    const subtitle = playerIsLying
-      ? t(
-          "Pretend you know the word and try to discover it based on people's answers."
-        )
-      : t(
-          'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.'
-        );
-    setDisplayWord(word || '');
-    setDisplaySubtitle(subtitle || '');
+    setIsLyingPlayer(playerIsLying);
+    setRawWord(getCurrentWord());
     setWordRevealed(true);
   }
 
   function handleShowWordToNextPlayer() {
     if (game.showingWordToPlayer >= game.players.length - 1) {
       setWordRevealed(false);
-      setDisplayWord('');
-      setDisplaySubtitle('');
+      setRawWord('');
+      setIsLyingPlayer(false);
       router.replace('/round');
     } else {
       showWordToNextPlayer();
       setWordRevealed(false);
-      setDisplayWord('');
-      setDisplaySubtitle('');
+      setRawWord('');
+      setIsLyingPlayer(false);
       setModalVisible(true);
       router.replace('/showWordToAll');
     }

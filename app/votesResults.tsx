@@ -99,6 +99,11 @@ export default function VotesResults() {
                 : t('The most voted player was:')}
             </Text>
             {highestVoted.map(vote => {
+              const highestVotedText = vote.votes === 1 ?
+                t('With') + ' ' + vote.votes + ' ' + t('vote')!
+              :
+                t('With') + ' ' + vote.votes + ' ' + t('Votes').toLowerCase()!
+
               return (
                 <View key={vote.player.id} style={styles.playerCard}>
                   <View style={styles.headerContainer}>
@@ -115,7 +120,7 @@ export default function VotesResults() {
                       }}
                     >
                       <Text style={styles.votesInfo}>
-                        {t('With')} {vote.votes} {t('votes')}!
+                        {highestVotedText}
                       </Text>
                       <Text style={styles.votesInfo}>
                         (

@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(26),
     fontWeight: 'bold',
     maxWidth: '50%',
-    marginVertical: verticalScale(10),
+    marginVertical: verticalScale(0),
   },
   subtitle: {
     fontSize: moderateScale(14),

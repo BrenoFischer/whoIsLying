@@ -23,17 +23,17 @@ export default function Words() {
   const [allWords, setAllWords] = useState<string[]>([]);
   const { game, getRandomWord, setSelectedWord, getCurrentWord } =
     useContext(GameContext);
-  const { language, t } = useTranslation();
+  const { t } = useTranslation();
 
   const impostorPlayer = game.lyingPlayer;
 
   const getRandomWords = (): string[] => {
     let i = 0;
     const randomWords = [];
-    const currentWord = getCurrentWord(language);
+    const currentWord = getCurrentWord();
 
     while (i < 4) {
-      const word = getRandomWord(game.category!, language);
+      const word = getRandomWord(game.category!);
       if (word !== currentWord) {
         let wordNotAlreadySelected = true;
         for (let j = 0; j < randomWords.length; j++) {
@@ -52,7 +52,7 @@ export default function Words() {
   };
 
   const addWordAndShuffle = (words: string[]) => {
-    const currentWord = getCurrentWord(language);
+    const currentWord = getCurrentWord();
     words.push(currentWord);
     for (let i = words.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -76,7 +76,7 @@ export default function Words() {
           isWordSelected && { backgroundColor: colors.orange[200] },
         ]}
       >
-        <Text style={styles.wordOption}>{word}</Text>
+        <Text style={styles.wordOption}>{t(word, { ns: 'categories' })}</Text>
       </TouchableOpacity>
     );
   }
@@ -88,13 +88,13 @@ export default function Words() {
   };
 
   useEffect(() => {
-    if (game.category && language) {
+    if (game.category) {
       const randomWords = getRandomWords();
       const words = addWordAndShuffle(randomWords);
 
       setAllWords(words);
     }
-  }, [language, game.category]);
+  }, [game.category]);
 
   return (
     <WithSidebar>

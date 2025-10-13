@@ -12,8 +12,8 @@ import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function Discussion() {
-  const { game, getCurrentQuestion } = useContext(GameContext);
-  const { language, t } = useTranslation();
+  const { game } = useContext(GameContext);
+  const { t } = useTranslation();
 
   const rounds = game.rounds;
 
@@ -75,34 +75,16 @@ export default function Discussion() {
               )}
             </Text>
           </View>
-          {/* <Character mood="bothCharacter" size='small' /> */}
         </View>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.table}>
             {agregatedArray.map((round, index) => {
-              // Get the translated question for this specific round
-              const translatedQuestion =
-                game.category &&
-                round.questionIndex !== undefined &&
-                round.questionSet
-                  ? (() => {
-                      const categories: any = require('@/data/categories.json');
-                      const key =
-                        round.questionSet === 'first'
-                          ? 'firstSetOfQuestions'
-                          : 'secondSetOfQuestions';
-                      return categories[game.category][language][key][
-                        round.questionIndex
-                      ];
-                    })()
-                  : round.question;
-
               return (
                 <View key={`${round.playerThatAnswers.id}-${index}`}>
                   <Text style={styles.playerName}>
                     {round.playerThatAnswers.name}
                   </Text>
-                  <Text style={styles.question}>{translatedQuestion}</Text>
+                  <Text style={styles.question}>{t(round.question, {ns: 'categories'})}</Text>
                 </View>
               );
             })}

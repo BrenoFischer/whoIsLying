@@ -2,8 +2,6 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { useContext, useState } from 'react';
 import {
-  Alert,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,

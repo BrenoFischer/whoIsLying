@@ -12,13 +12,13 @@ import {
 
 interface GameContextType {
   game: Game;
-  createGame: (players: Player[], language: Language) => void;
+  createGame: (players: Player[]) => void;
   createNewGame: () => void;
   setMaximumMatches: (maxQtd: number) => void;
   setLyingPlayer: (players: Player[]) => Player;
   addNewMatch: () => void;
-  setGameWord: (category: string, language: Language) => void;
-  getRandomWord: (category: string, language: Language) => string;
+  setGameWord: (category: string) => void;
+  getRandomWord: (category: string) => string;
   setSelectedWord: (newWord: string) => void;
   nextRound: () => void;
   previousRound: () => void;
@@ -27,9 +27,9 @@ interface GameContextType {
   updatePlayers: (players: Player[]) => void;
   updatePointsToPlayer: (player: Player, points: number) => Player[];
   resetGameWithExistingPlayers: () => void;
-  getCurrentWord: (language: Language) => string;
+  getCurrentWord: () => string;
   checkVoteForSecretWord: () => void;
-  getCurrentQuestion: (language: Language) => string;
+  getCurrentQuestion: () => string;
 }
 
 export const GameContext = createContext({} as GameContextType);
@@ -89,7 +89,6 @@ export const GameContextProvider = ({
   const setAllRounds = (
     newPlayers: Player[],
     category: string,
-    language: Language
   ): Round[] => {
     //the order of questions will always follow the crescent order of Players on the array
     //a 3 player game will have 1 round of questions: A->B, B->C, C->A
@@ -101,9 +100,9 @@ export const GameContextProvider = ({
 
     const categories: any = allCategories;
     const firstSetOfQuestions: string[] =
-      categories[category][language].firstSetOfQuestions;
+      categories[category].firstSetOfQuestions;
     const secondSetOfQuestions: string[] =
-      categories[category][language].secondSetOfQuestions;
+      categories[category].secondSetOfQuestions;
 
     const usedFirstIndices = new Set<number>();
     const usedSecondIndices = new Set<number>();
@@ -167,9 +166,9 @@ export const GameContextProvider = ({
     setGame({ ...game, currentMatch: newMatch });
   };
 
-  const getRandomWord = (category: string, language: Language) => {
+  const getRandomWord = (category: string) => {
     const categories: any = allCategories;
-    const categoryWords: string[] = categories[category][language].content;
+    const categoryWords: string[] = categories[category].content;
     return categoryWords[Math.floor(Math.random() * categoryWords.length)];
   };
 
@@ -194,8 +193,8 @@ export const GameContextProvider = ({
     }
   };
 
-  const setGameWord = (category: string, language: Language) => {
-    const { index, word } = getRandomWordIndex(category, language);
+  const setGameWord = (category: string) => {
+    const { index, word } = getRandomWordIndex(category);
     setGame({ ...game, word, wordIndex: index, category });
   };
 
@@ -248,10 +247,10 @@ export const GameContextProvider = ({
     return lyingPlayer;
   };
 
-  const createGame = (newPlayers: Player[], language: Language) => {
+  const createGame = (newPlayers: Player[]) => {
     const newGame = resetGameWithExistingPlayers();
     const category = game.category ? game.category : '';
-    const rounds = setAllRounds(newPlayers, category, language);
+    const rounds = setAllRounds(newPlayers, category);
     const lyingPlayer = setLyingPlayer(newPlayers);
 
     setGame({ ...newGame, players: newPlayers, rounds, lyingPlayer });
@@ -308,13 +307,13 @@ export const GameContextProvider = ({
     }
   };
 
-  const getCurrentWord = (language: Language): string => {
+  const getCurrentWord = () => {
     if (!game.category || game.wordIndex === undefined) return '';
     const categories: any = allCategories;
-    return categories[game.category][language].content[game.wordIndex];
+    return categories[game.category].content[game.wordIndex];
   };
 
-  const getCurrentQuestion = (language: Language): string => {
+  const getCurrentQuestion = (): string => {
     if (!game.category || game.rounds.length === 0) return '';
     const currentRound = game.rounds[game.currentRound - 1];
     if (!currentRound) return '';
@@ -324,7 +323,7 @@ export const GameContextProvider = ({
       currentRound.questionSet === 'first'
         ? 'firstSetOfQuestions'
         : 'secondSetOfQuestions';
-    return categories[game.category][language][questionSet][
+    return categories[game.category][questionSet][
       currentRound.questionIndex
     ];
   };
