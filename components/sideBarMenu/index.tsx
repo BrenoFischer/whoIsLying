@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   subtitleBlack: {
-    fontFamily: 'Raleway',
+    fontFamily: 'Raleway-Medium',
     fontSize: moderateScale(16),
     color: colors.black[100],
     marginBottom: verticalScale(12),
