@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   langText: {
     fontFamily: 'Raleway',
-    fontSize: moderateScale(14),
+    fontSize: moderateScale(12),
     fontWeight: 'bold',
     color: colors.orange[200],
   },
