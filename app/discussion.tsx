@@ -113,6 +113,8 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontFamily: 'Raleway-Medium',
     maxWidth: scale(250),
+    textAlign: 'center',
+    marginTop: verticalScale(4)
   },
   table: {
     gap: verticalScale(10),
