@@ -28,7 +28,7 @@ interface HowToPlayProps {
 function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
   const [slide, setSlide] = useState(0);
   const totalSlides = 7
-  const { t, language, setLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   if(!showHowToPlay) return;
 
