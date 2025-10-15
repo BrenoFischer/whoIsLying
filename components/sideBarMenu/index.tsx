@@ -7,6 +7,7 @@ import {
   Dimensions,
   Modal,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomModal from '@/components/modal';
@@ -238,14 +239,21 @@ export default function SidebarMenu() {
         </TouchableOpacity>
       </View>
 
-      <Modal transparent visible={visible} animationType="slide">
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={toggleMenu}>
-            <Ionicons name="close" size={28} color={colors.orange[200]} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.backdrop}>
-          <ScrollView style={styles.sidebar}>
+      <Modal
+        transparent={false}
+        visible={visible}
+        animationType="slide"
+        statusBarTranslucent
+      >
+        <StatusBar backgroundColor={colors.background[100]} barStyle="light-content" />
+        <View style={styles.modalContainer}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={toggleMenu}>
+              <Ionicons name="close" size={28} color={colors.orange[200]} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.backdrop}>
+            <ScrollView style={styles.sidebar}>
             <View style={{alignSelf: "center"}}>
               <Character mood="umpa" />
             </View>
@@ -337,6 +345,7 @@ export default function SidebarMenu() {
             <View style={{ marginBottom: verticalScale(150) }} />
           </ScrollView>
         </View>
+        </View>
       </Modal>
     </>
   );
@@ -344,6 +353,10 @@ export default function SidebarMenu() {
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    backgroundColor: colors.background[100],
+  },
   buttonContainer: {
     position: 'absolute',
     top: verticalScale(50),
