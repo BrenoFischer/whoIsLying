@@ -182,11 +182,15 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(40),
-    left: scale(20),
-    right: scale(20),
+    bottom: verticalScale(10),
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(30),
+    paddingBottom: verticalScale(30),
+    backgroundColor: colors.background[100],
   },
   modalView: {
     margin: scale(20),

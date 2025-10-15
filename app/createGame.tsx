@@ -42,7 +42,7 @@ const femaleImagesBase = ['paola', 'sara', 'luh', 'pri', 'gio', 'ginger', 'eight
 
 export default function CreateGame() {
   const { createGame, game } = useContext(GameContext);
-  const { language, t } = useTranslation();
+  const { t } = useTranslation();
   const [playerGender, setPlayerGender] = useState('man');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [players, setPlayers] = useState<Player[]>(game.players);
@@ -119,7 +119,7 @@ export default function CreateGame() {
   }
 
   function handleCreateGame() {
-    createGame(players, language);
+    createGame(players);
     router.replace('/showWordToAll');
   }
 
@@ -372,14 +372,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(20),
+    bottom: 0,
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: scale(20),
-    paddingTop: verticalScale(20),
-    paddingBottom: verticalScale(20),
+    paddingTop: verticalScale(30),
+    paddingBottom: verticalScale(30),
     backgroundColor: colors.background[100],
   },
   changeCharacterButton: {

@@ -135,14 +135,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(20),
+    bottom: 0,
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: scale(20),
-    paddingTop: verticalScale(20),
-    paddingBottom: verticalScale(20),
+    paddingTop: verticalScale(30),
+    paddingBottom: verticalScale(30),
     backgroundColor: colors.background[100],
   },
 });

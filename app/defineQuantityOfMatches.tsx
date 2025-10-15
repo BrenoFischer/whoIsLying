@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginLeft: scale(20),
-    marginTop: scale(35),
+    marginTop: scale(20),
   },
   charContainer: {
     position: "absolute",
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     maxWidth: '50%',
   },
   quantityContainer: {
-    marginTop: verticalScale(60),
+    marginTop: verticalScale(90),
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -140,10 +140,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(60),
+    bottom: 0,
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(30),
+    paddingBottom: verticalScale(30),
+    backgroundColor: colors.background[100],
   },
 });

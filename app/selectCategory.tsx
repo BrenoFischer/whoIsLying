@@ -36,13 +36,13 @@ const backgroundImages = {
 
 export default function SelectCategory() {
   const { setGameWord } = useContext(GameContext);
-  const { language, t } = useTranslation();
+  const { t } = useTranslation();
 
   const categoriesArray = Object.keys(categories);
   const [selectedCategory, setSelectedCategory] = useState(categoriesArray[0] || '');
 
   const handleContinueWithSelectedCategory = () => {
-    setGameWord(selectedCategory, language);
+    setGameWord(selectedCategory);
     router.push('/createGame');
   };
 
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginLeft: scale(20),
     marginTop: verticalScale(30),
-    marginBottom: verticalScale(40)
+    marginBottom: verticalScale(10)
   },
   charContainer: {
     position: "absolute",
@@ -248,9 +248,15 @@ const styles = StyleSheet.create({
     width: scale(120),
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: scale(20),
-    paddingBottom: verticalScale(20),
+    paddingTop: verticalScale(30),
+    paddingBottom: verticalScale(30),
+    backgroundColor: colors.background[100],
   },
 });

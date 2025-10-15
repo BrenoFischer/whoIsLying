@@ -96,10 +96,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: verticalScale(40),
+    bottom: 0,
     left: 0,
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(30),
+    paddingBottom: verticalScale(30),
+    backgroundColor: colors.background[100],
   },
 });
