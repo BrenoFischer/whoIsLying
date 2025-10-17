@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,8 @@ import { useNavigation } from 'expo-router';
 import { useAppReset } from '@/context/AppResetContext';
 import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
+import CheckPlayerWord from '../forgotWord';
+import { GameContext } from '@/context/GameContext';
 
 
 interface HowToPlayProps {
@@ -209,8 +211,10 @@ export default function SidebarMenu() {
   const [visible, setVisible] = useState(false);
   const [newGameModalOpen, setNewGameModalOpen] = useState(false);
   const [howToPlayModalOpen, setHowToPlayModalOpen] = useState(false);
+  const [showForgotWord, setShowForgotWord] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
+  const { game } = useContext(GameContext)
 
   const { resetApp } = useAppReset();
   const toggleMenu = () => setVisible(!visible);
@@ -324,7 +328,7 @@ export default function SidebarMenu() {
                   />
                   <Button
                     text={t('Continue with current game')}
-                    variants="secondary"
+                    variants='secondary'
                     onPress={() => {
                       setNewGameModalOpen(false);
                     }}
@@ -341,6 +345,16 @@ export default function SidebarMenu() {
             </View>
 
             <HowToPlay setShowHowToPlay={setHowToPlayModalOpen} showHowToPlay={howToPlayModalOpen} />
+
+            <View style={styles.startNewGameContainer}>
+              <Button
+                text={t('Forgot your word') + '?'}
+                variants={game.players.length > 0 ? "secondary" : "disabled"}
+                onPress={() => { setShowForgotWord(true) }}
+              />
+            </View>
+
+            <CheckPlayerWord showForgotWord={showForgotWord} setShowForgotWord={setShowForgotWord} />
 
             <View style={{ marginBottom: verticalScale(150) }} />
           </ScrollView>
