@@ -39,7 +39,9 @@ export default function SelectCategory() {
   const { t } = useTranslation();
 
   const categoriesArray = Object.keys(categories);
-  const [selectedCategory, setSelectedCategory] = useState(categoriesArray[0] || '');
+  const [selectedCategory, setSelectedCategory] = useState(
+    categoriesArray[0] || ''
+  );
 
   const handleContinueWithSelectedCategory = () => {
     setGameWord(selectedCategory);
@@ -56,17 +58,25 @@ export default function SelectCategory() {
     }
   };
 
-  const renderCategoryCard = (categoryName: string, index: number, isActive: boolean) => {
+  const renderCategoryCard = (
+    categoryName: string,
+    index: number,
+    isActive: boolean
+  ) => {
     const categoryData = categories[categoryName as keyof typeof categories];
     const isAvailable = categoryData?.available ?? true;
 
     return (
-      <View style={[
-        styles.categoryCardContainer,
-        isActive && styles.categoryCardActive
-      ]}>
+      <View
+        style={[
+          styles.categoryCardContainer,
+          isActive && styles.categoryCardActive,
+        ]}
+      >
         <ImageBackground
-          source={backgroundImages[categoryName as keyof typeof backgroundImages]}
+          source={
+            backgroundImages[categoryName as keyof typeof backgroundImages]
+          }
           style={styles.categoryCardInner}
           imageStyle={styles.categoryCardBackgroundImage}
           resizeMode="cover"
@@ -83,13 +93,19 @@ export default function SelectCategory() {
           />
           {!isAvailable && (
             <View style={styles.lockIconContainer}>
-              <Ionicons name="lock-closed" size={moderateScale(40)} color={colors.background[100]} />
+              <Ionicons
+                name="lock-closed"
+                size={moderateScale(40)}
+                color={colors.background[100]}
+              />
             </View>
           )}
-          <Text style={[
-            styles.categoryTitle,
-            isActive && styles.categoryTitleActive,
-          ]}>
+          <Text
+            style={[
+              styles.categoryTitle,
+              isActive && styles.categoryTitleActive,
+            ]}
+          >
             {t(categoryName)}
           </Text>
         </ImageBackground>
@@ -116,7 +132,7 @@ export default function SelectCategory() {
               </Text>
             </View>
             <View style={styles.charContainer}>
-              <Character mood={'bothCharacter'} size='medium' />
+              <Character mood={'bothCharacter'} size="medium" />
             </View>
           </View>
           <View style={styles.carouselWrapper}>
@@ -145,16 +161,16 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: verticalScale(20),
     flex: 1,
-    position: "relative"
+    position: 'relative',
   },
   headerContainer: {
     marginLeft: scale(20),
     marginTop: verticalScale(30),
-    marginBottom: verticalScale(10)
+    marginBottom: verticalScale(10),
   },
   charContainer: {
-    position: "absolute",
-    right: scale(5)
+    position: 'absolute',
+    right: scale(5),
   },
   pageTitle: {
     fontFamily: 'Ralway',

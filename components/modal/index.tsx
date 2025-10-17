@@ -7,14 +7,14 @@ interface ModalProps {
   modalVisible: boolean;
   setModalVisible: (modalVisible: boolean) => void;
   children: ReactNode;
-  fixedHeight?: DimensionValue
+  fixedHeight?: DimensionValue;
 }
 
 export default function CustomModal({
   modalVisible,
   setModalVisible,
   children,
-  fixedHeight
+  fixedHeight,
 }: ModalProps) {
   return (
     <Modal
@@ -37,7 +37,14 @@ export default function CustomModal({
           alignItems: 'center',
         }}
       >
-        <View style={[styles.modalView, fixedHeight ? { height: fixedHeight } : undefined]}>{children}</View>
+        <View
+          style={[
+            styles.modalView,
+            fixedHeight ? { height: fixedHeight } : undefined,
+          ]}
+        >
+          {children}
+        </View>
       </View>
     </Modal>
   );

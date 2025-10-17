@@ -51,7 +51,7 @@ export default function VotesResults() {
     return (
       <View style={{ flexDirection: 'row', gap: scale(4) }}>
         <Character mood={vote.player.character} />
-        <View style={{ justifyContent: 'center', maxWidth: "40%" }}>
+        <View style={{ justifyContent: 'center', maxWidth: '40%' }}>
           <Text style={styles.allPlayersName}>{vote.player.name}</Text>
           <Text style={styles.allPlayersInfo}>
             {t('Votes')}: {vote.votes}
@@ -99,10 +99,14 @@ export default function VotesResults() {
                 : t('The most voted player was:')}
             </Text>
             {highestVoted.map(vote => {
-              const highestVotedText = vote.votes === 1 ?
-                t('With') + ' ' + vote.votes + ' ' + t('vote')!
-              :
-                t('With') + ' ' + vote.votes + ' ' + t('Votes').toLowerCase()!
+              const highestVotedText =
+                vote.votes === 1
+                  ? t('With') + ' ' + vote.votes + ' ' + t('vote')!
+                  : t('With') +
+                    ' ' +
+                    vote.votes +
+                    ' ' +
+                    t('Votes').toLowerCase()!;
 
               return (
                 <View key={vote.player.id} style={styles.playerCard}>
@@ -119,9 +123,7 @@ export default function VotesResults() {
                         maxWidth: scale(150),
                       }}
                     >
-                      <Text style={styles.votesInfo}>
-                        {highestVotedText}
-                      </Text>
+                      <Text style={styles.votesInfo}>{highestVotedText}</Text>
                       <Text style={styles.votesInfo}>
                         (
                         {vote.playersThatVoted.map((player, idx) => {

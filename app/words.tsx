@@ -114,7 +114,7 @@ export default function Words() {
           setModalVisible={setModalVisible}
         />
         <View style={styles.topContainer}>
-          <Character mood={impostorPlayer.character} size='medium' />
+          <Character mood={impostorPlayer.character} size="medium" />
         </View>
         <View style={styles.tableContainer}>
           <ScrollView style={styles.table}>
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     gap: verticalScale(10),
   },
   wordContainer: {
-    width: "100%",
+    width: '100%',
     alignItems: 'center',
     borderWidth: scale(2),
     borderRadius: moderateScale(10),

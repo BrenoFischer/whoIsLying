@@ -9,8 +9,8 @@ export default function SkillUpScreen() {
   const { t, language, setLanguage } = useTranslation();
 
   const handleChangeLanguage = (lan: Language) => {
-      if(lan === language) return;
-      setLanguage(lan);
+    if (lan === language) return;
+    setLanguage(lan);
   };
 
   return (
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
 
   languageButtons: {
-    position: "absolute",
+    position: 'absolute',
     top: verticalScale(50),
     right: 10,
     flexDirection: 'row',

@@ -37,8 +37,28 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro', 'bday', 'rock', 'ber'];
-const femaleImagesBase = ['paola', 'sara', 'luh', 'pri', 'gio', 'ginger', 'eighties', 'highlight', 'surfer'];
+const maleImagesBase = [
+  'breno',
+  'umpa',
+  'risada',
+  'fabricin',
+  'gabs',
+  'pedro',
+  'bday',
+  'rock',
+  'ber',
+];
+const femaleImagesBase = [
+  'paola',
+  'sara',
+  'luh',
+  'pri',
+  'gio',
+  'ginger',
+  'eighties',
+  'highlight',
+  'surfer',
+];
 
 export default function CreateGame() {
   const { createGame, game } = useContext(GameContext);
@@ -177,10 +197,16 @@ export default function CreateGame() {
                       {t('Game')} {game.currentMatch} {t('of')}{' '}
                       {game.maximumMatches}
                     </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                      <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <Text style={styles.headerCategoryTitle}>
+                        {t('Category')}
+                      </Text>
                       <Dot color={colors.white[100]} />
-                      <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
+                      <Text style={styles.headerCategoryTitle}>
+                        {t(game.category || '')}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -396,7 +422,7 @@ const styles = StyleSheet.create({
   changeCharacterText: {
     fontSize: moderateScale(12),
     fontFamily: 'Raleway',
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.background[100],
   },
 });

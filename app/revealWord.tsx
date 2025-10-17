@@ -39,7 +39,9 @@ export default function RevealWord() {
           <Text style={styles.title}>
             {game.lyingPlayer.name} {t('voted for:')}
           </Text>
-          <Text style={styles.word}>{t(game.selectedWord || '', { ns: 'categories' })}</Text>
+          <Text style={styles.word}>
+            {t(game.selectedWord || '', { ns: 'categories' })}
+          </Text>
         </View>
 
         {secretWordRevealed && (
@@ -84,7 +86,7 @@ const styles = StyleSheet.create({
     color: colors.white[100],
   },
   secretWordContainer: {
-    marginTop: "5%",
+    marginTop: '5%',
   },
   word: {
     marginTop: verticalScale(10),

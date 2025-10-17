@@ -30,6 +30,7 @@ interface GameContextType {
   getCurrentWord: () => string;
   checkVoteForSecretWord: () => void;
   getCurrentQuestion: () => string;
+  updateRoundAudio: (roundIndex: number, audioUri: string | undefined) => void;
 }
 
 export const GameContext = createContext({} as GameContextType);
@@ -86,10 +87,7 @@ export const GameContextProvider = ({
     return { question: randomQuestion, questionIndex: randomIndex };
   };
 
-  const setAllRounds = (
-    newPlayers: Player[],
-    category: string,
-  ): Round[] => {
+  const setAllRounds = (newPlayers: Player[], category: string): Round[] => {
     //the order of questions will always follow the crescent order of Players on the array
     //a 3 player game will have 1 round of questions: A->B, B->C, C->A
     //the next round of questions will be: A->C, C->B, B->A
@@ -257,8 +255,10 @@ export const GameContextProvider = ({
   };
 
   const nextRound = () => {
-    const newRound = game.currentRound + 1;
-    setGame({ ...game, currentRound: newRound });
+    setGame(prevGame => ({
+      ...prevGame,
+      currentRound: prevGame.currentRound + 1,
+    }));
   };
 
   const previousRound = () => {
@@ -323,9 +323,18 @@ export const GameContextProvider = ({
       currentRound.questionSet === 'first'
         ? 'firstSetOfQuestions'
         : 'secondSetOfQuestions';
-    return categories[game.category][questionSet][
-      currentRound.questionIndex
-    ];
+    return categories[game.category][questionSet][currentRound.questionIndex];
+  };
+
+  const updateRoundAudio = (
+    roundIndex: number,
+    audioUri: string | undefined
+  ) => {
+    setGame(prevGame => {
+      const updatedRounds = [...prevGame.rounds];
+      updatedRounds[roundIndex] = { ...updatedRounds[roundIndex], audioUri };
+      return { ...prevGame, rounds: updatedRounds };
+    });
   };
 
   return (
@@ -350,6 +359,7 @@ export const GameContextProvider = ({
         getCurrentWord,
         checkVoteForSecretWord,
         getCurrentQuestion,
+        updateRoundAudio,
       }}
     >
       {children}

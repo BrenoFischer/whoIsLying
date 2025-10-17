@@ -58,11 +58,7 @@ export default function Votes() {
     setSelectedPlayer(player);
   };
 
-  function PlayerVoteOption({
-    player,
-  }: {
-    player: Player;
-  }) {
+  function PlayerVoteOption({ player }: { player: Player }) {
     const isPlayerSelected =
       selectedPlayer === undefined ? false : player.id === selectedPlayer.id;
 
@@ -130,13 +126,8 @@ export default function Votes() {
               </Text>
             </Text>
             <View style={styles.restOfPlayerContainer}>
-              {restOfPlayer.map((p) => {
-                return (
-                  <PlayerVoteOption
-                    key={p.id}
-                    player={p}
-                  />
-                );
+              {restOfPlayer.map(p => {
+                return <PlayerVoteOption key={p.id} player={p} />;
               })}
             </View>
           </ScrollView>

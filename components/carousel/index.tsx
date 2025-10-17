@@ -1,13 +1,24 @@
 import { colors } from '@/styles/colors';
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, ScrollView, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 import { scale } from 'react-native-size-matters';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface CarouselProps {
   data: any[];
-  renderItem: (item: any, index: number, isActive: boolean) => React.ReactElement;
+  renderItem: (
+    item: any,
+    index: number,
+    isActive: boolean
+  ) => React.ReactElement;
   onIndexChange?: (index: number) => void;
   itemWidth?: number;
   spacing?: number;

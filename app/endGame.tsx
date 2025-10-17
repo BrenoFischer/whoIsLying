@@ -26,21 +26,19 @@ export default function EndGame() {
   }) {
     return (
       <View style={styles.playerCard}>
-          <View
-            style={{
-              marginLeft: scale(10),
-              flexDirection: 'row',
-              gap: scale(10),
-            }}
-          >
-            <Text style={styles.index}>{index + 1}</Text>
-            <Text style={styles.playerName}>{player.name}</Text>
-          </View>
+        <View
+          style={{
+            marginLeft: scale(10),
+            flexDirection: 'row',
+            gap: scale(10),
+          }}
+        >
+          <Text style={styles.index}>{index + 1}</Text>
+          <Text style={styles.playerName}>{player.name}</Text>
+        </View>
         <View style={styles.headerContainer}>
           <Character mood={player.character} />
-          <View
-            style={styles.textContainer}
-          >
+          <View style={styles.textContainer}>
             <Text style={styles.playerScore}>
               {player.score}{' '}
               <Text style={styles.playerPointsText}>{t('points')}</Text>

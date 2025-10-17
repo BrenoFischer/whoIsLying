@@ -48,7 +48,7 @@ export default function Character({
         styles.image,
         flip && { transform: [{ scaleX: -1 }] },
         size === 'small' && { height: scale(120), width: scale(120) },
-        size === 'medium' && { height: scale(150), width: scale(150) }
+        size === 'medium' && { height: scale(150), width: scale(150) },
       ]}
       resizeMode="cover"
     />

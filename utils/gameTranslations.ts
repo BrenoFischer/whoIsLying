@@ -1,15 +1,10 @@
 import allCategories from '@/data/categories.json';
 
-export const getWordByIndex = (
-  category: string,
-  index: number,
-): string => {
+export const getWordByIndex = (category: string, index: number): string => {
   const categories: any = allCategories;
 
   if (!categories[category]?.content) {
-    throw new Error(
-      `Content not found for category "${category}"`
-    );
+    throw new Error(`Content not found for category "${category}"`);
   }
 
   return categories[category].content[index];
@@ -18,7 +13,7 @@ export const getWordByIndex = (
 export const getQuestionByIndex = (
   category: string,
   questionSet: 'first' | 'second',
-  index: number,
+  index: number
 ): string => {
   const categories: any = allCategories;
   const key =
@@ -34,7 +29,7 @@ export const getQuestionByIndex = (
 };
 
 export const getRandomWordIndex = (
-  category: string,
+  category: string
 ): { index: number; word: string } => {
   const categories: any = allCategories;
 
@@ -43,9 +38,7 @@ export const getRandomWordIndex = (
   }
 
   if (!categories[category].content) {
-    throw new Error(
-      `Content not found for category "${category}"`
-    );
+    throw new Error(`Content not found for category "${category}"`);
   }
 
   const words = categories[category].content;

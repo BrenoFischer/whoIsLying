@@ -1,11 +1,6 @@
 import { GameContext } from '@/context/GameContext';
 import React, { useContext, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  SafeAreaView,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, SafeAreaView, View } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
@@ -32,13 +27,19 @@ export default function ShowWordToAll() {
   const displayWord = wordRevealed
     ? isLyingPlayer
       ? t('You will be the impostor this round!')
-      : rawWord ? t(rawWord, { ns: 'categories' }) : ''
+      : rawWord
+        ? t(rawWord, { ns: 'categories' })
+        : ''
     : '';
 
   const displaySubtitle = wordRevealed
     ? isLyingPlayer
-      ? t("Pretend you know the word and try to discover it based on people's answers.")
-      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.')
+      ? t(
+          "Pretend you know the word and try to discover it based on people's answers."
+        )
+      : t(
+          'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.'
+        )
     : '';
 
   function handleRevealWord() {
@@ -89,7 +90,9 @@ export default function ShowWordToAll() {
         >
           <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
           <Dot color={colors.white[100]} />
-          <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
+          <Text style={styles.headerCategoryTitle}>
+            {t(game.category || '')}
+          </Text>
           <Dot color={colors.white[100]} />
           <Text style={styles.headerCategoryTitle}>
             {t('Player')} {game.showingWordToPlayer + 1} {t('of')}{' '}

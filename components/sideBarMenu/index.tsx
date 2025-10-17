@@ -22,190 +22,243 @@ import { Language, useTranslation } from '@/translations';
 import CheckPlayerWord from '../forgotWord';
 import { GameContext } from '@/context/GameContext';
 
-
 interface HowToPlayProps {
   showHowToPlay: boolean;
-  setShowHowToPlay: React.Dispatch<React.SetStateAction<boolean>>
+  setShowHowToPlay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
+function HowToPlay({ showHowToPlay, setShowHowToPlay }: HowToPlayProps) {
   const [slide, setSlide] = useState(0);
-  const totalSlides = 7
+  const totalSlides = 7;
   const { t } = useTranslation();
 
-  if(!showHowToPlay) return;
+  if (!showHowToPlay) return;
 
   const handleChangeSlide = (amount: number) => {
     const newSlide = slide + amount;
-    if(newSlide >= totalSlides) return;
-    if(newSlide < 0) return;
+    if (newSlide >= totalSlides) return;
+    if (newSlide < 0) return;
 
-    setSlide(newSlide)
-  }
+    setSlide(newSlide);
+  };
 
   const slides = [
     //Slide 1
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={{ marginBottom: verticalScale(20), alignItems: 'center' }}>
         <Character mood="slide1" />
       </View>
-      <Text style={styles.subtitleBlack}>{t('All players except')}{' '}
-      <Text style={styles.specialText}>{t('one')}</Text>{' '}
-      {t('receives a')}{' '}<Text style={styles.specialText}>{t('secret word')}</Text></Text>
-      <Text style={styles.subtitleBlack}>{t('One random player is the')}{' '}
-      <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
-      {t('for the round.')}
+      <Text style={styles.subtitleBlack}>
+        {t('All players except')}{' '}
+        <Text style={styles.specialText}>{t('one')}</Text> {t('receives a')}{' '}
+        <Text style={styles.specialText}>{t('secret word')}</Text>
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        {t('One random player is the')}{' '}
+        <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+        {t('for the round.')}
       </Text>
     </View>,
 
     //Slide 2
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={{ marginBottom: verticalScale(20), alignItems: 'center' }}>
         <Character mood="slide2" />
       </View>
-      <Text style={styles.subtitleBlack}><Text style={styles.specialText}>{t('Questions')}</Text>{' '}
-      {t('are asked between players.')}{' '}</Text>
-      <Text style={styles.subtitleBlack}>{t('Can you')}{' '}
-      <Text style={styles.specialText}>{t('identify')}</Text>{' '}
-      {t('who is')}{' '}
-      <Text style={styles.specialText}>{t('pretending')}</Text>{' '}
-      {t('to know the word? Will the')}{' '}
-      <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
-      {t('be able to guess what the secret')}{' '}
-      <Text style={styles.specialText}>{t('word')}</Text> {t('is?')}</Text>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>{t('Questions')}</Text>{' '}
+        {t('are asked between players.')}{' '}
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        {t('Can you')} <Text style={styles.specialText}>{t('identify')}</Text>{' '}
+        {t('who is')} <Text style={styles.specialText}>{t('pretending')}</Text>{' '}
+        {t('to know the word? Will the')}{' '}
+        <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+        {t('be able to guess what the secret')}{' '}
+        <Text style={styles.specialText}>{t('word')}</Text> {t('is?')}
+      </Text>
     </View>,
 
     //Slide 3
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={{ marginBottom: verticalScale(20), alignItems: 'center' }}>
         <Character mood="slide3" />
       </View>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>1.{' '}</Text>{t('Choose a category for the')}{' '}
-        <Text style={styles.specialText}>{t('secret word')}{' '}</Text>{t('(e.g. Animals, Foods)')}.
+        <Text style={styles.specialText}>1. </Text>
+        {t('Choose a category for the')}{' '}
+        <Text style={styles.specialText}>{t('secret word')} </Text>
+        {t('(e.g. Animals, Foods)')}.
       </Text>
       <Text style={styles.subtitleBlack}>
         {t('Questions will be based on the selected category')}.
       </Text>
-            <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>2.{' '}</Text>{t('Enter the names of')}{' '}
-        <Text style={styles.specialText}>{t('all players')}</Text>{' '}{t('who will participate')}.{' '}
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>2. </Text>
+        {t('Enter the names of')}{' '}
+        <Text style={styles.specialText}>{t('all players')}</Text>{' '}
+        {t('who will participate')}.{' '}
       </Text>
-      <Text style={styles.subtitleBlack}>{t('Each player will have a unique character')}.</Text>
+      <Text style={styles.subtitleBlack}>
+        {t('Each player will have a unique character')}.
+      </Text>
     </View>,
 
     //Slide 4
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={{ marginBottom: verticalScale(20), alignItems: 'center' }}>
         <Character mood="slide4" />
       </View>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>3.{' '}</Text>{t('Each player will see either the secret word or a message indicating they are')}
-        {' '}
+        <Text style={styles.specialText}>3. </Text>
+        {t(
+          'Each player will see either the secret word or a message indicating they are'
+        )}{' '}
         <Text style={styles.specialText}>{t('the impostor')}</Text>.
       </Text>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>4.{' '}</Text>{t('Players ask each other')}{' '}
-        <Text style={styles.specialText}>{t('questions')},{' '}</Text>{t('based on the secret word')}.
+        <Text style={styles.specialText}>4. </Text>
+        {t('Players ask each other')}{' '}
+        <Text style={styles.specialText}>{t('questions')}, </Text>
+        {t('based on the secret word')}.
       </Text>
     </View>,
 
     //Slide 5
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={{ marginBottom: verticalScale(20), alignItems: 'center' }}>
         <Character mood="slide5" />
       </View>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>5.{' '}</Text>{t('A round of')}{' '}
-        <Text style={styles.specialText}>{t('discussion')}{' '}</Text>
+        <Text style={styles.specialText}>5. </Text>
+        {t('A round of')}{' '}
+        <Text style={styles.specialText}>{t('discussion')} </Text>
         {t('may be needed — share your thoughts')}!
-        </Text>
+      </Text>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>6.{' '}</Text>{t('Each player')}{' '}
-        <Text style={styles.specialText}>{t('votes')}{' '}</Text>
+        <Text style={styles.specialText}>6. </Text>
+        {t('Each player')} <Text style={styles.specialText}>{t('votes')} </Text>
         {t('for who they think the impostor is')}.
       </Text>
     </View>,
 
     //Slide 6
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={{ marginBottom: verticalScale(20), alignItems: 'center' }}>
         <Character mood="slide6" />
       </View>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>7.{' '}</Text>{t('The')}{' '}
-        <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
+        <Text style={styles.specialText}>7. </Text>
+        {t('The')} <Text style={styles.specialText}>{t('impostor')}</Text>{' '}
         {t('is revealed after all votes are counted')}.
-        </Text>
-        <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>8.{' '}</Text>{t("Now it's the")}{' '}
-        <Text style={styles.specialText}>{t("impostor's")}{' '}</Text>
-        {t("turn to guess the secret word")}.
-        </Text>
+      </Text>
+      <Text style={styles.subtitleBlack}>
+        <Text style={styles.specialText}>8. </Text>
+        {t("Now it's the")}{' '}
+        <Text style={styles.specialText}>{t("impostor's")} </Text>
+        {t('turn to guess the secret word')}.
+      </Text>
     </View>,
 
     //Slide 7
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={{ marginBottom: verticalScale(20), alignItems: 'center' }}>
         <Character mood="slide7" />
       </View>
       <Text style={styles.subtitleBlack}>
         <Text style={styles.specialText}>9.</Text>{' '}
-        <Text style={styles.specialText}>{t("Scores")}</Text>{' '}
-        {t("are calculated as follows")}:
+        <Text style={styles.specialText}>{t('Scores')}</Text>{' '}
+        {t('are calculated as follows')}:
       </Text>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>9.1.</Text>{t("Voted on the impostor")}{' '}
-        <Text style={styles.specialText}>+3{' '}{t('points')}</Text>.
+        <Text style={styles.specialText}>9.1.</Text>
+        {t('Voted on the impostor')}{' '}
+        <Text style={styles.specialText}>+3 {t('points')}</Text>.
       </Text>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>9.2.</Text>{t("The impostor receives")}{' '}
-        <Text style={styles.specialText}>+1{' '}{t('point')}{' '}</Text>{t('for every vote not on him')}.
+        <Text style={styles.specialText}>9.2.</Text>
+        {t('The impostor receives')}{' '}
+        <Text style={styles.specialText}>+1 {t('point')} </Text>
+        {t('for every vote not on him')}.
       </Text>
       <Text style={styles.subtitleBlack}>
-        <Text style={styles.specialText}>9.3.</Text>{t("The impostor receives")}{' '}
-        <Text style={styles.specialText}>+2{' '}{t('points')}{' '}</Text>{t('if correctly guessed the secret word')}.
+        <Text style={styles.specialText}>9.3.</Text>
+        {t('The impostor receives')}{' '}
+        <Text style={styles.specialText}>+2 {t('points')} </Text>
+        {t('if correctly guessed the secret word')}.
       </Text>
     </View>,
-  ]
+  ];
 
-  return(
+  return (
     <CustomModal
       setModalVisible={setShowHowToPlay}
       modalVisible={showHowToPlay}
       fixedHeight="85%"
     >
-        <View style={{ minWidth: "100%" }}>
-          <View style={{marginBottom: verticalScale(20), alignSelf: "flex-end"}}>
-            <TouchableOpacity onPress={() => {setShowHowToPlay(false);}}>
-              <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <ScrollView
-          style={{ flex: 1, width: "100%" }}
-          contentContainerStyle={{ paddingBottom: verticalScale(60) }}
-          showsVerticalScrollIndicator={true}
+      <View style={{ minWidth: '100%' }}>
+        <View
+          style={{ marginBottom: verticalScale(20), alignSelf: 'flex-end' }}
         >
-          {slides[slide]}
-        </ScrollView>
+          <TouchableOpacity
+            onPress={() => {
+              setShowHowToPlay(false);
+            }}
+          >
+            <Ionicons
+              name="close"
+              size={scale(28)}
+              color={colors.orange[200]}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-        <View style={{position: "absolute", bottom: "2%",flexDirection: 'row', gap: scale(15)}}>
-            <TouchableOpacity onPress={()=>{ handleChangeSlide(-1) }}>
-              <Ionicons name="arrow-back-outline" size={scale(28)} color={colors.orange[200]} />
-            </TouchableOpacity>
-            <Text style={styles.titleInformation}>
-              {slide + 1}/{totalSlides}
-            </Text>
-            <TouchableOpacity onPress={()=>{ handleChangeSlide(1) }}>
-              <Ionicons name="arrow-forward-outline" size={scale(28)} color={colors.orange[200]} />
-            </TouchableOpacity>
-          </View>
+      <ScrollView
+        style={{ flex: 1, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: verticalScale(60) }}
+        showsVerticalScrollIndicator={true}
+      >
+        {slides[slide]}
+      </ScrollView>
+
+      <View
+        style={{
+          position: 'absolute',
+          bottom: '2%',
+          flexDirection: 'row',
+          gap: scale(15),
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            handleChangeSlide(-1);
+          }}
+        >
+          <Ionicons
+            name="arrow-back-outline"
+            size={scale(28)}
+            color={colors.orange[200]}
+          />
+        </TouchableOpacity>
+        <Text style={styles.titleInformation}>
+          {slide + 1}/{totalSlides}
+        </Text>
+        <TouchableOpacity
+          onPress={() => {
+            handleChangeSlide(1);
+          }}
+        >
+          <Ionicons
+            name="arrow-forward-outline"
+            size={scale(28)}
+            color={colors.orange[200]}
+          />
+        </TouchableOpacity>
+      </View>
     </CustomModal>
   );
 }
-
 
 export default function SidebarMenu() {
   const [visible, setVisible] = useState(false);
@@ -214,7 +267,7 @@ export default function SidebarMenu() {
   const [showForgotWord, setShowForgotWord] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
-  const { game } = useContext(GameContext)
+  const { game } = useContext(GameContext);
 
   const { resetApp } = useAppReset();
   const toggleMenu = () => setVisible(!visible);
@@ -231,7 +284,7 @@ export default function SidebarMenu() {
   };
 
   const handleChangeLanguage = (lan: Language) => {
-    if(lan === language) return;
+    if (lan === language) return;
     setLanguage(lan);
   };
 
@@ -249,7 +302,10 @@ export default function SidebarMenu() {
         animationType="slide"
         statusBarTranslucent
       >
-        <StatusBar backgroundColor={colors.background[100]} barStyle="light-content" />
+        <StatusBar
+          backgroundColor={colors.background[100]}
+          barStyle="light-content"
+        />
         <View style={styles.modalContainer}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={toggleMenu}>
@@ -258,107 +314,117 @@ export default function SidebarMenu() {
           </View>
           <View style={styles.backdrop}>
             <ScrollView style={styles.sidebar}>
-            <View style={{alignSelf: "center"}}>
-              <Character mood="umpa" />
-            </View>
-            <View style={styles.languageContainer}>
-              <Text style={styles.languageLabel}>Language / Idioma:</Text>
-              <View style={styles.languageButtons}>
-                <TouchableOpacity
-                  style={[
-                    styles.langButton,
-                    language === 'en' && styles.activeLangButton,
-                  ]}
-                  onPress={() => handleChangeLanguage('en')}
-                >
-                  <Text
-                    style={[
-                      styles.langText,
-                      language === 'en' && styles.activeLangText,
-                    ]}
-                  >
-                    🇺🇸 EN
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.langButton,
-                    language === 'pt' && styles.activeLangButton,
-                  ]}
-                  onPress={() => handleChangeLanguage('pt')}
-                >
-                  <Text
-                    style={[
-                      styles.langText,
-                      language === 'pt' && styles.activeLangText,
-                    ]}
-                  >
-                    🇧🇷 PT
-                  </Text>
-                </TouchableOpacity>
+              <View style={{ alignSelf: 'center' }}>
+                <Character mood="umpa" />
               </View>
-            </View>
-
-            <View style={styles.startNewGameContainer}>
-              <Button
-                text={t('Start a new game')}
-                onPress={() => {
-                  setNewGameModalOpen(true);
-                }}
-              />
-            </View>
-
-            <CustomModal
-              setModalVisible={setNewGameModalOpen}
-              modalVisible={newGameModalOpen}
-            >
-              <>
-                <View>
-                  <View style={{ marginBottom: verticalScale(30) }}>
-                    <Text style={styles.titleInformation}>
-                      {t('Do you want to:')}
+              <View style={styles.languageContainer}>
+                <Text style={styles.languageLabel}>Language / Idioma:</Text>
+                <View style={styles.languageButtons}>
+                  <TouchableOpacity
+                    style={[
+                      styles.langButton,
+                      language === 'en' && styles.activeLangButton,
+                    ]}
+                    onPress={() => handleChangeLanguage('en')}
+                  >
+                    <Text
+                      style={[
+                        styles.langText,
+                        language === 'en' && styles.activeLangText,
+                      ]}
+                    >
+                      🇺🇸 EN
                     </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.langButton,
+                      language === 'pt' && styles.activeLangButton,
+                    ]}
+                    onPress={() => handleChangeLanguage('pt')}
+                  >
+                    <Text
+                      style={[
+                        styles.langText,
+                        language === 'pt' && styles.activeLangText,
+                      ]}
+                    >
+                      🇧🇷 PT
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.startNewGameContainer}>
+                <Button
+                  text={t('Start a new game')}
+                  onPress={() => {
+                    setNewGameModalOpen(true);
+                  }}
+                />
+              </View>
+
+              <CustomModal
+                setModalVisible={setNewGameModalOpen}
+                modalVisible={newGameModalOpen}
+              >
+                <>
+                  <View>
+                    <View style={{ marginBottom: verticalScale(30) }}>
+                      <Text style={styles.titleInformation}>
+                        {t('Do you want to:')}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <Character mood="bothCharacter" />
-                <View style={{ gap: verticalScale(40) }}>
-                  <Button
-                    text={t('Start a fresh new game')}
-                    onPress={handleStartNewGame}
-                  />
-                  <Button
-                    text={t('Continue with current game')}
-                    variants='secondary'
-                    onPress={() => {
-                      setNewGameModalOpen(false);
-                    }}
-                  />
-                </View>
-              </>
-            </CustomModal>
+                  <Character mood="bothCharacter" />
+                  <View style={{ gap: verticalScale(40) }}>
+                    <Button
+                      text={t('Start a fresh new game')}
+                      onPress={handleStartNewGame}
+                    />
+                    <Button
+                      text={t('Continue with current game')}
+                      variants="secondary"
+                      onPress={() => {
+                        setNewGameModalOpen(false);
+                      }}
+                    />
+                  </View>
+                </>
+              </CustomModal>
 
-            <View style={styles.startNewGameContainer}>
-              <Button
-                text={t('Como jogar')}
-                onPress={() => { setHowToPlayModalOpen(true) }}
+              <View style={styles.startNewGameContainer}>
+                <Button
+                  text={t('Como jogar')}
+                  onPress={() => {
+                    setHowToPlayModalOpen(true);
+                  }}
+                />
+              </View>
+
+              <HowToPlay
+                setShowHowToPlay={setHowToPlayModalOpen}
+                showHowToPlay={howToPlayModalOpen}
               />
-            </View>
 
-            <HowToPlay setShowHowToPlay={setHowToPlayModalOpen} showHowToPlay={howToPlayModalOpen} />
+              <View style={styles.startNewGameContainer}>
+                <Button
+                  text={t('Forgot your word') + '?'}
+                  variants={game.players.length > 0 ? 'secondary' : 'disabled'}
+                  onPress={() => {
+                    setShowForgotWord(true);
+                  }}
+                />
+              </View>
 
-            <View style={styles.startNewGameContainer}>
-              <Button
-                text={t('Forgot your word') + '?'}
-                variants={game.players.length > 0 ? "secondary" : "disabled"}
-                onPress={() => { setShowForgotWord(true) }}
+              <CheckPlayerWord
+                showForgotWord={showForgotWord}
+                setShowForgotWord={setShowForgotWord}
               />
-            </View>
 
-            <CheckPlayerWord showForgotWord={showForgotWord} setShowForgotWord={setShowForgotWord} />
-
-            <View style={{ marginBottom: verticalScale(150) }} />
-          </ScrollView>
-        </View>
+              <View style={{ marginBottom: verticalScale(150) }} />
+            </ScrollView>
+          </View>
         </View>
       </Modal>
     </>
@@ -386,7 +452,7 @@ const styles = StyleSheet.create({
   },
   languageLabel: {
     fontFamily: 'Raleway',
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: moderateScale(16),
     color: colors.white[100],
     marginBottom: verticalScale(10),
@@ -415,8 +481,8 @@ const styles = StyleSheet.create({
     color: colors.background[100],
   },
   startNewGameContainer: {
-    marginVertical: "4%",
-    alignSelf: "center",
+    marginVertical: '4%',
+    alignSelf: 'center',
   },
   backdrop: {
     flex: 1,

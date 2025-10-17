@@ -63,13 +63,21 @@ export default function DefineQuantityOfMatches() {
           </View>
           <View style={styles.quantityContainer}>
             <TouchableOpacity onPress={() => handleChangeQuantity(-1)}>
-              <Entypo name="minus" size={moderateScale(40)} color={colors.orange[200]} />
+              <Entypo
+                name="minus"
+                size={moderateScale(40)}
+                color={colors.orange[200]}
+              />
             </TouchableOpacity>
             <View style={styles.quantityCardContainer}>
               <Text style={styles.quantity}>{selectQuantity}</Text>
             </View>
             <TouchableOpacity onPress={() => handleChangeQuantity(1)}>
-              <FontAwesome6 name="add" size={moderateScale(40)} color={colors.orange[200]} />
+              <FontAwesome6
+                name="add"
+                size={moderateScale(40)}
+                color={colors.orange[200]}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -89,16 +97,16 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(30),
     textAlign: 'center',
     maxHeight: '84%',
-    position: "relative"
+    position: 'relative',
   },
   headerContainer: {
     marginLeft: scale(20),
     marginTop: scale(20),
   },
   charContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
-    right: scale(-30)
+    right: scale(-30),
   },
   pageTitle: {
     fontFamily: 'Ralway',

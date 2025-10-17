@@ -54,23 +54,23 @@ export default function RevealImpostor() {
         </View>
         <View style={styles.cardContainer}>
           {nextReveal ? (
-              <PlayerCard />
-            ) : (
-              <Text style={styles.randomPhrase}>{randomPhrase}</Text>
-            )}
+            <PlayerCard />
+          ) : (
+            <Text style={styles.randomPhrase}>{randomPhrase}</Text>
+          )}
         </View>
-          <View style={styles.buttonContainer}>
-            {nextReveal ? (
-              <Button
-                text={t('Continue')}
-                onPress={() => {
-                  router.replace('/words');
-                }}
-              />
-            ) : (
-              <Button text={t('Done it')} onPress={() => setNextReveal(true)} />
-            )}
-          </View>
+        <View style={styles.buttonContainer}>
+          {nextReveal ? (
+            <Button
+              text={t('Continue')}
+              onPress={() => {
+                router.replace('/words');
+              }}
+            />
+          ) : (
+            <Button text={t('Done it')} onPress={() => setNextReveal(true)} />
+          )}
+        </View>
       </SafeAreaView>
     </WithSidebar>
   );

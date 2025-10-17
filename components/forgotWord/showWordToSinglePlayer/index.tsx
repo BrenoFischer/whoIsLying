@@ -1,41 +1,51 @@
-import Button from "@/components/button";
-import Character from "@/components/character";
-import PlayerModal from "@/components/playerModal";
-import { GameContext } from "@/context/GameContext";
-import { colors } from "@/styles/colors";
-import { Player } from "@/types/Player";
-import { t } from "i18next";
-import { useContext, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { moderateScale, scale, verticalScale } from "react-native-size-matters";
+import Button from '@/components/button';
+import Character from '@/components/character';
+import PlayerModal from '@/components/playerModal';
+import { GameContext } from '@/context/GameContext';
+import { colors } from '@/styles/colors';
+import { Player } from '@/types/Player';
+import { t } from 'i18next';
+import { useContext, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 interface ShowWordToSinglePlayerProps {
-    player: Player
-    setPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>
-    setShowForgotWord: React.Dispatch<React.SetStateAction<boolean>>
+  player: Player;
+  setPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>;
+  setShowForgotWord: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ShowWordToSinglePlayer({ player, setPlayer, setShowForgotWord }: ShowWordToSinglePlayerProps) {
-const { game, getCurrentWord } = useContext(GameContext);
+export default function ShowWordToSinglePlayer({
+  player,
+  setPlayer,
+  setShowForgotWord,
+}: ShowWordToSinglePlayerProps) {
+  const { game, getCurrentWord } = useContext(GameContext);
   const [wordRevealed, setWordRevealed] = useState(false);
   const [isLyingPlayer, setIsLyingPlayer] = useState(false);
   const [rawWord, setRawWord] = useState('');
 
-    const displayWord = wordRevealed
+  const displayWord = wordRevealed
     ? isLyingPlayer
       ? t('You are be the impostor this round!')
-      : rawWord ? t(rawWord, { ns: 'categories' }) : ''
+      : rawWord
+        ? t(rawWord, { ns: 'categories' })
+        : ''
     : '';
 
   const displaySubtitle = wordRevealed
     ? isLyingPlayer
-      ? t("Pretend you know the word and try to discover it based on people's answers.")
-      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.')
+      ? t(
+          "Pretend you know the word and try to discover it based on people's answers."
+        )
+      : t(
+          'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.'
+        )
     : '';
 
   function handleRevealWord() {
-    if(player) {
+    if (player) {
       const playerIsLying = game.lyingPlayer.id === player.id;
       setIsLyingPlayer(playerIsLying);
       setRawWord(getCurrentWord());
@@ -44,44 +54,44 @@ const { game, getCurrentWord } = useContext(GameContext);
   }
 
   function handleCloseWindow() {
-    setPlayer(undefined)
-    setShowForgotWord(false)
+    setPlayer(undefined);
+    setShowForgotWord(false);
   }
 
-    return(
-        <SafeAreaView
-              style={[
-                {
-                  backgroundColor: colors.background[100],
-                  overflow: 'hidden',
-                  height: '100%',
-                },
-              ]}
-            >
-              <View style={styles.headerContainer}>
-                <View>
-                  <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
-                  <Text style={styles.playerName}>{player.name}</Text>
-                </View>
-                <Character mood={player.character} size="medium" />
-              </View>
-              <View style={styles.secretWordContainer}>
-                <Text style={styles.secretWord}>{displayWord}</Text>
-                <Text style={styles.subtitle}>{displaySubtitle}</Text>
-              </View>
-              <View style={styles.buttonContainer}>
-                {wordRevealed === false ? (
-                  <Button
-                    text={t('Tap to reveal')}
-                    onPress={handleRevealWord}
-                    variants='primary'
-                  />
-                ) : (
-                  <Button text={t('Got it!')} onPress={handleCloseWindow} />
-                )}
-              </View>
-            </SafeAreaView>
-    )
+  return (
+    <SafeAreaView
+      style={[
+        {
+          backgroundColor: colors.background[100],
+          overflow: 'hidden',
+          height: '100%',
+        },
+      ]}
+    >
+      <View style={styles.headerContainer}>
+        <View>
+          <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
+          <Text style={styles.playerName}>{player.name}</Text>
+        </View>
+        <Character mood={player.character} size="medium" />
+      </View>
+      <View style={styles.secretWordContainer}>
+        <Text style={styles.secretWord}>{displayWord}</Text>
+        <Text style={styles.subtitle}>{displaySubtitle}</Text>
+      </View>
+      <View style={styles.buttonContainer}>
+        {wordRevealed === false ? (
+          <Button
+            text={t('Tap to reveal')}
+            onPress={handleRevealWord}
+            variants="primary"
+          />
+        ) : (
+          <Button text={t('Got it!')} onPress={handleCloseWindow} />
+        )}
+      </View>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
