@@ -34,6 +34,12 @@
           "resizeMode": "contain",
           "backgroundColor": "#393939"
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone to record audio responses."
+        }
       ]
     ],
     "experiments": {
