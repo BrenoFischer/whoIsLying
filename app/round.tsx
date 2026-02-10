@@ -26,28 +26,20 @@ import {
 } from 'expo-audio';
 
 export default function RoundScreen() {
-  const { game, nextRound, previousRound, getCurrentQuestion } =
+  const { game, nextRound, previousRound, getCurrentQuestion, saveRecordingToRound, getRoundAudio } =
     useContext(GameContext);
-  const [ isRecording, setIsRecording ] = useState(false);
   const { t } = useTranslation();
 
-  const totalRounds = game.players.length * 2;
+  const [ isRecording, setIsRecording ] = useState(false);
+  const [audioUri, setAudioUri] = useState<string | null >(null);
 
-  if (game.currentRound === totalRounds + 1) {
-    return <Discussion />;
-  }
-
-  const round = game.rounds[game.currentRound - 1];
-  const playerThatAsks = round.playerThatAsks;
-  const playerThatAnswers = round.playerThatAnswers;
-  const question = t(getCurrentQuestion(), { ns: 'categories' });
-
-  // Initialize the recorder with a preset
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  
-  // This hook provides the real-time "timer" (currentTime)
-  // The '100' is the update interval in milliseconds
-  const recorderState = useAudioRecorderState(audioRecorder, 100);
+  const recorderState = useAudioRecorderState(audioRecorder, 900);
+
+  useEffect(() => {
+    const currentAudio = getRoundAudio();
+    setAudioUri(currentAudio ?? null); 
+  }, [game.currentRound]);
 
   useEffect(() => {
     (async () => {
@@ -63,17 +55,50 @@ export default function RoundScreen() {
     })();
   }, []);
 
+useEffect(() => {
+    return () => {
+      if (audioRecorder.isRecording) {
+        audioRecorder.stop().then(() => {
+          if (audioRecorder.uri) {
+            saveRecordingToRound(audioRecorder.uri);
+          }
+        });
+      }
+    };
+  }, [game.currentRound]);
+
+  const totalRounds = game.players.length * 2;
+
+  if (game.currentRound === totalRounds + 1) {
+    return <Discussion />;
+  }
+
+  const round = game.rounds[game.currentRound - 1];
+
+  if (!round) {
+    return null; 
+  }
+
+  const playerThatAsks = round.playerThatAsks;
+  const playerThatAnswers = round.playerThatAnswers;
+  const question = t(getCurrentQuestion(), { ns: 'categories' });
+
   const startRecording = async () => {
     setIsRecording(true)
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record();
   };
 
-  const stopRecording = async () => {
+  const handleStopRecording = async () => {
     setIsRecording(false);
-    // The recording will be available on `audioRecorder.uri`.
     await audioRecorder.stop();
-  }
+
+    const uri = audioRecorder.uri;
+    if (uri) {
+      saveRecordingToRound(uri);
+      setAudioUri(uri);
+    }
+  };
 
   const formatTime = (miliSeconds: number) => {
     const totalSeconds = Math.floor(miliSeconds / 1000);
@@ -85,13 +110,21 @@ export default function RoundScreen() {
     return `${formattedMins}:${formattedSecs}`;
   };
 
-  const handleNextRound = () => {
+  const handleNextRound = async () => {
+    if (isRecording) {
+      await handleStopRecording();
+    }
     nextRound();
   };
 
-  const handlePreviousRound = () => {
+  const handlePreviousRound = async () => {
+    if (isRecording) {
+      await handleStopRecording();
+    }
     previousRound();
   };
+
+  console.log(audioUri)
 
   return (
     <WithSidebar>
@@ -138,7 +171,7 @@ export default function RoundScreen() {
             <View style={styles.recordingContainer}>
               {isRecording ?
                   <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
-                    <TouchableOpacity onPress={() => {stopRecording()}}>
+                    <TouchableOpacity onPress={handleStopRecording}>
                       <FontAwesome6 name="circle-stop" size={24} color={colors.orange[200]} />
                     </TouchableOpacity>
                     <Text style={styles.recordingText}>
@@ -151,7 +184,7 @@ export default function RoundScreen() {
                     <TouchableOpacity onPress={() => {startRecording()}}>
                       <FontAwesome6 name="microphone" size={24} color={colors.orange[200]} />
                     </TouchableOpacity>
-                    <Text style={styles.recordingText}>{audioRecorder.uri ? "Record a new answer" : "Record answer"}</Text>
+                    <Text style={styles.recordingText}>{audioUri ? "Record a new answer" : "Record answer"}</Text>
                     <View />
                   </View>
               }

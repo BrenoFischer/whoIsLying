@@ -6,4 +6,5 @@ export interface Round {
   question: string;
   questionIndex: number;
   questionSet: 'first' | 'second';
+  audio: undefined | string;
 }

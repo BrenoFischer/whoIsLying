@@ -30,6 +30,8 @@ interface GameContextType {
   getCurrentWord: () => string;
   checkVoteForSecretWord: () => void;
   getCurrentQuestion: () => string;
+  saveRecordingToRound: (recording: string) => void;
+  getRoundAudio: () => string | undefined;
 }
 
 export const GameContext = createContext({} as GameContextType);
@@ -123,6 +125,7 @@ export const GameContextProvider = ({
         question: questionData.question,
         questionIndex: questionData.questionIndex,
         questionSet: 'first',
+        audio: undefined
       };
 
       rounds.push(round);
@@ -146,6 +149,7 @@ export const GameContextProvider = ({
         question: questionData.question,
         questionIndex: questionData.questionIndex,
         questionSet: 'second',
+        audio: undefined
       };
 
       auxRoundsArray.push(round);
@@ -257,13 +261,11 @@ export const GameContextProvider = ({
   };
 
   const nextRound = () => {
-    const newRound = game.currentRound + 1;
-    setGame({ ...game, currentRound: newRound });
+    setGame(prev => ({ ...prev, currentRound: prev.currentRound + 1 }));
   };
 
   const previousRound = () => {
-    const newRound = game.currentRound - 1;
-    setGame({ ...game, currentRound: newRound });
+    setGame(prev => ({ ...prev, currentRound: prev.currentRound - 1 }));
   };
 
   const showWordToNextPlayer = () => {
@@ -328,6 +330,22 @@ export const GameContextProvider = ({
     ];
   };
 
+  const saveRecordingToRound = (recording: string) => {
+    setGame(prev => {
+      const newRounds = prev.rounds.map((round, idx) => {
+        if (idx === prev.currentRound - 1) {
+          return { ...round, audio: recording };
+        }
+        return round;
+      });
+      return { ...prev, rounds: newRounds };
+    });
+  };
+
+  const getRoundAudio = () => {
+    return game.rounds[game.currentRound - 1]?.audio
+  }
+
   return (
     <GameContext.Provider
       value={{
@@ -350,6 +368,8 @@ export const GameContextProvider = ({
         getCurrentWord,
         checkVoteForSecretWord,
         getCurrentQuestion,
+        saveRecordingToRound,
+        getRoundAudio,
       }}
     >
       {children}
