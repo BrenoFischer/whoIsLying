@@ -24,6 +24,7 @@ import {
   setAudioModeAsync,
   useAudioRecorderState,
 } from 'expo-audio';
+import { router } from 'expo-router';
 
 export default function RoundScreen() {
   const { game, nextRound, previousRound, getCurrentQuestion, saveRecordingToRound, getRoundAudio } =
@@ -55,23 +56,21 @@ export default function RoundScreen() {
     })();
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
     return () => {
-      if (audioRecorder.isRecording) {
-        audioRecorder.stop().then(() => {
-          if (audioRecorder.uri) {
-            saveRecordingToRound(audioRecorder.uri);
-          }
-        });
+      if (recorderState.isRecording) {
+        audioRecorder.stop().catch(() => {});
       }
     };
-  }, [game.currentRound]);
+  }, []);
 
   const totalRounds = game.players.length * 2;
 
-  if (game.currentRound === totalRounds + 1) {
-    return <Discussion />;
-  }
+  useEffect(() => {
+    if (game.currentRound === totalRounds + 1) {
+      router.replace('/discussion');
+    }
+  }, [game.currentRound, totalRounds]);
 
   const round = game.rounds[game.currentRound - 1];
 
@@ -90,13 +89,20 @@ useEffect(() => {
   };
 
   const handleStopRecording = async () => {
-    setIsRecording(false);
-    await audioRecorder.stop();
+    if (!recorderState.isRecording) return;
 
-    const uri = audioRecorder.uri;
-    if (uri) {
-      saveRecordingToRound(uri);
-      setAudioUri(uri);
+    setIsRecording(false);
+
+    try {
+      await audioRecorder.stop();
+      const uri = audioRecorder.uri;
+
+      if (uri) {
+        saveRecordingToRound(uri);
+        setAudioUri(uri);
+      }
+    } catch (e) {
+      console.warn("Stop recording error:", e);
     }
   };
 
@@ -123,8 +129,6 @@ useEffect(() => {
     }
     previousRound();
   };
-
-  console.log(audioUri)
 
   return (
     <WithSidebar>
