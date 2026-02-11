@@ -1,23 +1,34 @@
 import Button from '@/components/button';
-import Character from '@/components/character';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Elipse from '@/components/elipse';
 import WithSidebar from '@/components/withSideBar';
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
-import { useContext } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import {
+  useAudioPlayer,
+  useAudioPlayerStatus,
+} from 'expo-audio';
 
 export default function Discussion() {
   const { game } = useContext(GameContext);
   const { t } = useTranslation();
 
+  const player = useAudioPlayer();
+  const playerState = useAudioPlayerStatus(player);
+
+  const [currentUri, setCurrentUri] = useState<string | null>(null);
+
   const rounds = game.rounds;
 
-  const agregateByPlayer = () => {
+  const agregateByPlayerRounds = useMemo(() => {
+    if(!game.rounds?.length) return [];
+    
     let agregatedArray = [game.rounds[0]];
 
     for (let i = 1; i < rounds.length; i++) {
@@ -42,13 +53,52 @@ export default function Discussion() {
     }
 
     return agregatedArray;
+  }, [game.rounds]);
+
+  useEffect(() => {
+    if (playerState.didJustFinish) {
+      setCurrentUri(null);
+    }
+  }, [playerState.didJustFinish]);
+
+  const handleToggleAudio = async (uri: string) => {
+    try {
+      if (!player) return;
+
+      if (currentUri === uri) {
+        if (playerState.playing) {
+          await player.pause();
+        } else {
+          await player.play();
+        }
+        return;
+      }
+
+      await player.pause();
+      await player.seekTo(0);
+      await player.replace({ uri });
+      await player.play();
+
+      setCurrentUri(uri);
+    } catch (e) {
+      console.warn('Audio error:', e);
+    }
   };
 
   const handleNextPage = () => {
     router.replace('/votes');
   };
 
-  const agregatedArray = agregateByPlayer();
+  const formatTime = (seconds?: number) => {
+    if (!seconds || seconds < 0) return '00:00';
+
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+
+    return `${mins.toString().padStart(2, '0')}:${secs
+      .toString()
+      .padStart(2, '0')}`;
+  };
 
   return (
     <WithSidebar>
@@ -78,13 +128,48 @@ export default function Discussion() {
         </View>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.table}>
-            {agregatedArray.map((round, index) => {
+            {agregateByPlayerRounds.map((round, index) => {
               return (
                 <View key={`${round.playerThatAnswers.id}-${index}`}>
                   <Text style={styles.playerName}>
                     {round.playerThatAnswers.name}
                   </Text>
                   <Text style={styles.question}>{t(round.question, {ns: 'categories'})}</Text>
+                  {round.audio && (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 8,
+                        justifyContent: 'space-between',
+                        backgroundColor: colors.background[100],
+                        paddingVertical: scale(10),
+                        paddingHorizontal: scale(15),
+                        borderRadius: scale(10)
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => handleToggleAudio(round.audio!)}
+                      >
+                        <FontAwesome6
+                          name={
+                            currentUri === round.audio && playerState.playing
+                              ? 'pause'
+                              : 'play'
+                          }
+                          size={20}
+                          color={colors.orange[200]}
+                        />
+                      </TouchableOpacity>
+
+                      {currentUri === round.audio && (
+                        <Text style={{ fontSize: moderateScale(14), color: colors.white[100] }}>
+                          {formatTime(playerState.currentTime)} /{' '}
+                          {formatTime(playerState.duration)}
+                        </Text>
+                      )}
+                    </View>
+                  )}
                 </View>
               );
             })}
