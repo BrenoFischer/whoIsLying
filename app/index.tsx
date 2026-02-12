@@ -1,9 +1,12 @@
 import { colors } from '@/styles/colors';
-import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { Language, useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function SkillUpScreen() {
   const { t, language, setLanguage } = useTranslation();
@@ -14,7 +17,7 @@ export default function SkillUpScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.languageButtons}>
         <TouchableOpacity
           style={[
@@ -55,15 +58,15 @@ export default function SkillUpScreen() {
           style={styles.icon}
           resizeMode="cover"
         />
+        <Text style={styles.title}>{'Who is Lying'}</Text>
       </View>
-      <Text style={styles.title}>{'Who is Lying'}</Text>
       <View style={styles.buttonContainer}>
         <Button
           text={t('New game')}
           onPress={() => router.replace('/defineQuantityOfMatches')}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -71,45 +74,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
     position: 'relative',
     backgroundColor: colors.background[100],
   },
 
   logoContainer: {
-    height: verticalScale(150),
-    marginTop: verticalScale(80),
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.md,
   },
 
   icon: {
-    flex: 1,
-    width: scale(80),
-    height: scale(80),
-    resizeMode: 'contain',
+    width: scale(100),
+    height: scale(100),
   },
 
   title: {
     fontFamily: 'Sigmar',
     fontWeight: 'bold',
-    fontSize: moderateScale(28),
+    fontSize: fontSize.xl,
     color: colors.orange[200],
     textTransform: 'uppercase',
-    textAlign: 'center',
-    paddingHorizontal: scale(20),
   },
 
   languageButtons: {
     position: "absolute",
-    top: verticalScale(50),
-    right: 10,
+    top: verticalScale(spacing.xxxl),
+    right: spacing.xl,
     flexDirection: 'row',
-    gap: scale(10),
+    gap: spacing.md,
   },
+
   langButton: {
-    paddingHorizontal: scale(8),
-    paddingVertical: verticalScale(4),
-    borderRadius: moderateScale(20),
-    borderWidth: scale(1),
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.lg,
+    borderWidth: 1,
     borderColor: colors.orange[200],
   },
   activeLangButton: {
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
   },
   langText: {
     fontFamily: 'Raleway',
-    fontSize: moderateScale(12),
+    fontSize: fontSize.sm,
     fontWeight: 'bold',
     color: colors.orange[200],
   },
@@ -126,11 +127,6 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    position: 'absolute',
-    bottom: verticalScale(80),
-    left: scale(20),
-    right: scale(20),
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingBottom: verticalScale(spacing.xxxxl),
   },
 });
