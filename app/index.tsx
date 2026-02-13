@@ -7,6 +7,7 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
+import ScreenLayout from '@/components/screenLayout';
 
 export default function SkillUpScreen() {
   const { t, language, setLanguage } = useTranslation();
@@ -17,41 +18,52 @@ export default function SkillUpScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.languageButtons}>
-        <TouchableOpacity
-          style={[
-            styles.langButton,
-            language === 'en' && styles.activeLangButton,
-          ]}
-          onPress={() => handleChangeLanguage('en')}
-        >
-          <Text
+    <ScreenLayout
+      header={
+        <View style={styles.languageButtons}>
+          <TouchableOpacity
             style={[
-              styles.langText,
-              language === 'en' && styles.activeLangText,
+              styles.langButton,
+              language === 'en' && styles.activeLangButton,
             ]}
+            onPress={() => handleChangeLanguage('en')}
           >
-            🇺🇸 EN
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.langButton,
-            language === 'pt' && styles.activeLangButton,
-          ]}
-          onPress={() => handleChangeLanguage('pt')}
-        >
-          <Text
+            <Text
+              style={[
+                styles.langText,
+                language === 'en' && styles.activeLangText,
+              ]}
+            >
+              🇺🇸 EN
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={[
-              styles.langText,
-              language === 'pt' && styles.activeLangText,
+              styles.langButton,
+              language === 'pt' && styles.activeLangButton,
             ]}
+            onPress={() => handleChangeLanguage('pt')}
           >
-            🇧🇷 PT
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <Text
+              style={[
+                styles.langText,
+                language === 'pt' && styles.activeLangText,
+              ]}
+            >
+              🇧🇷 PT
+            </Text>
+          </TouchableOpacity>
+        </View>
+      }
+      footer={
+        <View style={styles.buttonContainer}>
+          <Button
+            text={t('New game')}
+            onPress={() => router.replace('/defineQuantityOfMatches')}
+          />
+        </View>
+      }
+    >
       <View style={styles.logoContainer}>
         <Image
           source={require('@/assets/images/splash-icon.png')}
@@ -60,24 +72,11 @@ export default function SkillUpScreen() {
         />
         <Text style={styles.title}>{'Who is Lying'}</Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          text={t('New game')}
-          onPress={() => router.replace('/defineQuantityOfMatches')}
-        />
-      </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    position: 'relative',
-    backgroundColor: colors.background[100],
-  },
-
   logoContainer: {
     flex: 1,
     alignItems: "center",
@@ -99,10 +98,10 @@ const styles = StyleSheet.create({
   },
 
   languageButtons: {
-    position: "absolute",
-    top: verticalScale(spacing.xxxl),
-    right: spacing.xl,
+    paddingTop: verticalScale(spacing.xxxl),
+    paddingHorizontal: scale(spacing.xl),
     flexDirection: 'row',
+    justifyContent: "flex-end",
     gap: spacing.md,
   },
 
@@ -127,6 +126,6 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    paddingBottom: verticalScale(spacing.xxxxl),
+    alignItems: "center"
   },
 });
