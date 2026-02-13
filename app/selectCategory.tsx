@@ -21,6 +21,11 @@ import Character from '@/components/character';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import Carousel from '@/components/carousel';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 const images = {
   foods: require('@/assets/images/foodCategory.png'),
@@ -65,12 +70,13 @@ export default function SelectCategory() {
         styles.categoryCardContainer,
         isActive && styles.categoryCardActive
       ]}>
-        <ImageBackground
+        {/* <ImageBackground
           source={backgroundImages[categoryName as keyof typeof backgroundImages]}
           style={styles.categoryCardInner}
           imageStyle={styles.categoryCardBackgroundImage}
           resizeMode="cover"
-        >
+        > */}
+        <View style={styles.categoryCardInner}>
           <View style={styles.cardOverlay} />
           {!isAvailable && <View style={styles.lockedOverlay} />}
           <Text></Text>
@@ -92,87 +98,79 @@ export default function SelectCategory() {
           ]}>
             {t(categoryName)}
           </Text>
-        </ImageBackground>
+        </View>
+        {/* </ImageBackground> */}
       </View>
     );
   };
 
   return (
-    <WithSidebar>
-      <SafeAreaView
-        style={{
-          backgroundColor: colors.background[100],
-          height: '100%',
-          overflow: 'hidden',
-        }}
-      >
+    <ScreenLayout
+      footer={
+        <Button
+          text={t('Select category')}
+          variants={selectedCategory ? 'primary' : 'disabled'}
+          onPress={handleContinueWithSelectedCategory}
+        />
+      }
+    >
+      <View style={styles.contentWrapper}>
+        <SidebarMenu />
         <Elipse top={scale(-180)} />
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View>
-              <Text style={styles.pageTitle}>{t('Categories')}</Text>
-              <Text style={styles.subtitle}>
-                {t('Questions will be based on the selected category')}
-              </Text>
-            </View>
-            <View style={styles.charContainer}>
-              <Character mood={'bothCharacter'} size='medium' />
-            </View>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.pageTitle}>{t('Categories')}</Text>
+            <Text style={styles.subtitle}>
+              {t('Questions will be based on the selected category')}
+            </Text>
           </View>
-          <View style={styles.carouselWrapper}>
-            <Carousel
-              data={categoriesArray}
-              renderItem={renderCategoryCard}
-              onIndexChange={handleCarouselIndexChange}
-              itemWidth={scale(200)}
-              spacing={scale(20)}
-            />
-          </View>
+
+          <Character mood={'bothCharacter'} />
         </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            text={t('Select category')}
-            variants={selectedCategory ? 'primary' : 'disabled'}
-            onPress={handleContinueWithSelectedCategory}
+        <View style={styles.carouselWrapper}>
+          <Carousel
+            data={categoriesArray}
+            renderItem={renderCategoryCard}
+            onIndexChange={handleCarouselIndexChange}
+            itemWidth={scale(200)}
+            spacing={scale(20)}
           />
         </View>
-      </SafeAreaView>
-    </WithSidebar>
+      </View>
+  </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: verticalScale(20),
+  contentWrapper: {
     flex: 1,
-    position: "relative"
+    width: '100%',
+    overflow: 'hidden',
   },
   headerContainer: {
-    marginLeft: scale(20),
-    marginTop: verticalScale(30),
-    marginBottom: verticalScale(10)
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: scale(spacing.md)
   },
-  charContainer: {
-    position: "absolute",
-    right: scale(5)
+  headerTextContainer: {
+    flex: 1,
   },
   pageTitle: {
     fontFamily: 'Ralway',
-    fontSize: moderateScale(28),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
-    maxWidth: '50%',
-    marginVertical: verticalScale(10),
   },
   subtitle: {
-    fontSize: moderateScale(14),
+    fontSize: fontSize.md,
     fontFamily: 'Raleway-Medium',
-    maxWidth: '50%',
   },
   carouselWrapper: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: verticalScale(50),
+    paddingVertical: verticalScale(spacing.xxl),
+    width: '100%',
+    overflow: 'hidden',
   },
   categoryCardContainer: {
     width: '100%',
@@ -191,12 +189,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: verticalScale(20),
+    paddingVertical: verticalScale(spacing.sm),
     backgroundColor: colors.white[100],
-    borderRadius: moderateScale(13),
+    borderRadius: moderateScale(radius.lg),
   },
   categoryCardBackgroundImage: {
     borderRadius: moderateScale(13),
+    backgroundColor: colors.white[100]
   },
   cardOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -246,17 +245,5 @@ const styles = StyleSheet.create({
   categoryImageActive: {
     height: scale(120),
     width: scale(120),
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
   },
 });
