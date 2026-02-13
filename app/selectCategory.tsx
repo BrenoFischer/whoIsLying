@@ -8,6 +8,7 @@ import {
   Image,
   ImageBackground,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
@@ -42,9 +43,12 @@ const backgroundImages = {
 export default function SelectCategory() {
   const { setGameWord } = useContext(GameContext);
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
 
   const categoriesArray = Object.keys(categories);
   const [selectedCategory, setSelectedCategory] = useState(categoriesArray[0] || '');
+
+  const characterSize = height * 0.22;
 
   const handleContinueWithSelectedCategory = () => {
     setGameWord(selectedCategory);
@@ -125,7 +129,7 @@ export default function SelectCategory() {
             </Text>
           </View>
 
-          <Character mood={'bothCharacter'} />
+          <Character mood={'bothCharacter'} size={characterSize} />
         </View>
         <View style={styles.carouselWrapper}>
           <Carousel

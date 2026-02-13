@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import Button from '@/components/button';
@@ -28,6 +29,9 @@ export default function DefineQuantityOfMatches() {
   const [selectQuantity, setSelectedQuantity] = useState(1);
   const { setMaximumMatches, createNewGame } = useContext(GameContext);
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
+
+  const characterSize = height * 0.22;
 
   const handleContinueWithSelectedQuantity = () => {
     setMaximumMatches(selectQuantity);
@@ -65,7 +69,7 @@ export default function DefineQuantityOfMatches() {
             </Text>
           </View>
 
-          <Character mood={'luh'} />
+          <Character mood={'luh'} size={characterSize} />
         </View>
 
         <View style={styles.quantityContainer}>

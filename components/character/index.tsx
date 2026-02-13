@@ -4,13 +4,13 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 interface CharacterProps {
   mood: string;
   flip?: boolean;
-  size?: string;
+  size?: number;
 }
 
 export default function Character({
   mood,
   flip = false,
-  size = 'large',
+  size = 180,
 }: CharacterProps) {
   const characterImages = {
     paola: require('@/assets/images/paola.png'),
@@ -42,22 +42,16 @@ export default function Character({
   };
 
   return (
-    <Image
-      source={characterImages[mood as keyof typeof characterImages]}
-      style={[
-        styles.image,
-        flip && { transform: [{ scaleX: -1 }] },
-        size === 'small' && { height: scale(120), width: scale(120) },
-        size === 'medium' && { height: scale(150), width: scale(150) }
-      ]}
-      resizeMode="cover"
-    />
-  );
-}
-
-const styles = StyleSheet.create({
-  image: {
-    height: scale(180),
-    width: scale(180),
-  },
-});
+      <Image
+        source={characterImages[mood as keyof typeof characterImages]}
+        style={[
+          {
+            width: size ?? '100%',
+            height: size ?? '100%',
+          },
+          flip && { transform: [{ scaleX: -1 }] },
+        ]}
+        resizeMode="contain"
+      />
+    );
+  }
