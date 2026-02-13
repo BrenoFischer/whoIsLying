@@ -21,6 +21,8 @@ import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
 import CheckPlayerWord from '../forgotWord';
 import { GameContext } from '@/context/GameContext';
+import { radius } from '@/styles/radius';
+import { spacing } from '@/styles/spacing';
 
 
 interface HowToPlayProps {
@@ -237,11 +239,9 @@ export default function SidebarMenu() {
 
   return (
     <>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={toggleMenu}>
-          <Ionicons name="menu" size={28} color={colors.orange[200]} />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
+        <Ionicons name="menu" size={28} color={colors.orange[200]} />
+      </TouchableOpacity>
 
       <Modal
         transparent={false}
@@ -370,15 +370,14 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background[100],
+    paddingTop: verticalScale(spacing.xl)
   },
   buttonContainer: {
-    position: 'absolute',
-    top: verticalScale(50),
-    right: scale(10),
     zIndex: 100,
     backgroundColor: colors.background[100],
-    borderRadius: moderateScale(20),
+    borderRadius: moderateScale(radius.pill),
     padding: scale(5),
+    alignSelf: "flex-end"
   },
   languageContainer: {
     marginVertical: verticalScale(20),

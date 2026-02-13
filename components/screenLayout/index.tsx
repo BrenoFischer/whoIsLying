@@ -31,7 +31,7 @@ export default function ScreenLayout({
       >
           <View style={styles.wrapper}>
               {header && <View>{header}</View>}
-              
+
               <ContentWrapper 
                 style={styles.content}
                 contentContainerStyle={
@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     paddingBottom: scale(spacing.xl),
   },
   footer: {
+    alignItems: "center",
     paddingVertical: scale(spacing.xxxl)
   }
 });

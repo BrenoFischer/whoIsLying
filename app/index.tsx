@@ -56,12 +56,10 @@ export default function SkillUpScreen() {
         </View>
       }
       footer={
-        <View style={styles.buttonContainer}>
-          <Button
-            text={t('New game')}
-            onPress={() => router.replace('/defineQuantityOfMatches')}
-          />
-        </View>
+        <Button
+          text={t('New game')}
+          onPress={() => router.replace('/defineQuantityOfMatches')}
+        />
       }
     >
       <View style={styles.logoContainer}>
@@ -123,9 +121,5 @@ const styles = StyleSheet.create({
   },
   activeLangText: {
     color: colors.background[100],
-  },
-
-  buttonContainer: {
-    alignItems: "center"
   },
 });

@@ -9,8 +9,8 @@ type WithSidebarProps = {
 export default function WithSidebar({ children }: WithSidebarProps) {
   return (
     <View style={styles.container}>
-      {children}
       <SidebarMenu />
+      {children}
     </View>
   );
 }

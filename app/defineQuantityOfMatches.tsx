@@ -18,6 +18,11 @@ import { router } from 'expo-router';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function DefineQuantityOfMatches() {
   const [selectQuantity, setSelectedQuantity] = useState(1);
@@ -38,87 +43,75 @@ export default function DefineQuantityOfMatches() {
   };
 
   return (
-    <WithSidebar>
-      <SafeAreaView
-        style={{
-          backgroundColor: colors.background[100],
-          height: '100%',
-          overflow: 'hidden',
-        }}
-      >
-        <Elipse top={verticalScale(-150)} />
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View>
-              <Text style={styles.pageTitle}>
-                {t('How many matches will be played?')}
-              </Text>
-              <Text style={styles.subtitle}>
-                {t('The one with most points after all matches is the winner!')}
-              </Text>
-            </View>
-            <View style={styles.charContainer}>
-              <Character mood={'luh'} />
-            </View>
+    <ScreenLayout
+      footer={
+        <Button
+          text={t('Continue with this quantity')}
+          onPress={handleContinueWithSelectedQuantity}
+        />
+      }
+    >
+      <Elipse top={verticalScale(-150)} />
+
+      <View style={styles.container}>
+        <SidebarMenu />
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.pageTitle}>
+              {t('How many matches will be played?')}
+            </Text>
+            <Text style={styles.subtitle}>
+              {t('The one with most points after all matches is the winner!')}
+            </Text>
           </View>
-          <View style={styles.quantityContainer}>
-            <TouchableOpacity onPress={() => handleChangeQuantity(-1)}>
-              <Entypo name="minus" size={moderateScale(40)} color={colors.orange[200]} />
-            </TouchableOpacity>
-            <View style={styles.quantityCardContainer}>
-              <Text style={styles.quantity}>{selectQuantity}</Text>
-            </View>
-            <TouchableOpacity onPress={() => handleChangeQuantity(1)}>
-              <FontAwesome6 name="add" size={moderateScale(40)} color={colors.orange[200]} />
-            </TouchableOpacity>
+
+          <Character mood={'luh'} />
+        </View>
+
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity onPress={() => handleChangeQuantity(-1)}>
+            <Entypo name="minus" size={moderateScale(40)} color={colors.orange[200]} />
+          </TouchableOpacity>
+          <View style={styles.quantityCardContainer}>
+            <Text style={styles.quantity}>{selectQuantity}</Text>
           </View>
+          <TouchableOpacity onPress={() => handleChangeQuantity(1)}>
+            <FontAwesome6 name="add" size={moderateScale(40)} color={colors.orange[200]} />
+          </TouchableOpacity>
         </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            text={t('Continue with this quantity')}
-            onPress={handleContinueWithSelectedQuantity}
-          />
-        </View>
-      </SafeAreaView>
-    </WithSidebar>
+      </View>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: verticalScale(30),
-    textAlign: 'center',
-    maxHeight: '84%',
-    position: "relative"
+    flex: 1,
+    paddingVertical: verticalScale(spacing.xl),
   },
   headerContainer: {
-    marginLeft: scale(20),
-    marginTop: scale(20),
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: scale(spacing.md)
   },
-  charContainer: {
-    position: "absolute",
-    top: 0,
-    right: scale(-30)
+  headerTextContainer: {
+    flex: 1,
   },
   pageTitle: {
     fontFamily: 'Ralway',
-    fontSize: moderateScale(26),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
-    maxWidth: '50%',
-    marginVertical: verticalScale(0),
   },
   subtitle: {
-    fontSize: moderateScale(14),
+    fontSize: fontSize.md,
     fontFamily: 'Raleway-Medium',
-    maxWidth: '50%',
   },
   quantityContainer: {
-    marginTop: verticalScale(90),
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     gap: scale(20),
-    paddingHorizontal: scale(20),
+    flex: 1,
   },
   quantityCardContainer: {
     width: scale(120),
@@ -127,7 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.orange[100],
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: moderateScale(20),
+    borderRadius: moderateScale(radius.lg),
     borderBottomWidth: scale(7),
     borderEndWidth: scale(7),
     borderTopWidth: scale(4),
@@ -135,19 +128,7 @@ const styles = StyleSheet.create({
     borderColor: 'white',
   },
   quantity: {
-    fontSize: moderateScale(26),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
   },
 });
