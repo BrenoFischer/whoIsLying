@@ -239,11 +239,11 @@ export default function SidebarMenu() {
 
   return (
     <>
-    <View style={{ paddingTop: verticalScale(spacing.md) }}>
-      <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
-        <Ionicons name="menu" size={28} color={colors.orange[200]} />
-      </TouchableOpacity>
-    </View>
+      <View>
+        <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
+          <Ionicons name="menu" size={28} color={colors.orange[200]} />
+        </TouchableOpacity>
+      </View>
 
       <Modal
         transparent={false}

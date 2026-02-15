@@ -25,6 +25,11 @@ import { useTranslation } from '@/translations';
 import CustomModal from '@/components/modal';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Dot from '@/components/dot';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import { radius } from '@/styles/radius';
+import { fontSize } from '@/styles/fontSize';
 
 const MAX_PLAYERS = 10;
 
@@ -87,6 +92,52 @@ export default function CreateGame() {
     }
   }, [shouldLockToMale, shouldLockToFemale, playerGender]);
 
+
+  const SelectCharacterModal = () => {
+    return(
+      <CustomModal
+        modalVisible={modalOpen}
+        setModalVisible={setModalOpen}
+      >
+        <ScrollView style={styles.modalContainer}>
+          <View style={styles.modalHeaderContainer}>
+            <TouchableOpacity
+              onPress={handleChangeGender}
+              style={styles.genderIconContainer}
+            >
+              <MaterialIcons
+                name={playerGenderIcon}
+                size={32}
+                color={
+                  isGenderLocked
+                    ? colors.gray[100]
+                    : colors.orange[200]
+                }
+              />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>
+              {t('Choose your character')}
+            </Text>
+          </View>
+          <View style={styles.imagesGrid}>
+            {availableImages.map((char, idx) => {
+              return (
+                <View key={char} style={styles.imageItem}>
+                  <TouchableOpacity
+                    onPress={() => handleSelectCharacter(idx)}
+                  >
+                    <Character mood={char} size={80} />
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+          </View>
+        </ScrollView>
+      </CustomModal>
+    )
+  }
+
+
   function setNewPlayer({ id, name, gender }: Player) {
     if (players.length >= MAX_PLAYERS) return;
 
@@ -144,156 +195,10 @@ export default function CreateGame() {
   }
 
   return (
-    <WithSidebar>
-      <SafeAreaView
-        style={{
-          backgroundColor: colors.background[100],
-          overflow: 'hidden',
-          height: '100%',
-        }}
-      >
-        <Elipse top={-80} />
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.container}>
-            <View style={styles.headerContainer}>
-              <View>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                    marginBottom: verticalScale(20),
-                    gap: scale(5),
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      router.back();
-                    }}
-                  >
-                    <Ionicons name="arrow-back" size={24} color="black" />
-                  </TouchableOpacity>
-                  <View>
-                    <Text style={styles.headerCategoryTitle}>
-                      {t('Game')} {game.currentMatch} {t('of')}{' '}
-                      {game.maximumMatches}
-                    </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                      <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
-                      <Dot color={colors.white[100]} />
-                      <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
-                    </View>
-                  </View>
-                </View>
-                <View style={{ marginTop: verticalScale(10) }}>
-                  <Text style={styles.title}>{t('Add')}</Text>
-                  <Text style={styles.title}>{t('players')}</Text>
-                  <Text style={styles.title}>
-                    (3 {t('to')} {MAX_PLAYERS})
-                  </Text>
-                </View>
-              </View>
-              <View>
-                <CustomModal
-                  modalVisible={modalOpen}
-                  setModalVisible={setModalOpen}
-                >
-                  <ScrollView style={styles.modalContainer}>
-                    <View style={styles.modalHeaderContainer}>
-                      <TouchableOpacity
-                        onPress={handleChangeGender}
-                        style={styles.genderIconContainer}
-                      >
-                        <MaterialIcons
-                          name={playerGenderIcon}
-                          size={32}
-                          color={
-                            isGenderLocked
-                              ? colors.gray[100]
-                              : colors.orange[200]
-                          }
-                        />
-                      </TouchableOpacity>
-                      <Text style={styles.modalTitle}>
-                        {t('Choose your character')}
-                      </Text>
-                    </View>
-                    <View style={styles.imagesGrid}>
-                      {availableImages.map((char, idx) => {
-                        return (
-                          <View key={char} style={styles.imageItem}>
-                            <TouchableOpacity
-                              onPress={() => handleSelectCharacter(idx)}
-                            >
-                              <Character mood={char} size="small" />
-                            </TouchableOpacity>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  </ScrollView>
-                </CustomModal>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    gap: verticalScale(8),
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={handleChangeImage}
-                    style={styles.changeCharacterButton}
-                  >
-                    <MaterialCommunityIcons
-                      name="shuffle-variant"
-                      size={moderateScale(24)}
-                      color={colors.background[100]}
-                    />
-                    <Text style={styles.changeCharacterText}>
-                      {t('Change')}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={handleChangeImage}>
-                    <Character
-                      mood={
-                        availableImages.length > 0
-                          ? availableImages[currentImageIndex]
-                          : imagesArray[0]
-                      }
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-            <View style={{ alignItems: 'center' }}>
-              {players.length >= MAX_PLAYERS ? (
-                <NewPlayerInput
-                  disabled={true}
-                  setPlayer={() => {}}
-                  currentPlayerGender={playerGender}
-                />
-              ) : (
-                <NewPlayerInput
-                  disabled={false}
-                  setPlayer={setNewPlayer}
-                  currentPlayerGender={playerGender}
-                />
-              )}
-              <View style={styles.playersAddedContainer}>
-                <CustomText>
-                  {t('Players added')} - {players.length}
-                </CustomText>
-              </View>
-              {players.map(player => (
-                <PlayerInput
-                  key={player.id}
-                  player={player}
-                  editPlayer={editPlayer}
-                  deletePlayer={deletePlayer}
-                />
-              ))}
-            </View>
-          </View>
-        </ScrollView>
-        <View style={styles.buttonContainer}>
+    <ScreenLayout
+      scrollable
+      footer={
+        <>
           {notAvailableToContinue ? (
             <Button
               text={t('Create game')}
@@ -303,18 +208,148 @@ export default function CreateGame() {
           ) : (
             <Button text={t('Create game')} onPress={handleCreateGame} />
           )}
+        </>
+      }
+
+      header={
+        <View style={styles.headerContainer}>
+          <Elipse top={-80} />
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: scale(5),
+              flex: 1,
+              paddingHorizontal: scale(spacing.sm)
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                router.back();
+              }}
+            >
+              <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+            <View>
+              <Text style={styles.headerCategoryTitle}>
+                {t('Game')} {game.currentMatch} {t('of')}{' '}
+                {game.maximumMatches}
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
+                <Dot color={colors.white[100]} />
+                <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
+              </View>
+            </View>
+          </View>
+          <SidebarMenu />
         </View>
-      </SafeAreaView>
-    </WithSidebar>
+      }
+    >
+      <SelectCharacterModal />
+      <View>
+        <View style={styles.topContainer}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title}>{t(`Add players (3 to ${MAX_PLAYERS})`)}</Text>
+          </View>
+          <View>
+            <View style={styles.changeCharacterButtonContainer}>
+              <TouchableOpacity
+                onPress={handleChangeImage}
+                style={styles.changeCharacterButton}
+              >
+                <MaterialCommunityIcons
+                  name="shuffle-variant"
+                  size={moderateScale(24)}
+                  color={colors.background[100]}
+                />
+                <Text style={styles.changeCharacterText}>
+                  {t('Change')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleChangeImage}>
+                <Character
+                  mood={
+                    availableImages.length > 0
+                      ? availableImages[currentImageIndex]
+                      : imagesArray[0]
+                  }
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          {players.length >= MAX_PLAYERS ? (
+            <NewPlayerInput
+              disabled={true}
+              setPlayer={() => {}}
+              currentPlayerGender={playerGender}
+            />
+          ) : (
+            <NewPlayerInput
+              disabled={false}
+              setPlayer={setNewPlayer}
+              currentPlayerGender={playerGender}
+            />
+          )}
+          <View style={{ paddingTop: verticalScale(spacing.md) }}>
+            <CustomText>
+              {t('Players added')} - {players.length}
+            </CustomText>
+          </View>
+          {players.map(player => (
+            <PlayerInput
+              key={player.id}
+              player={player}
+              editPlayer={editPlayer}
+              deletePlayer={deletePlayer}
+            />
+          ))}
+        </View>
+      </View>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    paddingBottom: verticalScale(120),
+  headerContainer: {
+    paddingTop: verticalScale(spacing.xxl),
+    paddingBottom: verticalScale(spacing.xs),
+    flexDirection: "row", 
+    alignItems: "center" 
   },
-  container: {
-    marginTop: verticalScale(20),
+  topContainer: {
+    paddingHorizontal: scale(spacing.md),
+    paddingTop: verticalScale(spacing.lg),
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  title: {
+    fontFamily: 'Ralway',
+    fontSize: moderateScale(26),
+    fontWeight: 'bold',
+  },
+  changeCharacterButtonContainer: {
+    alignItems: 'center',
+    gap: scale(8),
+  },
+  changeCharacterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(5),
+    paddingHorizontal: scale(6),
+    paddingVertical: verticalScale(2),
+    backgroundColor: colors.orange[200],
+    borderRadius: radius.pill,
+    borderWidth: 2,
+    borderColor: colors.background[100],
+  },
+  changeCharacterText: {
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway',
+    fontWeight: "bold",
+    color: colors.background[100],
   },
   modalContainer: {
     maxHeight: verticalScale(400),
@@ -346,57 +381,9 @@ const styles = StyleSheet.create({
     marginVertical: verticalScale(3),
     alignItems: 'center',
   },
-  headerContainer: {
-    marginLeft: scale(20),
-    marginRight: scale(20),
-    marginTop: verticalScale(30),
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-
   headerCategoryTitle: {
     textTransform: 'capitalize',
     fontSize: moderateScale(14),
     fontFamily: 'Raleway-Medium',
-  },
-
-  title: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(26),
-    fontWeight: 'bold',
-  },
-
-  playersAddedContainer: {
-    marginTop: verticalScale(60),
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
-  },
-  changeCharacterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scale(5),
-    paddingHorizontal: scale(6),
-    paddingVertical: verticalScale(2),
-    backgroundColor: colors.orange[200],
-    borderRadius: moderateScale(20),
-    borderWidth: scale(2),
-    borderColor: colors.background[100],
-  },
-  changeCharacterText: {
-    fontSize: moderateScale(12),
-    fontFamily: 'Raleway',
-    fontWeight: "bold",
-    color: colors.background[100],
   },
 });

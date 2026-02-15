@@ -70,10 +70,7 @@ export default function SelectCategory() {
     const isAvailable = categoryData?.available ?? true;
 
     return (
-      <View style={[
-        styles.categoryCardContainer,
-        isActive && styles.categoryCardActive
-      ]}>
+      <View style={styles.categoryCardContainer}>
         {/* <ImageBackground
           source={backgroundImages[categoryName as keyof typeof backgroundImages]}
           style={styles.categoryCardInner}
@@ -86,20 +83,14 @@ export default function SelectCategory() {
           <Text></Text>
           <Image
             source={images[categoryName as keyof typeof images]}
-            style={[
-              styles.categoryImage,
-              isActive && styles.categoryImageActive,
-            ]}
+            style={styles.categoryImage}
           />
           {!isAvailable && (
             <View style={styles.lockIconContainer}>
               <Ionicons name="lock-closed" size={moderateScale(40)} color={colors.background[100]} />
             </View>
           )}
-          <Text style={[
-            styles.categoryTitle,
-            isActive && styles.categoryTitleActive,
-          ]}>
+          <Text style={styles.categoryTitle}>
             {t(categoryName)}
           </Text>
         </View>
@@ -151,6 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     overflow: 'hidden',
+    paddingTop: verticalScale(spacing.xl)
   },
   headerContainer: {
     flexDirection: "row",
@@ -217,15 +209,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 5,
   },
-  categoryCardActive: {
-    opacity: 1,
-    transform: [{ scale: 1 }],
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 10,
-  },
   categoryTitle: {
     fontFamily: 'Ralway',
     textTransform: 'capitalize',
@@ -233,17 +216,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.background[100],
     zIndex: 2,
-  },
-  categoryTitleActive: {
-    fontSize: fontSize.md,
     fontWeight: 'bold',
   },
   categoryImage: {
     height: scale(90),
     width: scale(90),
-  },
-  categoryImageActive: {
-    height: scale(110),
-    width: scale(110),
   },
 });
