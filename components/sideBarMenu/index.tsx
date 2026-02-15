@@ -239,7 +239,7 @@ export default function SidebarMenu() {
 
   return (
     <>
-    <View style={{ paddingTop: verticalScale(spacing.xl) }}>
+    <View style={{ paddingTop: verticalScale(spacing.md) }}>
       <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
         <Ionicons name="menu" size={28} color={colors.orange[200]} />
       </TouchableOpacity>
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background[100],
-    paddingTop: verticalScale(spacing.xl)
+    paddingTop: verticalScale(spacing.xxl)
   },
   buttonContainer: {
     zIndex: 100,

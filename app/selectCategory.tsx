@@ -118,9 +118,10 @@ export default function SelectCategory() {
         />
       }
     >
+      <Elipse top={scale(-180)} />
+
       <View style={styles.contentWrapper}>
         <SidebarMenu />
-        <Elipse top={scale(-180)} />
         <View style={styles.headerContainer}>
           <View style={styles.headerTextContainer}>
             <Text style={styles.pageTitle}>{t('Categories')}</Text>
@@ -172,14 +173,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: verticalScale(spacing.xxl),
     width: '100%',
     overflow: 'hidden',
   },
   categoryCardContainer: {
     width: '100%',
     minHeight: verticalScale(180),
-    maxHeight: verticalScale(220),
     backgroundColor: colors.orange[200],
     borderRadius: moderateScale(20),
     borderBottomWidth: scale(7),
@@ -219,7 +218,6 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   categoryCardActive: {
-    height: verticalScale(240),
     opacity: 1,
     transform: [{ scale: 1 }],
     shadowColor: '#000',
@@ -231,23 +229,21 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontFamily: 'Ralway',
     textTransform: 'capitalize',
-    fontSize: moderateScale(18),
+    fontSize: fontSize.md,
     textAlign: 'center',
     color: colors.background[100],
     zIndex: 2,
   },
   categoryTitleActive: {
-    fontSize: moderateScale(22),
+    fontSize: fontSize.md,
     fontWeight: 'bold',
   },
   categoryImage: {
     height: scale(90),
     width: scale(90),
-    resizeMode: 'contain',
-    zIndex: 0,
   },
   categoryImageActive: {
-    height: scale(120),
-    width: scale(120),
+    height: scale(110),
+    width: scale(110),
   },
 });
