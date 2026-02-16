@@ -25,6 +25,12 @@ import {
   useAudioRecorderState,
 } from 'expo-audio';
 import { router } from 'expo-router';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import Elipse from '@/components/elipse';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function RoundScreen() {
   const { game, nextRound, previousRound, getCurrentQuestion, saveRecordingToRound, getRoundAudio } =
@@ -131,20 +137,16 @@ export default function RoundScreen() {
   };
 
   return (
-    <WithSidebar>
-      <SafeAreaView
-        style={{
-          backgroundColor: colors.background[100],
-          overflow: 'hidden',
-          height: '100%',
-        }}
-      >
-        <View style={{ marginLeft: scale(15), marginRight: scale(15), marginTop: verticalScale(30) }}>
+    <ScreenLayout
+      header={
+        <View style={styles.headerContainer}>
           <View
             style={{
               alignItems: 'center',
               flexDirection: 'row',
-              marginVertical: verticalScale(30),
+              gap: scale(5),
+              flex: 1,
+              paddingHorizontal: scale(spacing.sm)
             }}
           >
             <Text style={styles.headerCategoryTitle}>
@@ -152,72 +154,82 @@ export default function RoundScreen() {
             </Text>
             <Dot color={colors.orange[200]} />
             <Text style={styles.headerCategoryTitle}>
-              {t('Category')}
-            </Text>
-            <Dot color={colors.orange[200]} />
-            <Text style={styles.headerCategoryTitle}>
               {t(game.category || '')}
             </Text>
-            </View>
+          </View>
+          <SidebarMenu />
         </View>
+      }
 
-        <View>
+      footer={
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: scale(spacing.sm) }}>
+          <View style={styles.leftFooterArea}>
+            <TouchableOpacity
+              onPress={handlePreviousRound}
+              style={styles.arrowTouchable}
+              disabled={game.currentRound === 1}
+            >
+              <AntDesign
+                name="left"
+                size={moderateScale(24)}
+                color={game.currentRound === 1 ? colors.gray[300] : colors.orange[200]}
+              />
+            </TouchableOpacity>
+          </View>
+
           <View>
-            <Text style={styles.playerName}>
-              {playerThatAsks.name}{' '}
-              <Text style={styles.playerThatAnswers}>{t('asks')}</Text>{' '}
-              {playerThatAnswers.name}
-            </Text>
-            <View style={{ flexDirection: 'row' }}>
-              <Character mood={playerThatAsks.character} />
-              <Character mood={playerThatAnswers.character} flip />
+            <Button text={t('Continue')} onPress={handleNextRound} />
+          </View>
+
+          <View style={styles.rightFooterArea} />
+        </View>
+      }
+    >
+      <View style={{ flex: 1}}>
+        <Text style={styles.playerName}>
+          {playerThatAsks.name}{' '}
+          <Text style={styles.playerThatAnswers}>{t('asks')}</Text>{' '}
+          {playerThatAnswers.name}
+        </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <Character mood={playerThatAsks.character} />
+          <Character mood={playerThatAnswers.character} flip />
+        </View>
+        <View style={styles.recordingContainer}>
+          {isRecording ?
+            <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
+              <TouchableOpacity onPress={handleStopRecording}>
+                <FontAwesome6 name="circle-stop" size={24} color={colors.orange[200]} />
+              </TouchableOpacity>
+              <Text style={styles.recordingText}>
+                {formatTime(recorderState.durationMillis)}
+              </Text>
+              <View />
             </View>
-            <View style={styles.recordingContainer}>
-              {isRecording ?
-                  <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
-                    <TouchableOpacity onPress={handleStopRecording}>
-                      <FontAwesome6 name="circle-stop" size={24} color={colors.orange[200]} />
-                    </TouchableOpacity>
-                    <Text style={styles.recordingText}>
-                      {formatTime(recorderState.durationMillis)}
-                    </Text>
-                    <View />
-                  </View>
-                :
-                  <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
-                    <TouchableOpacity onPress={() => {startRecording()}}>
-                      <FontAwesome6 name="microphone" size={24} color={colors.orange[200]} />
-                    </TouchableOpacity>
-                    <Text style={styles.recordingText}>{audioUri ? "Record a new answer" : "Record answer"}</Text>
-                    <View />
-                  </View>
-              }
+          :
+            <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
+              <TouchableOpacity onPress={() => {startRecording()}}>
+                <FontAwesome6 name="microphone" size={24} color={colors.orange[200]} />
+              </TouchableOpacity>
+              <Text style={styles.recordingText}>{audioUri ? "Record a new answer" : "Record answer"}</Text>
+              <View />
             </View>
+          }
           </View>
         </View>
         <Text style={styles.question}>{question}</Text>
-        <View style={styles.buttonContainer}>
-          <Button text={t('Continue')} onPress={handleNextRound} />
-          <View style={styles.arrowButtonContainer}>
-            {game.currentRound !== 1 ? (
-              <TouchableOpacity onPress={handlePreviousRound}>
-                <AntDesign
-                  name="left"
-                  size={moderateScale(24)}
-                  color={colors.orange[200]}
-                />
-              </TouchableOpacity>
-            ) : (
-              <View style={{ height: verticalScale(24) }} />
-            )}
-          </View>
-        </View>
-      </SafeAreaView>
-    </WithSidebar>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    paddingTop: verticalScale(spacing.md),
+    paddingBottom: verticalScale(spacing.xs),
+    flexDirection: "row", 
+    alignItems: "center" ,
+    paddingHorizontal: scale(spacing.sm)
+  },
   headerCategoryTitle: {
     textTransform: 'capitalize',
     fontSize: moderateScale(14),
@@ -226,11 +238,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   playerName: {
-    marginTop: verticalScale(10),
-    marginBottom: verticalScale(10),
-    paddingHorizontal: scale(15),
+    paddingVertical: verticalScale(10),
+    paddingHorizontal: scale(5),
     fontFamily: 'Ralway',
-    fontSize: moderateScale(28),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
     color: colors.white[100],
     textAlign: 'center',
@@ -239,44 +250,37 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   recordingContainer: {
-    marginTop: verticalScale(20),
-    // alignItems: 'center',
+    marginTop: verticalScale(8),
     backgroundColor: colors.gray[300],
     paddingVertical: scale(15),
     paddingHorizontal: scale(15),
     width: scale(250),
     alignSelf: 'center',
-    borderRadius: moderateScale(10),
+    borderRadius: radius.md,
   },
   recordingText: {
-    fontSize: moderateScale(16),
+    fontSize: fontSize.md,
     color: colors.orange[200],
     fontFamily: 'Ralway',
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   question: {
-    fontSize: moderateScale(18),
+    fontSize: fontSize.lg,
     color: colors.white[100],
     fontFamily: 'Sigmar',
-    padding: scale(15),
     textAlign: 'center',
-    marginTop: scale(50),
+    paddingHorizontal: scale(10),
+    flex: 1,
   },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: verticalScale(10),
-    left: 0,
-    right: 0,
+  leftFooterArea: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
   },
-  arrowButtonContainer: {
-    position: 'absolute',
-    left: scale(5)
+  rightFooterArea: {
+    flex: 1,
+  },
+  arrowTouchable: {
+    padding: moderateScale(8),
   }
 });
