@@ -5,6 +5,7 @@ import {
   Text,
   SafeAreaView,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
@@ -16,6 +17,11 @@ import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Dot from '@/components/dot';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import { Ionicons } from '@expo/vector-icons';
+import { fontSize } from '@/styles/fontSize';
 
 export default function ShowWordToAll() {
   const { game, showWordToNextPlayer, getCurrentWord } =
@@ -65,54 +71,33 @@ export default function ShowWordToAll() {
   }
 
   return (
-    <WithSidebar>
-      <SafeAreaView
-        style={[
-          {
-            backgroundColor: colors.background[100],
-            overflow: 'hidden',
-            height: '100%',
-          },
-          modalVisible && { opacity: 0.1 },
-        ]}
-      >
-        <Elipse top={verticalScale(-100)} left={scale(-30)} />
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginBottom: verticalScale(12),
-            marginLeft: scale(15),
-            marginRight: scale(15),
-            marginTop: verticalScale(30),
-          }}
-        >
-          <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
-          <Dot color={colors.white[100]} />
-          <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
-          <Dot color={colors.white[100]} />
-          <Text style={styles.headerCategoryTitle}>
-            {t('Player')} {game.showingWordToPlayer + 1} {t('of')}{' '}
-            {game.players.length}
-          </Text>
-        </View>
+    <ScreenLayout
+      style={modalVisible && { opacity: 0.1 }}
+      header={
         <View style={styles.headerContainer}>
-          <View>
-            <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
-            <Text style={styles.playerName}>{currentPlayer.name}</Text>
+          <Elipse top={verticalScale(-140)} left={scale(-30)} />
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: scale(5),
+              flex: 1,
+              paddingHorizontal: scale(spacing.sm)
+            }}
+          >
+            <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
+            <Dot color={colors.white[100]} />
+            <Text style={styles.headerCategoryTitle}>
+              {t('Player')} {game.showingWordToPlayer + 1} {t('of')}{' '}
+              {game.players.length}
+            </Text>
           </View>
-          <Character mood={currentPlayer.character} />
+          <SidebarMenu />
         </View>
-        <PlayerModal
-          player={currentPlayer}
-          setModalVisible={setModalVisible}
-          modalVisible={modalVisible}
-        />
-        <View style={styles.secretWordContainer}>
-          <Text style={styles.secretWord}>{displayWord}</Text>
-          <Text style={styles.subtitle}>{displaySubtitle}</Text>
-        </View>
-        <View style={styles.buttonContainer}>
+      }
+
+      footer={
+        <View>
           {wordRevealed === false ? (
             <Button
               text={t('Tap to reveal')}
@@ -123,23 +108,36 @@ export default function ShowWordToAll() {
             <Button text={t('Got it!')} onPress={handleShowWordToNextPlayer} />
           )}
         </View>
-      </SafeAreaView>
-    </WithSidebar>
+      }
+    >
+      <View style={styles.topContainer}>
+        <View style={ styles.topTextContainer }>
+          <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
+          <Text style={styles.playerName}>{currentPlayer.name}</Text>
+        </View>
+        <Character mood={currentPlayer.character} />
+      </View>
+      <PlayerModal
+        player={currentPlayer}
+        setModalVisible={setModalVisible}
+        modalVisible={modalVisible}
+      />
+      <View style={styles.secretWordContainer}>
+        <Text style={styles.secretWord}>{displayWord}</Text>
+        <Text style={styles.subtitle}>{displaySubtitle}</Text>
+      </View>
+    </ScreenLayout>
+
   );
 }
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginLeft: scale(30),
-    marginTop: verticalScale(20),
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  modalPlayerName: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(25),
-    fontWeight: 'bold',
-    color: colors.orange[200],
+    paddingTop: verticalScale(spacing.md),
+    paddingBottom: verticalScale(spacing.xs),
+    flexDirection: "row", 
+    alignItems: "center" ,
+    paddingHorizontal: scale(spacing.sm)
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',
@@ -147,64 +145,50 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway-Medium',
     textAlign: 'center',
   },
+  topContainer: {
+    paddingLeft: scale(30),
+    paddingTop: verticalScale(20),
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  topTextContainer: {
+    flex: 1
+  },
   titleInformation: {
-    fontSize: moderateScale(18),
+    fontSize: fontSize.lg,
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: moderateScale(32),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
     color: colors.white[100],
   },
+  modalPlayerName: {
+    fontFamily: 'Ralway',
+    fontSize: moderateScale(25),
+    fontWeight: 'bold',
+    color: colors.orange[200],
+  },
   secretWordContainer: {
-    marginTop: verticalScale(100),
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: scale(20),
+    paddingHorizontal: scale(5),
   },
   secretWord: {
     color: colors.white[100],
-    fontSize: moderateScale(26),
+    fontSize: fontSize.xl,
     textAlign: 'center',
-    paddingHorizontal: scale(15),
   },
   subtitle: {
     fontFamily: 'Ralway',
-    fontSize: moderateScale(14),
+    fontSize: fontSize.sm,
     fontWeight: 'bold',
     color: colors.orange[200],
-    paddingHorizontal: scale(15),
-    marginTop: verticalScale(10),
+    paddingTop: verticalScale(spacing.sm),
     textAlign: 'center',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: verticalScale(10),
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
-  },
-  modalView: {
-    margin: scale(20),
-    backgroundColor: 'white',
-    borderRadius: moderateScale(20),
-    padding: scale(35),
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: verticalScale(2),
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: moderateScale(4),
-    elevation: 5,
   },
 });

@@ -1,13 +1,14 @@
 import { colors } from '@/styles/colors';
 import { spacing } from '@/styles/spacing';
 import { ReactNode } from 'react';
-import { StyleSheet, SafeAreaView, KeyboardAvoidingView, View, ScrollView, Platform } from 'react-native';
+import { StyleProp, ViewStyle, StyleSheet, SafeAreaView, KeyboardAvoidingView, View, ScrollView, Platform } from 'react-native';
 import { scale } from 'react-native-size-matters';
 
 type ScreenLayoutProps = {
   children: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
+  style?: StyleProp<ViewStyle>;
   scrollable?: boolean;
   withKeyboardAvoiding?: boolean;
 };
@@ -16,6 +17,7 @@ export default function ScreenLayout({
   children,
   header,
   footer,
+  style,
   scrollable = false,
   withKeyboardAvoiding = true,
 }: ScreenLayoutProps) {
@@ -23,7 +25,7 @@ export default function ScreenLayout({
   const ContentWrapper = scrollable ? ScrollView : View;
 
   return (
-  <SafeAreaView style={styles.container}>
+  <SafeAreaView style={[styles.container, style]}>
       <KeyboardAvoidingView 
         style={styles.keyboard}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -51,14 +53,14 @@ export default function ScreenLayout({
 
 const styles = StyleSheet.create({
   container: {
-  flex: 1,
-  backgroundColor: colors.background[100],
+    flex: 1,
+    backgroundColor: colors.background[100],
   },
   keyboard: {
-  flex: 1,
+    flex: 1,
   },
   wrapper: {
-  flex: 1,
+    flex: 1,
   },
   content: {
     flex: 1,
