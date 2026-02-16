@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     overflow: 'hidden',
-    paddingTop: verticalScale(spacing.xl)
+    paddingTop: verticalScale(spacing.md)
   },
   headerContainer: {
     flexDirection: "row",

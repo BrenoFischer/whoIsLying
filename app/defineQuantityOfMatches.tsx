@@ -91,7 +91,7 @@ export default function DefineQuantityOfMatches() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: verticalScale(spacing.xl)
+    paddingTop: verticalScale(spacing.md)
   },
   headerContainer: {
     flexDirection: "row",

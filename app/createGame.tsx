@@ -314,7 +314,7 @@ export default function CreateGame() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: verticalScale(spacing.xxl),
+    paddingTop: verticalScale(spacing.md),
     paddingBottom: verticalScale(spacing.xs),
     flexDirection: "row", 
     alignItems: "center" 

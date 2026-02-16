@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   },
 
   languageButtons: {
-    paddingTop: verticalScale(spacing.xxxl),
+    paddingTop: verticalScale(spacing.xl),
     paddingHorizontal: scale(spacing.xl),
     flexDirection: 'row',
     justifyContent: "flex-end",
