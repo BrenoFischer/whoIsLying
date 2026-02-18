@@ -3,8 +3,9 @@ import { Player } from '@/types/Player';
 import { Round } from '@/types/Round';
 // import questions from '@/data/questions.json';
 import allCategories from '@/data/categories.json';
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import uuid from 'react-native-uuid';
+import * as FileSystem from 'expo-file-system';
 import { useTranslation, Language } from '@/translations';
 import {
   getRandomWordIndex,
@@ -58,6 +59,25 @@ export const GameContextProvider = ({
   };
 
   const [game, setGame] = useState<Game>(newGame);
+
+  useEffect(() => {
+    // Clean up any leftover audio files from previous sessions
+    try {
+      const cacheDir = new FileSystem.Directory(FileSystem.Paths.cache);
+      const files = cacheDir.list();
+      files.forEach(entry => {
+        if (entry instanceof FileSystem.File && /^round_.*\.m4a$/.test(entry.name)) {
+          try {
+            entry.delete();
+          } catch (e) {
+            console.warn('Failed to delete leftover audio file:', entry.uri, e);
+          }
+        }
+      });
+    } catch (e) {
+      console.warn('Audio cache cleanup failed:', e);
+    }
+  }, []);
 
   const shuffleRounds = (rounds: Round[]) => {
     for (let i = rounds.length - 1; i > 0; i--) {

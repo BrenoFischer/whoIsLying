@@ -41,7 +41,7 @@ export default function RoundScreen() {
   const [ isRecording, setIsRecording ] = useState(false);
   const [audioUri, setAudioUri] = useState<string | null >(null);
 
-  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const audioRecorder = useAudioRecorder(RecordingPresets.LOW_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder, 900);
 
   useEffect(() => {
