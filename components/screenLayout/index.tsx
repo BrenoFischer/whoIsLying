@@ -26,27 +26,21 @@ export default function ScreenLayout({
 
   return (
   <SafeAreaView style={[styles.container, style]}>
-      <KeyboardAvoidingView 
-        style={styles.keyboard}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        enabled={withKeyboardAvoiding}
-      >
-          <View style={styles.wrapper}>
-              {header && <View>{header}</View>}
+      <View style={styles.wrapper}>
+          {header && <View>{header}</View>}
 
-              <ContentWrapper 
-                style={styles.content}
-                contentContainerStyle={
-                  scrollable ? styles.scrollContent : undefined
-                }
-                keyboardShouldPersistTaps="handled"
-              >
-                  {children}
-              </ContentWrapper>
+          <ContentWrapper 
+            style={styles.content}
+            contentContainerStyle={
+              scrollable ? styles.scrollContent : undefined
+            }
+            keyboardShouldPersistTaps="handled"
+          >
+              {children}
+          </ContentWrapper>
 
-              {footer && <View style={styles.footer}>{footer}</View>}
-          </View>
-      </KeyboardAvoidingView>
+          {footer && <View style={styles.footer}>{footer}</View>}
+      </View>
   </SafeAreaView>
   );
 }

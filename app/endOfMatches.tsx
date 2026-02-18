@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import * as FileSystem from 'expo-file-system';
 
 export default function EndOfMatches() {
   const navigation = useNavigation();
@@ -54,17 +55,31 @@ export default function EndOfMatches() {
     );
   }
 
+  const cleanupAudioFiles = () => {
+    game.rounds
+      .filter(round => round.audio)
+      .forEach(round => {
+        try {
+          new FileSystem.File(round.audio!).delete();
+        } catch (e) {
+          console.warn('Failed to delete audio file:', round.audio, e);
+        }
+      });
+  };
+
   const handleContinue = () => {
     setModalOpen(true);
   };
 
   const handlePlayerOneMoreRound = () => {
     setModalOpen(!modalOpen);
+    cleanupAudioFiles();
     router.replace('/selectCategory');
   };
 
   const handleStartNewGame = () => {
     setModalOpen(!modalOpen);
+    cleanupAudioFiles();
     resetApp();
     navigation.dispatch(
       CommonActions.reset({

@@ -11,20 +11,35 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import {
+  setAudioModeAsync,
   useAudioPlayer,
   useAudioPlayerStatus,
 } from 'expo-audio';
+import ScreenLayout from '@/components/screenLayout';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
+import SidebarMenu from '@/components/sideBarMenu';
+import { Round } from '@/types/Round';
 
 export default function Discussion() {
   const { game } = useContext(GameContext);
   const { t } = useTranslation();
 
   const player = useAudioPlayer();
-  const playerState = useAudioPlayerStatus(player);
+  const playerStatus = useAudioPlayerStatus(player);
 
-  const [currentUri, setCurrentUri] = useState<string | null>(null);
+  const [currentRoundId, setCurrentRoundId] = useState<string | null>(null);
 
   const rounds = game.rounds;
+
+  useEffect(() => {
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldRouteThroughEarpiece: false,
+      allowsRecording: false,
+    });
+  }, [])
 
   const agregateByPlayerRounds = useMemo(() => {
     if(!game.rounds?.length) return [];
@@ -55,35 +70,37 @@ export default function Discussion() {
     return agregatedArray;
   }, [game.rounds]);
 
-  useEffect(() => {
-    if (playerState.didJustFinish) {
-      setCurrentUri(null);
-    }
-  }, [playerState.didJustFinish]);
+  const handleToggleAudio = async (round: Round) => {
+    if (!round.audio) return;
 
-  const handleToggleAudio = async (uri: string) => {
     try {
       if (!player) return;
 
-      if (currentUri === uri) {
-        if (playerState.playing) {
-          await player.pause();
+      if (currentRoundId === round.id) {
+        if (playerStatus.playing) {
+          player.pause();
         } else {
-          await player.play();
+          player.play();
         }
         return;
       }
 
-      await player.pause();
-      await player.seekTo(0);
-      await player.replace({ uri });
-      await player.play();
-
-      setCurrentUri(uri);
+      if (player.playing) {
+        player.pause();
+      }
+      player.replace({ uri: round.audio });
+      player.play()
+      setCurrentRoundId(round.id);
     } catch (e) {
       console.warn('Audio error:', e);
     }
   };
+
+  useEffect(() => {
+    if (playerStatus.didJustFinish) {
+      player.seekTo(0);
+    }
+  }, [playerStatus]);
 
   const handleNextPage = () => {
     router.replace('/votes');
@@ -101,33 +118,36 @@ export default function Discussion() {
   };
 
   return (
-    <WithSidebar>
-      <SafeAreaView
-        style={{
-          backgroundColor: colors.background[100],
-          overflow: 'hidden',
-          height: '100%',
-        }}
-      >
-        <Elipse left={scale(-20)} />
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: verticalScale(60),
-          }}
-        >
-          <View style={{ marginBottom: verticalScale(30) }}>
-            <Text style={styles.title}>{t('Discussion time!')}</Text>
-            <Text style={styles.subtitle}>
-              {t(
-                'Review all questions and analyse each detail that was answered'
-              )}
-            </Text>
+    <ScreenLayout
+      footer={ 
+        <Button text={t('Continue')} onPress={handleNextPage} />
+      }
+      header={
+        <>
+          <Elipse left={scale(-20)} />
+          <SidebarMenu />
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: spacing.lg,
+              paddingHorizontal: spacing.sm
+            }}
+            >
+            <View style={{ paddingBottom: verticalScale(30) }}>
+              <Text style={styles.title}>{t('Discussion time!')}</Text>
+              <Text style={styles.subtitle}>
+                {t(
+                  'Review all questions and analyse each detail that was answered'
+                )}
+              </Text>
+            </View>
           </View>
-        </View>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.table}>
+        </>
+      }
+    >
+      <View style={styles.table}>
+        <ScrollView showsVerticalScrollIndicator={false}>
             {agregateByPlayerRounds.map((round, index) => {
               return (
                 <View key={`${round.playerThatAnswers.id}-${index}`}>
@@ -137,23 +157,14 @@ export default function Discussion() {
                   <Text style={styles.question}>{t(round.question, {ns: 'categories'})}</Text>
                   {round.audio && (
                     <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginTop: 8,
-                        justifyContent: 'space-between',
-                        backgroundColor: colors.background[100],
-                        paddingVertical: scale(10),
-                        paddingHorizontal: scale(15),
-                        borderRadius: scale(10)
-                      }}
+                      style={styles.audioContainer}
                     >
                       <TouchableOpacity
-                        onPress={() => handleToggleAudio(round.audio!)}
+                        onPress={() => handleToggleAudio(round)}
                       >
                         <FontAwesome6
                           name={
-                            currentUri === round.audio && playerState.playing
+                            round.id === currentRoundId && playerStatus.playing
                               ? 'pause'
                               : 'play'
                           }
@@ -162,10 +173,10 @@ export default function Discussion() {
                         />
                       </TouchableOpacity>
 
-                      {currentUri === round.audio && (
+                      {currentRoundId === round.id && (
                         <Text style={{ fontSize: moderateScale(14), color: colors.white[100] }}>
-                          {formatTime(playerState.currentTime)} /{' '}
-                          {formatTime(playerState.duration)}
+                          {formatTime(playerStatus.currentTime)} /{' '}
+                          {formatTime(playerStatus.duration)}
                         </Text>
                       )}
                     </View>
@@ -173,41 +184,30 @@ export default function Discussion() {
                 </View>
               );
             })}
-          </View>
         </ScrollView>
-        <View style={styles.buttonContainer}>
-          <Button text={t('Continue')} onPress={handleNextPage} />
-        </View>
-      </SafeAreaView>
-    </WithSidebar>
+          </View>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    paddingBottom: verticalScale(120),
-  },
   title: {
-    fontSize: moderateScale(30),
-    maxWidth: scale(250),
+    fontSize: fontSize.xl,
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: moderateScale(16),
+    fontSize: fontSize.md,
     fontFamily: 'Raleway-Medium',
-    maxWidth: scale(250),
     textAlign: 'center',
     marginTop: verticalScale(4)
   },
   table: {
-    gap: verticalScale(10),
     padding: scale(20),
-    marginHorizontal: scale(25),
-    marginBottom: verticalScale(15),
+    marginHorizontal: scale(15),
     backgroundColor: colors.white[100],
-    borderRadius: moderateScale(10),
+    borderRadius: radius.sm,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: moderateScale(8),
     elevation: 5,
+    flex: 1
   },
   playerName: {
     fontSize: moderateScale(17),
@@ -226,16 +227,14 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(15),
     fontFamily: 'Raleway-Medium',
   },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
+  audioContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
+    marginTop: 8,
+    justifyContent: 'space-between',
     backgroundColor: colors.background[100],
-  },
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(15),
+    borderRadius: scale(10)
+  }
 });

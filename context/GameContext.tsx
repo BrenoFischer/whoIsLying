@@ -4,6 +4,7 @@ import { Round } from '@/types/Round';
 // import questions from '@/data/questions.json';
 import allCategories from '@/data/categories.json';
 import { createContext, useState, useContext } from 'react';
+import uuid from 'react-native-uuid';
 import { useTranslation, Language } from '@/translations';
 import {
   getRandomWordIndex,
@@ -120,6 +121,7 @@ export const GameContextProvider = ({
       );
 
       const round: Round = {
+        id: uuid.v4().toString(),
         playerThatAsks,
         playerThatAnswers,
         question: questionData.question,
@@ -144,6 +146,7 @@ export const GameContextProvider = ({
       );
 
       const round: Round = {
+        id: uuid.v4().toString(),
         playerThatAsks,
         playerThatAnswers,
         question: questionData.question,
