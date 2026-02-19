@@ -41,8 +41,12 @@ const backgroundImages = {
 };
 
 export default function SelectCategory() {
-  const { setGameWord } = useContext(GameContext);
+  const { setGameWord, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/selectCategory');
+  }, []);
   const { height } = useWindowDimensions();
 
   const categoriesArray = Object.keys(categories);

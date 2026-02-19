@@ -5,7 +5,7 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAppReset } from '@/context/AppResetContext';
 import { useNavigation } from '@react-navigation/native';
@@ -19,8 +19,12 @@ export default function EndOfMatches() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { resetApp } = useAppReset();
-  const { game } = useContext(GameContext);
+  const { game, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/endOfMatches');
+  }, []);
 
   const getWinners = () => {
     const firstPlayer = game.players[0];

@@ -46,8 +46,12 @@ const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro', 
 const femaleImagesBase = ['paola', 'sara', 'luh', 'pri', 'gio', 'ginger', 'eighties', 'highlight', 'surfer'];
 
 export default function CreateGame() {
-  const { createGame, game } = useContext(GameContext);
+  const { createGame, game, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/createGame');
+  }, []);
   const [playerGender, setPlayerGender] = useState('man');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [players, setPlayers] = useState<Player[]>(game.players);

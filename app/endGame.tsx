@@ -4,14 +4,18 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function EndGame() {
-  const { game, addNewMatch } = useContext(GameContext);
+  const { game, addNewMatch, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/endGame');
+  }, []);
 
   const sortedWinningPlayers = game.players
     .slice()

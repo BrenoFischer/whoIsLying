@@ -1,6 +1,6 @@
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -21,8 +21,12 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Dot from '@/components/dot';
 
 export default function Votes() {
-  const { game, addVote } = useContext(GameContext);
+  const { game, addVote, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/votes');
+  }, []);
   const players = game.players;
   const [player, setPlayer] = useState(players[0]);
   const [playerIndex, setPlayerIndex] = useState(0);

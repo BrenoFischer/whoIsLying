@@ -11,6 +11,9 @@ import {
   getRandomWordIndex,
   getQuestionByIndex,
 } from '@/utils/gameTranslations';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const GAME_STORAGE_KEY = 'game_state';
 
 interface GameContextType {
   game: Game;
@@ -34,6 +37,7 @@ interface GameContextType {
   getCurrentQuestion: () => string;
   saveRecordingToRound: (recording: string) => void;
   getRoundAudio: () => string | undefined;
+  setCurrentScreen: (screen: string) => void;
 }
 
 export const GameContext = createContext({} as GameContextType);
@@ -59,25 +63,48 @@ export const GameContextProvider = ({
   };
 
   const [game, setGame] = useState<Game>(newGame);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Clean up any leftover audio files from previous sessions
-    try {
-      const cacheDir = new FileSystem.Directory(FileSystem.Paths.cache);
-      const files = cacheDir.list();
-      files.forEach(entry => {
-        if (entry instanceof FileSystem.File && /^round_.*\.m4a$/.test(entry.name)) {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(GAME_STORAGE_KEY);
+        if (stored) {
+          // Saved game exists — restore it, keeping audio URIs intact for Discussion
+          const parsedGame: Game = JSON.parse(stored);
+          setGame(parsedGame);
+        } else {
+          // No saved game — safe to delete any orphaned audio files from a crashed session
           try {
-            entry.delete();
+            const cacheDir = new FileSystem.Directory(FileSystem.Paths.cache);
+            const files = cacheDir.list();
+            files.forEach(entry => {
+              if (entry instanceof FileSystem.File && /^round_.*\.m4a$/.test(entry.name)) {
+                try {
+                  entry.delete();
+                } catch (e) {
+                  console.warn('Failed to delete leftover audio file:', entry.uri, e);
+                }
+              }
+            });
           } catch (e) {
-            console.warn('Failed to delete leftover audio file:', entry.uri, e);
+            console.warn('Audio cache cleanup failed:', e);
           }
         }
-      });
-    } catch (e) {
-      console.warn('Audio cache cleanup failed:', e);
-    }
+      } catch (e) {
+        console.warn('Failed to hydrate game state:', e);
+      } finally {
+        setIsHydrated(true);
+      }
+    })();
   }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    AsyncStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(game)).catch(e => {
+      console.warn('Failed to persist game state:', e);
+    });
+  }, [game, isHydrated]);
 
   const shuffleRounds = (rounds: Round[]) => {
     for (let i = rounds.length - 1; i > 0; i--) {
@@ -369,6 +396,10 @@ export const GameContextProvider = ({
     return game.rounds[game.currentRound - 1]?.audio
   }
 
+  const setCurrentScreen = (screen: string) => {
+    setGame(prev => ({ ...prev, currentScreen: screen }));
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -393,6 +424,7 @@ export const GameContextProvider = ({
         getCurrentQuestion,
         saveRecordingToRound,
         getRoundAudio,
+        setCurrentScreen,
       }}
     >
       {children}

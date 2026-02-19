@@ -34,9 +34,13 @@ import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 
 export default function RoundScreen() {
-  const { game, nextRound, previousRound, getCurrentQuestion, saveRecordingToRound, getRoundAudio } =
+  const { game, nextRound, previousRound, getCurrentQuestion, saveRecordingToRound, getRoundAudio, setCurrentScreen } =
     useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/round');
+  }, []);
 
   const [ isRecording, setIsRecording ] = useState(false);
   const [audioUri, setAudioUri] = useState<string | null >(null);

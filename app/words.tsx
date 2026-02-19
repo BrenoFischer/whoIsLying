@@ -13,6 +13,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -21,9 +22,16 @@ export default function Words() {
   const [modalVisible, setModalVisible] = useState(true);
   const [newSelectedWord, setNewSelectedWord] = useState('');
   const [allWords, setAllWords] = useState<string[]>([]);
-  const { game, getRandomWord, setSelectedWord, getCurrentWord } =
+  const { game, getRandomWord, setSelectedWord, getCurrentWord, setCurrentScreen } =
     useContext(GameContext);
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
+  
+  const characterSize = height * 0.22;
+
+  useEffect(() => {
+    setCurrentScreen('/words');
+  }, []);
 
   const impostorPlayer = game.lyingPlayer;
 
@@ -114,7 +122,7 @@ export default function Words() {
           setModalVisible={setModalVisible}
         />
         <View style={styles.topContainer}>
-          <Character mood={impostorPlayer.character} size='medium' />
+          <Character mood={impostorPlayer.character} size={characterSize} />
         </View>
         <View style={styles.tableContainer}>
           <ScrollView style={styles.table}>

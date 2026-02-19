@@ -5,7 +5,7 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -17,8 +17,12 @@ type VotesByPlayerType = {
 };
 
 export default function VotesResults() {
-  const { game } = useContext(GameContext);
+  const { game, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/votesResults');
+  }, []);
 
   const votesByPlayer: VotesByPlayerType[] = game.players.map(p => {
     return { player: p, votes: 0, playersThatVoted: [] };

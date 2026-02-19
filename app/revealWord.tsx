@@ -5,16 +5,20 @@ import WithSidebar from '@/components/withSideBar';
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
-  const { game, checkVoteForSecretWord, getCurrentWord } =
+  const { game, checkVoteForSecretWord, getCurrentWord, setCurrentScreen } =
     useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/revealWord');
+  }, []);
 
   const handleContinue = () => {
     //if impostor got correct the secret word, it obtains 2 points

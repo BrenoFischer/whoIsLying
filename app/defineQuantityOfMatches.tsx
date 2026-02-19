@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -27,8 +27,12 @@ import { radius } from '@/styles/radius';
 
 export default function DefineQuantityOfMatches() {
   const [selectQuantity, setSelectedQuantity] = useState(1);
-  const { setMaximumMatches, createNewGame } = useContext(GameContext);
+  const { setMaximumMatches, createNewGame, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/defineQuantityOfMatches');
+  }, []);
   const { height } = useWindowDimensions();
 
   const characterSize = height * 0.22;

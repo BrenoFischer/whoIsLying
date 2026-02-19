@@ -4,7 +4,7 @@ import WithSidebar from '@/components/withSideBar';
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -17,7 +17,11 @@ export default function RevealImpostor() {
     t('Impostor, you can stand up to reveal yourself'),
   ];
   const [nextReveal, setNextReveal] = useState(false);
-  const { game } = useContext(GameContext);
+  const { game, setCurrentScreen } = useContext(GameContext);
+
+  useEffect(() => {
+    setCurrentScreen('/revealImpostor');
+  }, []);
 
   const getRandomPhrase = () => {
     return phrasesToReveal[Math.floor(Math.random() * phrasesToReveal.length)];

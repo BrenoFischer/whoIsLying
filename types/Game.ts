@@ -15,4 +15,5 @@ export interface Game {
   votes: Vote[];
   maximumMatches: number;
   currentMatch: number;
+  currentScreen?: string;
 }

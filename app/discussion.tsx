@@ -23,8 +23,12 @@ import SidebarMenu from '@/components/sideBarMenu';
 import { Round } from '@/types/Round';
 
 export default function Discussion() {
-  const { game } = useContext(GameContext);
+  const { game, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/discussion');
+  }, []);
 
   const player = useAudioPlayer();
   const playerStatus = useAudioPlayerStatus(player);

@@ -1,5 +1,5 @@
 import { GameContext } from '@/context/GameContext';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -24,9 +24,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { fontSize } from '@/styles/fontSize';
 
 export default function ShowWordToAll() {
-  const { game, showWordToNextPlayer, getCurrentWord } =
+  const { game, showWordToNextPlayer, getCurrentWord, setCurrentScreen } =
     useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/showWordToAll');
+  }, []);
   const [wordRevealed, setWordRevealed] = useState(false);
   const [isLyingPlayer, setIsLyingPlayer] = useState(false);
   const [rawWord, setRawWord] = useState('');
