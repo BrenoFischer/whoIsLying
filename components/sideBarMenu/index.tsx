@@ -16,7 +16,6 @@ import { colors } from '@/styles/colors';
 import Button from '../button';
 import Character from '../character';
 import { useNavigation } from 'expo-router';
-import { useAppReset } from '@/context/AppResetContext';
 import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
 import CheckPlayerWord from '../forgotWord';
@@ -216,14 +215,12 @@ export default function SidebarMenu() {
   const [showForgotWord, setShowForgotWord] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
-  const { game } = useContext(GameContext)
-
-  const { resetApp } = useAppReset();
+  const { game, createNewGame } = useContext(GameContext);
   const toggleMenu = () => setVisible(!visible);
 
   const handleStartNewGame = () => {
     setNewGameModalOpen(!newGameModalOpen);
-    resetApp();
+    createNewGame();
     navigation.dispatch(
       CommonActions.reset({
         index: 0,

@@ -7,7 +7,6 @@ import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext, useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useAppReset } from '@/context/AppResetContext';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from '@/translations';
@@ -18,8 +17,7 @@ export default function EndOfMatches() {
   const navigation = useNavigation();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { resetApp } = useAppReset();
-  const { game, setCurrentScreen } = useContext(GameContext);
+  const { game, setCurrentScreen, resetGameWithExistingPlayers, createNewGame } = useContext(GameContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -78,13 +76,14 @@ export default function EndOfMatches() {
   const handlePlayerOneMoreRound = () => {
     setModalOpen(!modalOpen);
     cleanupAudioFiles();
+    resetGameWithExistingPlayers();
     router.replace('/selectCategory');
   };
 
   const handleStartNewGame = () => {
     setModalOpen(!modalOpen);
     cleanupAudioFiles();
-    resetApp();
+    createNewGame();
     navigation.dispatch(
       CommonActions.reset({
         index: 0,

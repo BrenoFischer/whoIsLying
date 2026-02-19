@@ -3,6 +3,8 @@ import { View, Image, StyleSheet, Text, TouchableOpacity, SafeAreaView } from 'r
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { Language, useTranslation } from '@/translations';
+import { useContext, useEffect } from 'react';
+import { GameContext } from '@/context/GameContext';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
@@ -11,6 +13,14 @@ import ScreenLayout from '@/components/screenLayout';
 
 export default function SkillUpScreen() {
   const { t, language, setLanguage } = useTranslation();
+  const { game, isHydrated } = useContext(GameContext);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (game.currentScreen && game.players.length > 0) {
+      router.replace(game.currentScreen as any);
+    }
+  }, [isHydrated]);
 
   const handleChangeLanguage = (lan: Language) => {
       if(lan === language) return;
