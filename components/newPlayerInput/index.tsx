@@ -17,13 +17,13 @@ import { useTranslation } from '@/translations';
 interface NewPlayerInputProps {
   setPlayer: ({ id, name }: Player) => void;
   disabled: boolean;
-  currentPlayerGender: string;
+  currentPlayerTheme: string;
 }
 
 export default function NewPlayerInput({
   setPlayer,
   disabled,
-  currentPlayerGender,
+  currentPlayerTheme,
 }: NewPlayerInputProps) {
   const [newName, setNewName] = useState('');
   const [inputError, setInputError] = useState(false);
@@ -39,7 +39,7 @@ export default function NewPlayerInput({
     setPlayer({
       id,
       name: newName,
-      gender: currentPlayerGender,
+      theme: currentPlayerTheme,
       character: '',
       score: 0,
     });

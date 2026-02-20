@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -20,7 +19,6 @@ import { colors } from '@/styles/colors';
 import Elipse from '@/components/elipse';
 import PlayerInput from '@/components/playerInput';
 import Character from '@/components/character';
-import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import CustomModal from '@/components/modal';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -30,20 +28,9 @@ import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
 import { radius } from '@/styles/radius';
 import { fontSize } from '@/styles/fontSize';
+import { characters, CharacterTheme, themes } from '@/data/imagesData';
 
 const MAX_PLAYERS = 10;
-
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-const maleImagesBase = ['breno', 'umpa', 'risada', 'fabricin', 'gabs', 'pedro', 'bday', 'rock', 'ber'];
-const femaleImagesBase = ['paola', 'sara', 'luh', 'pri', 'gio', 'ginger', 'eighties', 'highlight', 'surfer'];
 
 export default function CreateGame() {
   const { createGame, game, setCurrentScreen } = useContext(GameContext);
@@ -52,110 +39,49 @@ export default function CreateGame() {
   useEffect(() => {
     setCurrentScreen('/createGame');
   }, []);
-  const [playerGender, setPlayerGender] = useState('man');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const [players, setPlayers] = useState<Player[]>(game.players);
-  const [maleImages] = useState(() => shuffleArray(maleImagesBase));
-  const [femaleImages] = useState(() => shuffleArray(femaleImagesBase));
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalThemeFilter, setModalThemeFilter] = useState<CharacterTheme | 'all'>('all');
 
-  const imagesArray = playerGender === 'man' ? maleImages : femaleImages;
-  const usedCharacters = players.map(player => player.character);
-  const availableImages = imagesArray.filter(
-    image => !usedCharacters.includes(image)
-  );
+  const usedCharacters = players.map(p => p.character);
+  const availableCharacters = characters.filter(c => !usedCharacters.includes(c.name));
 
-  const playerGenderIcon = playerGender === 'man' ? 'man-2' : 'woman';
+  const [currentImageName, setCurrentImageName] = useState<string>(() => {
+    const used = game.players.map(p => p.character);
+    return characters.find(c => !used.includes(c.name))?.name ?? characters[0].name;
+  });
 
-  // Check available characters for each gender
-  const availableMaleImages = maleImages.filter(
-    image => !usedCharacters.includes(image)
-  );
-  const availableFemaleImages = femaleImages.filter(
-    image => !usedCharacters.includes(image)
-  );
-
-  // Determine if gender should be locked (when one gender has no available characters)
-  const shouldLockToMale =
-    availableMaleImages.length > 0 && availableFemaleImages.length === 0;
-  const shouldLockToFemale =
-    availableFemaleImages.length > 0 && availableMaleImages.length === 0;
-  const isGenderLocked = shouldLockToMale || shouldLockToFemale;
-
-  const notAvailableToContinue =
-    players.length < 3 || players.length > MAX_PLAYERS;
-
-  // Auto-switch gender when current gender has no available characters
+  // If the current preview image was taken by a just-added player, pick the next free one
   useEffect(() => {
-    if (shouldLockToMale && playerGender !== 'man') {
-      setPlayerGender('man');
-      setCurrentImageIndex(0);
-    } else if (shouldLockToFemale && playerGender !== 'woman') {
-      setPlayerGender('woman');
-      setCurrentImageIndex(0);
+    if (usedCharacters.includes(currentImageName)) {
+      const next = characters.find(c => !usedCharacters.includes(c.name));
+      if (next) setCurrentImageName(next.name);
     }
-  }, [shouldLockToMale, shouldLockToFemale, playerGender]);
+  }, [players]);
 
+  const filteredForModal = modalThemeFilter === 'all'
+    ? availableCharacters
+    : availableCharacters.filter(c => c.theme === modalThemeFilter);
 
-  const SelectCharacterModal = () => {
-    return(
-      <CustomModal
-        modalVisible={modalOpen}
-        setModalVisible={setModalOpen}
-      >
-        <ScrollView style={styles.modalContainer}>
-          <View style={styles.modalHeaderContainer}>
-            <TouchableOpacity
-              onPress={handleChangeGender}
-              style={styles.genderIconContainer}
-            >
-              <MaterialIcons
-                name={playerGenderIcon}
-                size={32}
-                color={
-                  isGenderLocked
-                    ? colors.gray[100]
-                    : colors.orange[200]
-                }
-              />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>
-              {t('Choose your character')}
-            </Text>
-          </View>
-          <View style={styles.imagesGrid}>
-            {availableImages.map((char, idx) => {
-              return (
-                <View key={char} style={styles.imageItem}>
-                  <TouchableOpacity
-                    onPress={() => handleSelectCharacter(idx)}
-                  >
-                    <Character mood={char} size={80} />
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-      </CustomModal>
-    )
+  const currentImageTheme = characters.find(c => c.name === currentImageName)?.theme ?? 'male';
+  const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS;
+
+  function hasAvailableForTheme(theme: CharacterTheme) {
+    return availableCharacters.some(c => c.theme === theme);
   }
 
+  function themeIconColor(theme: CharacterTheme): string {
+    if (modalThemeFilter === theme) return colors.white[100];
+    return colors.orange[200];
+  }
 
-  function setNewPlayer({ id, name, gender }: Player) {
+  function setNewPlayer({ id, name, theme }: Player) {
     if (players.length >= MAX_PLAYERS) return;
-
-    const selectedCharacter =
-      availableImages.length > 0
-        ? availableImages[currentImageIndex]
-        : imagesArray[0];
-    setPlayers([
-      { id, name, gender, character: selectedCharacter, score: 0 },
-      ...players,
+    setPlayers(prev => [
+      { id, name, theme, character: currentImageName, score: 0 },
+      ...prev,
     ]);
-
-    // Reset to first available character after adding a player
-    setCurrentImageIndex(0);
   }
 
   function editPlayer(player: Player, newName: string) {
@@ -171,9 +97,7 @@ export default function CreateGame() {
   }
 
   function deletePlayer(id: string) {
-    const newPlayers = players.filter(p => p.id !== id);
-
-    setPlayers(newPlayers);
+    setPlayers(prev => prev.filter(p => p.id !== id));
   }
 
   function handleCreateGame() {
@@ -181,23 +105,8 @@ export default function CreateGame() {
     router.replace('/showWordToAll');
   }
 
-  function handleChangeGender() {
-    if (isGenderLocked) return;
-
-    setCurrentImageIndex(0);
-    if (playerGender === 'man') {
-      setPlayerGender('woman');
-    } else {
-      setPlayerGender('man');
-    }
-  }
-
-  function handleChangeImage() {
-    setModalOpen(true);
-  }
-
-  function handleSelectCharacter(index: number) {
-    setCurrentImageIndex(index);
+  function handleSelectCharacter(name: string) {
+    setCurrentImageName(name);
     setModalOpen(false);
   }
 
@@ -205,44 +114,24 @@ export default function CreateGame() {
     <ScreenLayout
       scrollable
       footer={
-        <>
-          {notAvailableToContinue ? (
-            <Button
-              text={t('Create game')}
-              onPress={handleCreateGame}
-              variants="disabled"
-            />
-          ) : (
-            <Button text={t('Create game')} onPress={handleCreateGame} />
-          )}
-        </>
+        notAvailableToContinue ? (
+          <Button text={t('Create game')} onPress={handleCreateGame} variants="disabled" />
+        ) : (
+          <Button text={t('Create game')} onPress={handleCreateGame} />
+        )
       }
-
       header={
         <View style={styles.headerContainer}>
           <Elipse top={-80} />
-          <View
-            style={{
-              alignItems: 'center',
-              flexDirection: 'row',
-              gap: scale(5),
-              flex: 1,
-              paddingHorizontal: scale(spacing.sm)
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                router.back();
-              }}
-            >
+          <View style={{ alignItems: 'center', flexDirection: 'row', gap: scale(5), flex: 1, paddingHorizontal: scale(spacing.sm) }}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
             <View>
               <Text style={styles.headerCategoryTitle}>
-                {t('Game')} {game.currentMatch} {t('of')}{' '}
-                {game.maximumMatches}
+                {t('Game')} {game.currentMatch} {t('of')} {game.maximumMatches}
               </Text>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
                 <Dot color={colors.white[100]} />
                 <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
@@ -253,63 +142,103 @@ export default function CreateGame() {
         </View>
       }
     >
-      <SelectCharacterModal />
+      <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
+        <Text style={styles.modalTitle}>{t('Choose your character')}</Text>
+
+        <View style={styles.themeFilterRow}>
+          <TouchableOpacity
+            onPress={() => setModalThemeFilter('all')}
+            style={[styles.themeButton, modalThemeFilter === 'all' && styles.themeButtonSelected]}
+          >
+            <Text style={[
+              styles.themeAllText,
+              modalThemeFilter === 'all' && styles.themeAllTextSelected,
+            ]}>
+              {t('All')}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.themeSeparator} />
+
+          {themes.map(theme => (
+            <TouchableOpacity
+              key={theme}
+              onPress={() => setModalThemeFilter(theme)}
+              style={[
+                styles.themeButton,
+                modalThemeFilter === theme && styles.themeButtonSelected,
+                !hasAvailableForTheme(theme) && styles.themeButtonUnavailable,
+              ]}
+            >
+              {theme === 'male' && (
+                <MaterialIcons name="man" size={moderateScale(20)} color={themeIconColor(theme)} />
+              )}
+              {theme === 'female' && (
+                <MaterialIcons name="woman" size={moderateScale(20)} color={themeIconColor(theme)} />
+              )}
+              {theme === 'halloween' && (
+                <MaterialCommunityIcons name="ghost-outline" size={moderateScale(20)} color={themeIconColor(theme)} />
+              )}
+              {theme === 'music' && (
+                <MaterialCommunityIcons name="music-note" size={moderateScale(20)} color={themeIconColor(theme)} />
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <ScrollView style={styles.modalContainer}>
+          {filteredForModal.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>{t('No more available images for this theme')}</Text>
+            </View>
+          ) : (
+            <View style={styles.imagesGrid}>
+              {filteredForModal.map(char => (
+                <View key={char.name} style={styles.imageItem}>
+                  <TouchableOpacity onPress={() => handleSelectCharacter(char.name)}>
+                    <Character mood={char.name} size={80} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
+        </ScrollView>
+      </CustomModal>
       <View>
         <View style={styles.topContainer}>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>{t(`Add players (3 to ${MAX_PLAYERS})`)}</Text>
           </View>
-          <View>
-            <View style={styles.changeCharacterButtonContainer}>
-              <TouchableOpacity
-                onPress={handleChangeImage}
-                style={styles.changeCharacterButton}
-              >
-                <MaterialCommunityIcons
-                  name="shuffle-variant"
-                  size={moderateScale(24)}
-                  color={colors.background[100]}
-                />
-                <Text style={styles.changeCharacterText}>
-                  {t('Change')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleChangeImage}>
-                <Character
-                  mood={
-                    availableImages.length > 0
-                      ? availableImages[currentImageIndex]
-                      : imagesArray[0]
-                  }
-                />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.changeCharacterButtonContainer}>
+            <TouchableOpacity
+              onPress={() => setModalOpen(true)}
+              style={styles.changeCharacterButton}
+            >
+              <MaterialCommunityIcons
+                name="shuffle-variant"
+                size={moderateScale(24)}
+                color={colors.background[100]}
+              />
+              <Text style={styles.changeCharacterText}>{t('Change')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalOpen(true)}>
+              <Character mood={currentImageName} />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={{ alignItems: 'center' }}>
-          {players.length >= MAX_PLAYERS ? (
-            <NewPlayerInput
-              disabled={true}
-              setPlayer={() => {}}
-              currentPlayerGender={playerGender}
-            />
-          ) : (
-            <NewPlayerInput
-              disabled={false}
-              setPlayer={setNewPlayer}
-              currentPlayerGender={playerGender}
-            />
-          )}
+          <NewPlayerInput
+            disabled={players.length >= MAX_PLAYERS}
+            setPlayer={players.length >= MAX_PLAYERS ? () => {} : setNewPlayer}
+            currentPlayerTheme={currentImageTheme}
+          />
           <View style={{ paddingTop: verticalScale(spacing.md) }}>
-            <CustomText>
-              {t('Players added')} - {players.length}
-            </CustomText>
+            <CustomText>{t('Players added')} - {players.length}</CustomText>
           </View>
           {players.map(player => {
-            const allImages = [...maleImages, ...femaleImages];
-            const availableForPlayer = allImages.filter(
-              img => !usedCharacters.includes(img) || img === player.character
-            );
+            const availableForPlayer = characters
+              .filter(c => !usedCharacters.includes(c.name) || c.name === player.character)
+              .map(c => c.name);
             return (
               <PlayerInput
                 key={player.id}
@@ -331,14 +260,14 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingTop: verticalScale(spacing.md),
     paddingBottom: verticalScale(spacing.xs),
-    flexDirection: "row", 
-    alignItems: "center" 
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   topContainer: {
     paddingHorizontal: scale(spacing.md),
     paddingTop: verticalScale(spacing.lg),
-    flexDirection: "row",
-    alignItems: "center"
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   title: {
     fontFamily: 'Ralway',
@@ -363,29 +292,65 @@ const styles = StyleSheet.create({
   changeCharacterText: {
     fontSize: fontSize.sm,
     fontFamily: 'Raleway',
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.background[100],
   },
-  modalContainer: {
-    maxHeight: verticalScale(400),
-  },
-  modalHeaderContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    position: 'relative',
-    marginTop: verticalScale(10),
-  },
   modalTitle: {
+    textAlign: 'center',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(14),
-    fontFamily: 'Ralway',
+    marginBottom: verticalScale(12),
   },
-  genderIconContainer: {
-    position: 'absolute',
-    left: 0,
+  themeFilterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: verticalScale(10),
+    gap: scale(4),
+  },
+  themeButton: {
+    paddingHorizontal: scale(8),
+    paddingVertical: verticalScale(4),
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.orange[200],
+  },
+  themeButtonSelected: {
+    backgroundColor: colors.orange[200],
+  },
+  themeButtonUnavailable: {
+    backgroundColor: colors.gray[200],
+  },
+  themeAllText: {
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    color: colors.orange[200],
+  },
+  themeAllTextSelected: {
+    color: colors.white[100],
+  },
+  themeSeparator: {
+    width: 1,
+    alignSelf: 'stretch',
+    backgroundColor: colors.white[100],
+    opacity: 0.4,
+    marginHorizontal: scale(4),
+  },
+  modalContainer: {
+    height: verticalScale(350),
+  },
+  emptyContainer: {
+    paddingVertical: verticalScale(40),
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontFamily: 'Raleway',
+    fontSize: fontSize.sm,
+    color: colors.gray[100],
+    textAlign: 'center',
   },
   imagesGrid: {
-    marginTop: verticalScale(15),
+    marginTop: verticalScale(5),
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
