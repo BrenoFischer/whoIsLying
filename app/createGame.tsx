@@ -159,12 +159,15 @@ export default function CreateGame() {
   }
 
   function editPlayer(player: Player, newName: string) {
-    const newPlayers = players.map(p => {
-      if (p.id === player.id) {
-        return Object.assign({}, p, { id: p.id, name: newName });
-      }
-      return p;
-    });
+    setPlayers(prev => prev.map(p =>
+      p.id === player.id ? { ...p, name: newName } : p
+    ));
+  }
+
+  function editCharacter(player: Player, newCharacter: string) {
+    setPlayers(prev => prev.map(p =>
+      p.id === player.id ? { ...p, character: newCharacter } : p
+    ));
   }
 
   function deletePlayer(id: string) {
@@ -302,14 +305,22 @@ export default function CreateGame() {
               {t('Players added')} - {players.length}
             </CustomText>
           </View>
-          {players.map(player => (
-            <PlayerInput
-              key={player.id}
-              player={player}
-              editPlayer={editPlayer}
-              deletePlayer={deletePlayer}
-            />
-          ))}
+          {players.map(player => {
+            const allImages = [...maleImages, ...femaleImages];
+            const availableForPlayer = allImages.filter(
+              img => !usedCharacters.includes(img) || img === player.character
+            );
+            return (
+              <PlayerInput
+                key={player.id}
+                player={player}
+                editPlayer={editPlayer}
+                deletePlayer={deletePlayer}
+                availableImages={availableForPlayer}
+                editCharacter={editCharacter}
+              />
+            );
+          })}
         </View>
       </View>
     </ScreenLayout>

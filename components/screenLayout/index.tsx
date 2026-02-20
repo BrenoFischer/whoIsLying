@@ -29,15 +29,22 @@ export default function ScreenLayout({
       <View style={styles.wrapper}>
           {header && <View>{header}</View>}
 
-          <ContentWrapper 
-            style={styles.content}
-            contentContainerStyle={
-              scrollable ? styles.scrollContent : undefined
-            }
-            keyboardShouldPersistTaps="handled"
+          <KeyboardAvoidingView
+            style={styles.keyboard}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={24}
+            enabled={withKeyboardAvoiding}
           >
-              {children}
-          </ContentWrapper>
+            <ContentWrapper
+              style={styles.content}
+              contentContainerStyle={
+                scrollable ? styles.scrollContent : undefined
+              }
+              keyboardShouldPersistTaps="handled"
+            >
+                {children}
+            </ContentWrapper>
+          </KeyboardAvoidingView>
 
           {footer && <View style={styles.footer}>{footer}</View>}
       </View>

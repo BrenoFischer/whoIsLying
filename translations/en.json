@@ -105,6 +105,7 @@
   "Reveal secret word": "Reveal secret word",
   "Scores": "Scores",
   "points": "points",
+  "Points": "Points",
   "The grand winners are!": "The grand winners are!",
   "The grand winner is!": "The grand winner is!",
   "Play one more round": "Play one more round",
@@ -118,5 +119,6 @@
   "Change": "Change",
   "Forgot your word": "Forgot your word",
   "Select your name": "Select your name",
-  "Recording...": "Recording..."
+  "Recording...": "Recording...",
+  "Forgot your word?: ": "Forgot your word?"
 }

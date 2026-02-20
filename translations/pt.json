@@ -110,6 +110,7 @@
   "are calculated as follows": "são calculados da seguinte maneira",
   "Voted on the impostor": "Votou no impostor",
   "point": "apontar",
+  "Points": "Pontos",
   "The impostor receives": "O impostor recebe",
   "for every vote not on him": "Para cada voto que não foi nele",
   "if correctly guessed the secret word": "se adivinhou corretamente a palavra secreta",
@@ -118,5 +119,6 @@
   "Change": "Trocar",
   "Forgot your word": "Esqueceu a palavra",
   "Select your name": "Selecione o seu nome",
-  "Recording...": "Gravando..."
+  "Recording...": "Gravando...",
+  "Forgot your word?": "Esqueceu a sua palavra?"
 }

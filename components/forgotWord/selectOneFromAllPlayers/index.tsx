@@ -12,6 +12,10 @@ import { colors } from '@/styles/colors';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { Player } from '@/types/Player';
 import { useTranslation } from '@/translations';
+import PlayerInput from '@/components/playerInput';
+import ScreenLayout from '@/components/screenLayout';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
 
 interface SelectOneFromAllPlayersType {
   setPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>
@@ -24,24 +28,20 @@ export default function SelectOneFromAllPlayers({setPlayer}: SelectOneFromAllPla
     const allPlayers = game.players
 
     return(
-      <SafeAreaView
-        style={[
-          {
-            backgroundColor: colors.background[100],
-            overflow: 'hidden',
-            height: '100%',
-          },
-        ]}
-      >
+      <ScreenLayout>
         <View style={styles.container}>
-          <Text style={styles.title}>{t('Select your name')}:</Text>
+          <Text style={styles.title}>{t('Forgot your word?')}</Text>
+          <Text style={styles.subtitle}>{t('Select your name')}:</Text>
           <ScrollView>
             <View style={styles.allPlayersContainer}>
               {
                 allPlayers.map(p => {
                 return(
-                  <TouchableOpacity key={p.id} style={styles.playerContainer} onPress={() => {setPlayer(p)}}>
-                    <Text>{p.name}</Text>
+                  <TouchableOpacity key={p.id} onPress={() => {setPlayer(p)}}>
+                    <PlayerInput
+                      player={p}
+                      notEditable
+                    />
                   </TouchableOpacity>
                 )
               })
@@ -49,35 +49,34 @@ export default function SelectOneFromAllPlayers({setPlayer}: SelectOneFromAllPla
             </View>
           </ScrollView>
         </View>
-    </SafeAreaView>
+    </ScreenLayout>
     )
   }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: verticalScale(60)
+    paddingVertical: verticalScale(spacing.md),
+    marginBottom: verticalScale(spacing.lg),
   },
+
   allPlayersContainer: {
     alignItems: "center",
-    gap: verticalScale(15)
+    gap: verticalScale(5)
   },
+
   title: {
-    fontSize: moderateScale(23),
+    fontSize: fontSize.xl,
     fontFamily: 'Raleway-Medium',
     color: colors.orange[200],
     fontWeight: "bold",
     textAlign: 'center',
-    marginBottom: verticalScale(30)
+    paddingBottom: verticalScale(spacing.sm)
   },
-  playerContainer: {
-    width: '90%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: "center",
-    borderWidth: scale(2),
-    borderRadius: moderateScale(10),
-    borderColor: colors.orange[200],
-    paddingVertical: verticalScale(8),
-    backgroundColor: colors.orange[200]
-  },
+  subtitle: {
+    fontSize: fontSize.md,
+    fontFamily: 'Raleway-Medium',
+    color: colors.white[100],
+    textAlign: 'center',
+    marginBottom: verticalScale(spacing.sm)
+  }
 });

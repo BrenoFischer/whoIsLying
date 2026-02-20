@@ -5,6 +5,8 @@ import {
   TextInput,
   StyleSheet,
   Text,
+  useWindowDimensions,
+  ScrollView,
 } from 'react-native';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -14,24 +16,38 @@ import { Player } from '@/types/Player';
 import CustomModal from '../modal';
 import Button from '../button';
 import { useTranslation } from '@/translations';
+import Character from '../character';
+import { fontSize } from '@/styles/fontSize';
 
 interface PlayerInputProps {
   player: Player;
-  editPlayer: (player: Player, newName: string) => void;
-  deletePlayer: (id: string) => void;
+  editPlayer?: (player: Player, newName: string) => void;
+  deletePlayer?: (id: string) => void;
+  availableImages?: string[];
+  editCharacter?: (player: Player, newCharacter: string) => void;
+  notEditable?: boolean;
 }
 
 export default function PlayerInput({
   editPlayer,
   player,
   deletePlayer,
+  availableImages,
+  editCharacter,
+  notEditable = false,
 }: PlayerInputProps) {
   const [newName, setNewName] = useState(player.name);
   const [modalOpen, setModalOpen] = useState(false);
+  const [characterModalOpen, setCharacterModalOpen] = useState(false);
   const { t } = useTranslation();
 
+  const screenHeight = useWindowDimensions().height;
+  const characterSize = screenHeight * 0.1;
+
   const handleSubmit = () => {
-    editPlayer(player, newName);
+    if (editPlayer) {
+      editPlayer(player, newName);
+    }
   };
 
   const clickDeletePlayer = () => {
@@ -39,8 +55,17 @@ export default function PlayerInput({
   };
 
   const handleDeletePlayer = () => {
-    deletePlayer(player.id);
-    setModalOpen(false);
+    if (deletePlayer){
+      deletePlayer(player.id);
+      setModalOpen(false);
+    }
+  };
+
+  const handleSelectCharacter = (char: string) => {
+    if(editCharacter) {
+      editCharacter(player, char);
+      setCharacterModalOpen(false);
+    }
   };
 
   return (
@@ -65,23 +90,60 @@ export default function PlayerInput({
           </View>
         </View>
       </CustomModal>
-      <TextInput
-        placeholder={t('Add a new name')}
-        keyboardType="ascii-capable"
-        inputMode="text"
-        maxLength={15}
-        style={styles.textInput}
-        value={newName}
-        onChangeText={text => setNewName(text)}
-        onSubmitEditing={handleSubmit}
-        returnKeyType="done"
-      />
-      <TouchableOpacity
-        style={[styles.iconContainer]}
-        onPress={clickDeletePlayer}
-      >
-        <EvilIcons name="trash" size={40} color="red" />
-      </TouchableOpacity>
+
+      <CustomModal modalVisible={characterModalOpen} setModalVisible={setCharacterModalOpen}>
+        <ScrollView style={styles.characterModalContainer}>
+          <Text style={styles.characterModalTitle}>{t('Choose your character')}</Text>
+          <View style={styles.imagesGrid}>
+            {availableImages?.map((char) => (
+              <View key={char} style={styles.imageItem}>
+                <TouchableOpacity onPress={() => handleSelectCharacter(char)}>
+                  <Character mood={char} size={80} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      </CustomModal>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10), paddingTop: verticalScale(10) }}>
+        <View style={{ alignItems: 'center', gap: verticalScale(5) }}>
+          <Text style={styles.playerScore}><Text style={styles.playerScoreValue}>{player.score} pts</Text></Text>
+          { notEditable ?
+            <Character mood={player.character} size={characterSize} />
+          :
+            <TouchableOpacity onPress={() => setCharacterModalOpen(true)}>
+              <Character mood={player.character} size={characterSize} />
+            </TouchableOpacity>
+          }
+        </View>
+        <View style={{ flex: 1 }}>
+          {notEditable ? 
+              <View>
+                <Text style={styles.playerName}>{player.name}</Text>
+              </View>
+            :
+              <TextInput
+                placeholder={t('Add a new name')}
+                keyboardType="ascii-capable"
+                inputMode="text"
+                maxLength={15}
+                style={styles.playerName}
+                value={newName}
+                onChangeText={text => setNewName(text)}
+                onSubmitEditing={handleSubmit}
+                returnKeyType="done"
+              />
+          }
+        </View>
+        { notEditable ? 
+            <></>
+          :
+            <TouchableOpacity onPress={clickDeletePlayer}>
+              <EvilIcons name="trash" size={35} color="red" />
+            </TouchableOpacity>
+        }
+      </View>
     </View>
   );
 }
@@ -114,19 +176,39 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(10),
     backgroundColor: colors.background[100],
   },
-  textInput: {
+  playerName: {
+    fontSize: fontSize.md,
+    color: colors.white[100],
     flex: 1,
-    paddingVertical: verticalScale(18),
-    marginLeft: scale(15),
-    marginRight: scale(50),
-    fontSize: moderateScale(15),
+  },
+  playerScore: {
+    fontSize: fontSize.sm,
     color: colors.white[100],
   },
-  iconContainer: {
-    position: 'absolute',
-    right: scale(10),
+  playerScoreValue: {
+    color: colors.orange[200],
+    fontWeight: 'bold',
   },
-  errorContainer: {
-    backgroundColor: 'red',
+  characterModalContainer: {
+    maxHeight: verticalScale(400),
+  },
+  characterModalTitle: {
+    textAlign: 'center',
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(16),
+    marginTop: verticalScale(10),
+    marginBottom: verticalScale(10),
+  },
+  imagesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: scale(5),
+  },
+  imageItem: {
+    width: '48%',
+    marginVertical: verticalScale(3),
+    alignItems: 'center',
   },
 });
