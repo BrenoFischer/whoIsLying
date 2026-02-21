@@ -1,13 +1,17 @@
 import Button from '@/components/button';
 import Character from '@/components/character';
-import WithSidebar from '@/components/withSideBar';
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function RevealImpostor() {
   const { t } = useTranslation();
@@ -23,114 +27,80 @@ export default function RevealImpostor() {
     setCurrentScreen('/revealImpostor');
   }, []);
 
-  const getRandomPhrase = () => {
-    return phrasesToReveal[Math.floor(Math.random() * phrasesToReveal.length)];
-  };
-
-  const randomPhrase = getRandomPhrase();
-
+  const randomPhrase = phrasesToReveal[Math.floor(Math.random() * phrasesToReveal.length)];
   const impostorPlayer = game.lyingPlayer;
 
-  function PlayerCard() {
-    return (
-      <View style={styles.playerCard}>
-        <View style={styles.playerCardHeaderContainer}>
-          <View style={{ alignItems: 'center' }}>
+  return (
+    <ScreenLayout
+      header={
+        <View style={styles.headerContainer}>
+          <SidebarMenu />
+        </View>
+      }
+      footer={
+        nextReveal ? (
+          <Button text={t('Continue')} onPress={() => router.replace('/words')} />
+        ) : (
+          <Button text={t('Done it')} onPress={() => setNextReveal(true)} />
+        )
+      }
+    >
+      <View style={styles.content}>
+        <Text style={styles.title}>{t('The real impostor was:')}</Text>
+
+        {nextReveal ? (
+          <View style={styles.playerCard}>
             <Text style={styles.playerName}>{impostorPlayer.name}</Text>
             <Character mood={impostorPlayer.character} />
           </View>
-        </View>
+        ) : (
+          <Text style={styles.randomPhrase}>{randomPhrase}</Text>
+        )}
       </View>
-    );
-  }
-
-  return (
-    <WithSidebar>
-      <SafeAreaView
-        style={{
-          backgroundColor: colors.background[100],
-          overflow: 'hidden',
-          height: '100%',
-        }}
-      >
-        <View style={styles.headerContainer}>
-          <Text style={styles.title}>{t('The real impostor was:')}</Text>
-        </View>
-        <View style={styles.cardContainer}>
-          {nextReveal ? (
-              <PlayerCard />
-            ) : (
-              <Text style={styles.randomPhrase}>{randomPhrase}</Text>
-            )}
-        </View>
-          <View style={styles.buttonContainer}>
-            {nextReveal ? (
-              <Button
-                text={t('Continue')}
-                onPress={() => {
-                  router.replace('/words');
-                }}
-              />
-            ) : (
-              <Button text={t('Done it')} onPress={() => setNextReveal(true)} />
-            )}
-          </View>
-      </SafeAreaView>
-    </WithSidebar>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: verticalScale(50),
-    justifyContent: 'space-between',
+    paddingTop: verticalScale(spacing.md),
+    paddingBottom: verticalScale(spacing.xs),
+    paddingHorizontal: scale(spacing.sm),
+    alignItems: 'flex-end',
   },
-  cardContainer: {
-    marginTop: verticalScale(80),
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: scale(spacing.lg),
+    gap: verticalScale(spacing.xl),
   },
   title: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: moderateScale(20),
+    fontSize: fontSize.lg,
     color: colors.orange[200],
   },
   randomPhrase: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    paddingHorizontal: scale(25),
     fontSize: moderateScale(35),
     color: colors.white[100],
   },
   playerCard: {
+    width: '100%',
+    alignItems: 'center',
     backgroundColor: colors.white[100],
-    marginHorizontal: scale(30),
-    borderRadius: moderateScale(10),
-    marginVertical: verticalScale(20),
-    paddingTop: verticalScale(20),
-  },
-  playerCardHeaderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    borderRadius: radius.lg,
+    paddingVertical: verticalScale(spacing.lg),
+    gap: verticalScale(spacing.md),
   },
   playerName: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.orange[200],
-    marginBottom: verticalScale(20),
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: verticalScale(10),
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
   },
 });

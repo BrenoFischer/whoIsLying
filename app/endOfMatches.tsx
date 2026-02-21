@@ -6,12 +6,16 @@ import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext, useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import * as FileSystem from 'expo-file-system';
+import ScreenLayout from '@/components/screenLayout';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function EndOfMatches() {
   const navigation = useNavigation();
@@ -47,12 +51,8 @@ export default function EndOfMatches() {
   function PlayerCard({ player }: { player: Player }) {
     return (
       <View style={styles.playerCard}>
-        <View style={styles.playerCardHeaderContainer}>
-          <View style={{ alignItems: 'center' }}>
-            <Text style={styles.playerName}>{player.name}</Text>
-            <Character mood={player.character} />
-          </View>
-        </View>
+        <Text style={styles.playerName}>{player.name}</Text>
+        <Character mood={player.character} />
       </View>
     );
   }
@@ -69,19 +69,15 @@ export default function EndOfMatches() {
       });
   };
 
-  const handleContinue = () => {
-    setModalOpen(true);
-  };
-
   const handlePlayerOneMoreRound = () => {
-    setModalOpen(!modalOpen);
+    setModalOpen(false);
     cleanupAudioFiles();
     resetGameWithExistingPlayers();
     router.replace('/selectCategory');
   };
 
   const handleStartNewGame = () => {
-    setModalOpen(!modalOpen);
+    setModalOpen(false);
     cleanupAudioFiles();
     createNewGame();
     navigation.dispatch(
@@ -93,106 +89,70 @@ export default function EndOfMatches() {
   };
 
   return (
-    <SafeAreaView
-      style={[
-        {
-          backgroundColor: colors.background[100],
-          overflow: 'hidden',
-          height: '100%',
-        },
-        modalOpen && { opacity: 0.1 },
-      ]}
+    <ScreenLayout
+      scrollable
+      style={modalOpen ? { opacity: 0.1 } : undefined}
+      footer={<Button text={t('Continue')} onPress={() => setModalOpen(true)} />}
     >
-      <View style={styles.headerContainer}>
-        {allWinners.length > 1 ? (
-          <Text style={styles.title}>{t('The grand winners are!')}</Text>
-        ) : (
-          <Text style={styles.title}>{t('The grand winner is!')}</Text>
-        )}
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {allWinners.map(p => {
-            return <PlayerCard player={p} key={p.id} />;
-          })}
-        </ScrollView>
-      </View>
       <CustomModal setModalVisible={setModalOpen} modalVisible={modalOpen}>
-        <>
-          <View>
-            <View style={{ marginBottom: verticalScale(30) }}>
-              <Text style={styles.titleInformation}>
-                {t('Do you want to:')}
-              </Text>
-            </View>
-          </View>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>{t('Do you want to:')}</Text>
           <Character mood="bothCharacter" />
-          <View style={{ gap: verticalScale(40) }}>
-            <Button
-              text={t('Play one more round')}
-              onPress={handlePlayerOneMoreRound}
-            />
-            <Button
-              text={t('Start a fresh new game')}
-              onPress={handleStartNewGame}
-            />
+          <View style={styles.modalButtons}>
+            <Button text={t('Play one more round')} onPress={handlePlayerOneMoreRound} />
+            <Button text={t('Start a fresh new game')} onPress={handleStartNewGame} />
           </View>
-        </>
+        </View>
       </CustomModal>
-      <View style={styles.buttonContainer}>
-        <Button text={t('Continue')} onPress={handleContinue} />
-      </View>
-    </SafeAreaView>
+
+      <Text style={styles.title}>
+        {allWinners.length > 1 ? t('The grand winners are!') : t('The grand winner is!')}
+      </Text>
+
+      {allWinners.map(p => (
+        <PlayerCard player={p} key={p.id} />
+      ))}
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    paddingBottom: verticalScale(120),
-  },
-  headerContainer: {
-    marginTop: verticalScale(50),
-    height: '90%',
-  },
   title: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: moderateScale(20),
+    fontSize: fontSize.lg,
+    color: colors.orange[200],
+    marginTop: verticalScale(spacing.xl),
+    marginBottom: verticalScale(spacing.sm),
+  },
+  playerCard: {
+    alignItems: 'center',
+    backgroundColor: colors.white[100],
+    marginHorizontal: scale(spacing.md),
+    borderRadius: radius.md,
+    marginVertical: verticalScale(spacing.md),
+    paddingVertical: verticalScale(spacing.lg),
+    gap: verticalScale(spacing.sm),
+  },
+  playerName: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(40),
+    fontWeight: 'bold',
     color: colors.orange[200],
   },
-  titleInformation: {
-    fontSize: moderateScale(20),
+  modalContent: {
+    alignItems: 'center',
+    gap: verticalScale(spacing.lg),
+  },
+  modalTitle: {
+    fontSize: fontSize.lg,
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.black[100],
   },
-  playerCard: {
-    backgroundColor: colors.white[100],
-    marginHorizontal: scale(30),
-    borderRadius: moderateScale(10),
-    marginVertical: verticalScale(20),
-    paddingTop: verticalScale(20),
-  },
-  playerCardHeaderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  playerName: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(40),
-    fontWeight: 'bold',
-    color: colors.orange[200],
-    marginBottom: verticalScale(20),
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
+  modalButtons: {
+    width: '100%',
+    gap: verticalScale(spacing.xl),
   },
 });

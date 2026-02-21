@@ -1,22 +1,17 @@
 import Button from '@/components/button';
 import Character from '@/components/character';
 import PlayerModal from '@/components/playerModal';
-import WithSidebar from '@/components/withSideBar';
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from '@/translations';
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import ScreenLayout from '@/components/screenLayout';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function Words() {
   const [modalVisible, setModalVisible] = useState(true);
@@ -26,7 +21,7 @@ export default function Words() {
     useContext(GameContext);
   const { t } = useTranslation();
   const { height } = useWindowDimensions();
-  
+
   const characterSize = height * 0.22;
 
   useEffect(() => {
@@ -64,30 +59,10 @@ export default function Words() {
     words.push(currentWord);
     for (let i = words.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [words[i], words[j]] = [words[j], words[i]]; // Swap elements
+      [words[i], words[j]] = [words[j], words[i]];
     }
     return words;
   };
-
-  const handleSelectWord = (word: string) => {
-    setNewSelectedWord(word);
-  };
-
-  function WordVoteOption({ word }: { word: string }) {
-    const isWordSelected = newSelectedWord === word;
-
-    return (
-      <TouchableOpacity
-        onPress={() => handleSelectWord(word)}
-        style={[
-          styles.wordContainer,
-          isWordSelected && { backgroundColor: colors.orange[200] },
-        ]}
-      >
-        <Text style={styles.wordOption}>{t(word, { ns: 'categories' })}</Text>
-      </TouchableOpacity>
-    );
-  }
 
   const handleContinue = () => {
     setSelectedWord(newSelectedWord);
@@ -99,120 +74,110 @@ export default function Words() {
     if (game.category) {
       const randomWords = getRandomWords();
       const words = addWordAndShuffle(randomWords);
-
       setAllWords(words);
     }
   }, [game.category]);
 
-  return (
-    <WithSidebar>
-      <SafeAreaView
-        style={[
-          {
-            backgroundColor: colors.background[100],
-            overflow: 'hidden',
-            flex: 1,
-          },
-          modalVisible && { opacity: 0.1 },
-        ]}
+  function WordVoteOption({ word }: { word: string }) {
+    const isWordSelected = newSelectedWord === word;
+    return (
+      <TouchableOpacity
+        onPress={() => setNewSelectedWord(word)}
+        style={[styles.wordContainer, isWordSelected && styles.wordContainerSelected]}
       >
-        <PlayerModal
-          player={impostorPlayer}
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
+        <Text style={styles.wordOption}>{t(word, { ns: 'categories' })}</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  return (
+    <ScreenLayout
+      scrollable
+      style={modalVisible ? { opacity: 0.1 } : undefined}
+      footer={
+        <Button
+          text={t('Vote!')}
+          onPress={handleContinue}
+          variants={newSelectedWord ? 'primary' : 'disabled'}
         />
-        <View style={styles.topContainer}>
-          <Character mood={impostorPlayer.character} size={characterSize} />
+      }
+    >
+      <PlayerModal
+        player={impostorPlayer}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
+
+      <View style={styles.topContainer}>
+        <Character mood={impostorPlayer.character} size={characterSize} />
+      </View>
+
+      <View style={styles.tableContainer}>
+        <Text style={styles.playerNameOnTable}>
+          {impostorPlayer.name},{' '}
+          <Text style={styles.tableText}>
+            {t('vote on the secret word you think is the correct one:')}
+          </Text>
+        </Text>
+        <View style={styles.allWordsContainer}>
+          {allWords.map(w => (
+            <WordVoteOption key={w} word={w} />
+          ))}
         </View>
-        <View style={styles.tableContainer}>
-          <ScrollView style={styles.table}>
-            <Text style={styles.playerNameOnTable}>
-              {impostorPlayer.name},{' '}
-              <Text style={styles.tableText}>
-                {t('vote on the secret word you think is the correct one:')}
-              </Text>
-            </Text>
-            <View style={styles.allWordsContainer}>
-              {allWords.map(w => {
-                return <WordVoteOption key={w} word={w} />;
-              })}
-            </View>
-          </ScrollView>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            text={t('Vote!')}
-            onPress={handleContinue}
-            variants={newSelectedWord ? 'primary' : 'disabled'}
-          />
-        </View>
-      </SafeAreaView>
-    </WithSidebar>
+      </View>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
   topContainer: {
-    marginTop: verticalScale(40),
+    alignItems: 'center',
+    paddingTop: verticalScale(spacing.lg),
+  },
+  tableContainer: {
+    marginHorizontal: scale(spacing.md),
+    marginTop: verticalScale(spacing.lg),
+    padding: scale(spacing.md),
+    backgroundColor: colors.white[100],
+    borderRadius: radius.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: verticalScale(2) },
+    shadowOpacity: 0.25,
+    shadowRadius: scale(spacing.sm),
+    elevation: 5,
   },
   tableText: {
-    fontSize: moderateScale(16),
+    fontSize: fontSize.md,
     fontFamily: 'Raleway',
     color: colors.black[100],
+    fontWeight: 'normal',
   },
   playerNameOnTable: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(24),
+    fontFamily: 'Raleway',
+    fontSize: fontSize.lg,
     fontWeight: 'bold',
     color: colors.orange[200],
   },
-  tableContainer: {
-    maxHeight: '60%',
-    marginHorizontal: scale(15),
-    flexShrink: 1,
-  },
-  table: {
-    padding: scale(15),
-    backgroundColor: colors.white[100],
-    borderRadius: moderateScale(10),
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: verticalScale(2),
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: moderateScale(8),
-    elevation: 5,
-  },
   allWordsContainer: {
-    marginVertical: verticalScale(10),
-    gap: verticalScale(10),
+    marginTop: verticalScale(spacing.lg),
+    gap: verticalScale(spacing.sm),
   },
   wordContainer: {
-    width: "100%",
+    width: '100%',
     alignItems: 'center',
     borderWidth: scale(2),
-    borderRadius: moderateScale(10),
+    borderRadius: radius.md,
     borderColor: colors.orange[200],
-    paddingHorizontal: scale(10),
-    paddingVertical: verticalScale(9),
+    paddingHorizontal: scale(spacing.md),
+    paddingVertical: verticalScale(spacing.sm),
     backgroundColor: colors.white[100],
   },
-  wordOption: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(15),
-    color: colors.black[200],
+  wordContainerSelected: {
+    backgroundColor: colors.orange[200],
   },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: verticalScale(10),
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
+  wordOption: {
+    fontFamily: 'Raleway',
+    fontSize: fontSize.md,
+    color: colors.black[100],
   },
 });
