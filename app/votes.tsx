@@ -1,7 +1,7 @@
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, useWindowDimensions } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import Elipse from '@/components/elipse';
@@ -68,11 +68,10 @@ export default function Votes() {
 
   return (
     <ScreenLayout
-      scrollable
       style={modalVisible ? { opacity: 0.1 } : undefined}
       header={
         <View style={styles.headerContainer}>
-          <Elipse top={verticalScale(-30)} left={scale(-30)} />
+          <Elipse top={verticalScale(-20)} left={scale(-80)} />
           <View style={styles.headerRow}>
             <Text style={styles.headerTitle}>{t('Vote')}</Text>
             <Dot color={colors.white[100]} />
@@ -102,15 +101,20 @@ export default function Votes() {
       </View>
 
       <View style={styles.tableContainer}>
-        <Text style={styles.playerNameOnTable}>
-          {player.name},{' '}
-          <Text style={styles.tableText}>
-            {t('vote on the person you think is the impostor:')}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.playerNameOnTable}>
+            {player.name},{' '}
+            <Text style={styles.tableText}>
+              {t('vote on the person you think is the impostor:')}
+            </Text>
           </Text>
-        </Text>
-        <View style={styles.voteOptionsContainer}>
-          {restOfPlayers.map(p => <PlayerVoteOption key={p.id} player={p} />)}
-        </View>
+          <View style={styles.voteOptionsContainer}>
+            {restOfPlayers.map(p => <PlayerVoteOption key={p.id} player={p} />)}
+          </View>
+        </ScrollView>
       </View>
     </ScreenLayout>
   );
@@ -160,7 +164,7 @@ const styles = StyleSheet.create({
   tableContainer: {
     flex: 1,
     marginHorizontal: scale(spacing.md),
-    marginTop: verticalScale(spacing.lg),
+    marginBottom: verticalScale(spacing.md),
     padding: scale(spacing.md),
     backgroundColor: colors.white[100],
     borderRadius: radius.md,

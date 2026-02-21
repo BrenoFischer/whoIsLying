@@ -1,7 +1,8 @@
 import { colors } from '@/styles/colors';
 import { spacing } from '@/styles/spacing';
 import { ReactNode } from 'react';
-import { StyleProp, ViewStyle, StyleSheet, SafeAreaView, KeyboardAvoidingView, View, ScrollView, Platform } from 'react-native';
+import { StyleProp, ViewStyle, StyleSheet, KeyboardAvoidingView, View, ScrollView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { scale } from 'react-native-size-matters';
 
 type ScreenLayoutProps = {

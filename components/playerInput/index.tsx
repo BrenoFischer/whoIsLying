@@ -105,6 +105,10 @@ export default function PlayerInput({
       </CustomModal>
 
       <CustomModal modalVisible={characterModalOpen} setModalVisible={setCharacterModalOpen}>
+        <TouchableOpacity style={{ position: 'absolute', top: scale(15), right: scale(15) }} onPress={() => setCharacterModalOpen(false)}>
+          <MaterialIcons name="close" size={moderateScale(24)} color={colors.orange[200]} />
+        </TouchableOpacity>
+
         <Text style={styles.characterModalTitle}>{t('Choose your character')}</Text>
 
         <View style={styles.themeFilterRow}>

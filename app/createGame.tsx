@@ -143,6 +143,9 @@ export default function CreateGame() {
       }
     >
       <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
+        <TouchableOpacity style={{ position: 'absolute', top: scale(15), right: scale(15) }} onPress={() => setModalOpen(false)}>
+          <MaterialIcons name="close" size={moderateScale(24)} color={colors.orange[200]} />
+        </TouchableOpacity>
         <Text style={styles.modalTitle}>{t('Choose your character')}</Text>
 
         <View style={styles.themeFilterRow}>
@@ -186,7 +189,7 @@ export default function CreateGame() {
           ))}
         </View>
 
-        <ScrollView style={styles.modalContainer}>
+        <ScrollView style={styles.modalContainer} showsVerticalScrollIndicator={false}>
           {filteredForModal.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('No more available images for this theme')}</Text>
