@@ -4,10 +4,8 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Modal,
   ScrollView,
-  StatusBar,
 } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomModal from '@/components/modal';
@@ -22,6 +20,7 @@ import CheckPlayerWord from '../forgotWord';
 import { GameContext } from '@/context/GameContext';
 import { radius } from '@/styles/radius';
 import { spacing } from '@/styles/spacing';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface HowToPlayProps {
@@ -216,6 +215,7 @@ export default function SidebarMenu() {
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
   const { game, createNewGame } = useContext(GameContext);
+  
   const toggleMenu = () => setVisible(!visible);
 
   const handleStartNewGame = () => {
@@ -238,7 +238,7 @@ export default function SidebarMenu() {
     <>
       <View>
         <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
-          <Ionicons name="menu" size={28} color={colors.orange[200]} />
+          <Ionicons name="menu" size={scale(28)} color={colors.orange[200]} />
         </TouchableOpacity>
       </View>
 
@@ -246,13 +246,11 @@ export default function SidebarMenu() {
         transparent={false}
         visible={visible}
         animationType="slide"
-        statusBarTranslucent
       >
-        <StatusBar backgroundColor={colors.background[100]} barStyle="light-content" />
-        <View style={styles.modalContainer}>
+        <SafeAreaView style={styles.modalContainer}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={toggleMenu}>
-              <Ionicons name="close" size={28} color={colors.orange[200]} />
+              <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
           <View style={styles.backdrop}>
@@ -355,21 +353,19 @@ export default function SidebarMenu() {
 
             <CheckPlayerWord showForgotWord={showForgotWord} setShowForgotWord={setShowForgotWord} />
 
-            <View style={{ marginBottom: verticalScale(150) }} />
+            <View style={{ marginBottom: verticalScale(40) }} />
           </ScrollView>
         </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </>
   );
 }
 
-const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background[100],
-    paddingTop: verticalScale(spacing.xxl)
   },
   buttonContainer: {
     zIndex: 100,
@@ -418,7 +414,6 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     flex: 1,
-    flexDirection: 'row',
   },
   titleInformation: {
     fontSize: moderateScale(20),
@@ -434,10 +429,10 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   sidebar: {
-    width: width,
+    flex: 1,
     backgroundColor: colors.background[100],
-    padding: scale(40),
-    paddingTop: verticalScale(80),
+    paddingHorizontal: scale(24),
+    paddingTop: verticalScale(16),
     elevation: 5,
   },
   menuItem: {
