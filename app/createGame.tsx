@@ -238,21 +238,23 @@ export default function CreateGame() {
           <View style={{ paddingTop: verticalScale(spacing.md) }}>
             <CustomText>{t('Players added')} - {players.length}</CustomText>
           </View>
-          {players.map(player => {
-            const availableForPlayer = characters
-              .filter(c => !usedCharacters.includes(c.name) || c.name === player.character)
-              .map(c => c.name);
-            return (
-              <PlayerInput
-                key={player.id}
-                player={player}
-                editPlayer={editPlayer}
-                deletePlayer={deletePlayer}
-                availableImages={availableForPlayer}
-                editCharacter={editCharacter}
-              />
-            );
-          })}
+          <View style={{ gap: verticalScale(spacing.xs) }}>
+            {players.map(player => {
+              const availableForPlayer = characters
+                .filter(c => !usedCharacters.includes(c.name) || c.name === player.character)
+                .map(c => c.name);
+              return (
+                <PlayerInput
+                  key={player.id}
+                  player={player}
+                  editPlayer={editPlayer}
+                  deletePlayer={deletePlayer}
+                  availableImages={availableForPlayer}
+                  editCharacter={editCharacter}
+                />
+              );
+            })}
+          </View>
         </View>
       </View>
     </ScreenLayout>

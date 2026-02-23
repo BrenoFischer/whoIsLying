@@ -7,11 +7,14 @@ import { router } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from '@/translations';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
 import ScreenLayout from '@/components/screenLayout';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
+import Elipse from '@/components/elipse';
+import Dot from '@/components/dot';
+import SidebarMenu from '@/components/sideBarMenu';
 
 export default function Words() {
   const [modalVisible, setModalVisible] = useState(true);
@@ -92,8 +95,14 @@ export default function Words() {
 
   return (
     <ScreenLayout
-      scrollable
       style={modalVisible ? { opacity: 0.1 } : undefined}
+      header={
+        <View style={styles.headerContainer}>
+          <View style={{flex: 1}}>
+          </View>
+          <SidebarMenu />
+        </View>
+      }
       footer={
         <Button
           text={t('Vote!')}
@@ -109,16 +118,16 @@ export default function Words() {
       />
 
       <View style={styles.topContainer}>
+        <View style={styles.topTextContainer}>
+          <Text style={styles.playerNameOnTable}>{impostorPlayer.name},</Text>
+          <Text style={styles.tableText}>
+            {t('vote on the secret word you think is the correct one:')}
+          </Text>
+        </View>
         <Character mood={impostorPlayer.character} size={characterSize} />
       </View>
 
       <View style={styles.tableContainer}>
-        <Text style={styles.playerNameOnTable}>
-          {impostorPlayer.name},{' '}
-          <Text style={styles.tableText}>
-            {t('vote on the secret word you think is the correct one:')}
-          </Text>
-        </Text>
         <View style={styles.allWordsContainer}>
           {allWords.map(w => (
             <WordVoteOption key={w} word={w} />
@@ -130,13 +139,35 @@ export default function Words() {
 }
 
 const styles = StyleSheet.create({
-  topContainer: {
+  headerContainer: {
+    paddingTop: verticalScale(spacing.xs),
+    paddingHorizontal: scale(spacing.md),
+    flexDirection: 'row',
     alignItems: 'center',
+  },
+  headerRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(spacing.xs),
+  },
+  headerTitle: {
+    textTransform: 'capitalize',
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway-Medium',
+  },
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: scale(spacing.md),
     paddingTop: verticalScale(spacing.lg),
+    gap: scale(spacing.md),
+  },
+  topTextContainer: {
+    flex: 1,
   },
   tableContainer: {
     marginHorizontal: scale(spacing.md),
-    marginTop: verticalScale(spacing.lg),
     padding: scale(spacing.md),
     backgroundColor: colors.white[100],
     borderRadius: radius.md,
@@ -149,8 +180,8 @@ const styles = StyleSheet.create({
   tableText: {
     fontSize: fontSize.md,
     fontFamily: 'Raleway',
-    color: colors.black[100],
     fontWeight: 'normal',
+    color: colors.white[100],
   },
   playerNameOnTable: {
     fontFamily: 'Raleway',
@@ -159,7 +190,6 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   allWordsContainer: {
-    marginTop: verticalScale(spacing.lg),
     gap: verticalScale(spacing.sm),
   },
   wordContainer: {

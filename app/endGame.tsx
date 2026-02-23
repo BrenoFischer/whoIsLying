@@ -69,7 +69,6 @@ export default function EndGame() {
 const styles = StyleSheet.create({
   headerContainer: {
     paddingTop: verticalScale(spacing.md),
-    paddingBottom: verticalScale(spacing.xs),
     paddingHorizontal: scale(spacing.sm),
     alignItems: 'flex-end',
   },
@@ -79,7 +78,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: fontSize.lg,
     color: colors.orange[200],
-    marginTop: verticalScale(spacing.xl),
     marginBottom: verticalScale(spacing.sm),
   },
   playerCard: {
@@ -87,7 +85,7 @@ const styles = StyleSheet.create({
     marginHorizontal: scale(spacing.sm),
     borderRadius: radius.md,
     marginVertical: verticalScale(spacing.md),
-    paddingVertical: verticalScale(spacing.md),
+    paddingTop: verticalScale(spacing.md),
     paddingHorizontal: scale(spacing.sm),
   },
   playerCardHeader: {

@@ -30,6 +30,9 @@ interface PlayerInputProps {
   availableImages?: string[];
   editCharacter?: (player: Player, newCharacter: string) => void;
   notEditable?: boolean;
+  showScore?: boolean;
+  selected?: boolean;
+  variant?: 'primary' | 'secondary';
 }
 
 export default function PlayerInput({
@@ -39,6 +42,9 @@ export default function PlayerInput({
   availableImages = [],
   editCharacter,
   notEditable = false,
+  showScore = true,
+  selected = false,
+  variant = 'primary',
 }: PlayerInputProps) {
   const [newName, setNewName] = useState(player.name);
   const [modalOpen, setModalOpen] = useState(false);
@@ -83,8 +89,14 @@ export default function PlayerInput({
     }
   };
 
+  const isSecondary = variant === 'secondary';
+
   return (
-    <View style={[styles.container, { borderColor: colors.orange[200] }]}>
+    <View style={[
+      styles.container,
+      isSecondary && styles.containerSecondary,
+      selected && styles.containerSelected,
+    ]}>
       <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
         <View>
           <Text style={styles.modalTitle}>
@@ -173,7 +185,9 @@ export default function PlayerInput({
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10), paddingTop: verticalScale(10) }}>
         <View style={{ alignItems: 'center', gap: verticalScale(5) }}>
-          <Text style={styles.playerScore}><Text style={styles.playerScoreValue}>{player.score} pts</Text></Text>
+          {showScore && (
+            <Text style={styles.playerScore}><Text style={styles.playerScoreValue}>{player.score} pts</Text></Text>
+          )}
           {notEditable ? (
             <Character mood={player.character} size={characterSize} />
           ) : (
@@ -182,9 +196,9 @@ export default function PlayerInput({
             </TouchableOpacity>
           )}
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={[{ flex: 1 }, notEditable && { alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center' }]}>
           {notEditable ? (
-            <Text style={styles.playerName}>{player.name}</Text>
+            <Text style={[styles.playerName, styles.playerNameCentered, isSecondary && styles.playerNameSecondary]}>{player.name}</Text>
           ) : (
             <TextInput
               placeholder={t('Add a new name')}
@@ -216,15 +230,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: scale(2),
+    borderColor: colors.orange[200],
     borderRadius: moderateScale(10),
-    marginTop: verticalScale(10),
     paddingHorizontal: scale(10),
     backgroundColor: colors.background[100],
+  },
+  containerSecondary: {
+    width: '100%',
+    maxWidth: undefined,
+    backgroundColor: colors.white[100],
+  },
+  containerSelected: {
+    backgroundColor: colors.orange[200],
   },
   playerName: {
     fontSize: fontSize.md,
     color: colors.white[100],
     flex: 1,
+  },
+  playerNameCentered: {
+    textAlign: 'center',
+    flex: 0,
+  },
+  playerNameSecondary: {
+    color: colors.black[100],
+    fontSize: fontSize.md,
+    fontWeight: 'bold',
   },
   playerScore: {
     fontSize: fontSize.sm,

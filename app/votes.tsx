@@ -8,6 +8,7 @@ import Elipse from '@/components/elipse';
 import Character from '@/components/character';
 import { Player } from '@/types/Player';
 import PlayerModal from '@/components/playerModal';
+import PlayerInput from '@/components/playerInput';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale } from 'react-native-size-matters';
 import Dot from '@/components/dot';
@@ -54,18 +55,6 @@ export default function Votes() {
 
   const restOfPlayers = players.filter(p => p.id !== player.id);
 
-  function PlayerVoteOption({ player }: { player: Player }) {
-    const isPlayerSelected = selectedPlayer !== undefined && player.id === selectedPlayer.id;
-    return (
-      <TouchableOpacity
-        onPress={() => setSelectedPlayer(player)}
-        style={[styles.playerOption, isPlayerSelected && styles.playerOptionSelected]}
-      >
-        <Text style={styles.playerOptionName}>{player.name}</Text>
-      </TouchableOpacity>
-    );
-  }
-
   return (
     <ScreenLayout
       style={modalVisible ? { opacity: 0.1 } : undefined}
@@ -96,6 +85,9 @@ export default function Votes() {
         <View style={styles.topTextContainer}>
           <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
           <Text style={styles.playerName}>{player.name}</Text>
+          <Text style={styles.voteInstruction}>
+            {t('Vote on the person you think is the impostor:')}
+          </Text>
         </View>
         <Character mood={player.character} size={characterSize} />
       </View>
@@ -105,14 +97,18 @@ export default function Votes() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.playerNameOnTable}>
-            {player.name},{' '}
-            <Text style={styles.tableText}>
-              {t('vote on the person you think is the impostor:')}
-            </Text>
-          </Text>
           <View style={styles.voteOptionsContainer}>
-            {restOfPlayers.map(p => <PlayerVoteOption key={p.id} player={p} />)}
+            {restOfPlayers.map(p => (
+              <TouchableOpacity key={p.id} onPress={() => setSelectedPlayer(p)}>
+                <PlayerInput
+                  player={p}
+                  notEditable
+                  showScore={false}
+                  selected={selectedPlayer?.id === p.id}
+                  variant="secondary"
+                />
+              </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
       </View>
@@ -164,7 +160,6 @@ const styles = StyleSheet.create({
   tableContainer: {
     flex: 1,
     marginHorizontal: scale(spacing.md),
-    marginBottom: verticalScale(spacing.md),
     padding: scale(spacing.md),
     backgroundColor: colors.white[100],
     borderRadius: radius.md,
@@ -174,39 +169,16 @@ const styles = StyleSheet.create({
     shadowRadius: scale(spacing.sm),
     elevation: 5,
   },
-  playerNameOnTable: {
+  voteInstruction: {
     fontFamily: 'Raleway',
-    fontSize: fontSize.lg,
+    fontSize: fontSize.md,
+    marginTop: verticalScale(spacing.xs),
+  },
+  voteInstructionName: {
     fontWeight: 'bold',
     color: colors.orange[200],
   },
-  tableText: {
-    fontSize: fontSize.md,
-    fontFamily: 'Raleway',
-    color: colors.black[100],
-    fontWeight: 'normal',
-  },
   voteOptionsContainer: {
-    marginTop: verticalScale(spacing.lg),
-    gap: verticalScale(spacing.sm),
-  },
-  playerOption: {
-    width: '100%',
-    alignItems: 'center',
-    borderWidth: scale(2),
-    borderRadius: radius.md,
-    borderColor: colors.orange[200],
-    paddingHorizontal: scale(spacing.md),
-    paddingVertical: verticalScale(spacing.sm),
-    backgroundColor: colors.white[100],
-  },
-  playerOptionSelected: {
-    backgroundColor: colors.orange[200],
-  },
-  playerOptionName: {
-    fontFamily: 'Raleway',
-    fontSize: fontSize.md,
-    color: colors.black[100],
-    textAlign: 'center',
+    gap: verticalScale(spacing.xs),
   },
 });

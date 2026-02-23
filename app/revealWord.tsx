@@ -41,27 +41,29 @@ export default function RevealWord() {
         )
       }
     >
-      <View style={styles.characterContainer}>
-        <Character mood={game.lyingPlayer.character} />
-      </View>
+      <View style={{ flex: 1 }}>
+        <View style={styles.characterContainer}>
+          <Character mood={game.lyingPlayer.character} />
+        </View>
 
-      <View style={styles.wordVotedContainer}>
-        <Text style={styles.label}>
-          {game.lyingPlayer.name} {t('voted for:')}
-        </Text>
-        <Text style={styles.word}>
-          {t(game.selectedWord || '', { ns: 'categories' })}
-        </Text>
-      </View>
-
-      {secretWordRevealed && (
-        <View style={styles.secretWordContainer}>
-          <Text style={styles.label}>{t('The secret word was:')}</Text>
-          <Text style={[styles.word, { color: colors.orange[200] }]}>
-            {t(getCurrentWord(), { ns: 'categories' })}
+        <View style={styles.wordVotedContainer}>
+          <Text style={styles.label}>
+            {game.lyingPlayer.name} {t('voted for:')}
+          </Text>
+          <Text style={styles.word}>
+            {t(game.selectedWord || '', { ns: 'categories' })}
           </Text>
         </View>
-      )}
+
+        {secretWordRevealed && (
+          <View style={styles.secretWordContainer}>
+            <Text style={styles.label}>{t('The secret word was:')}</Text>
+            <Text style={[styles.word, { color: colors.orange[200] }]}>
+              {t(getCurrentWord(), { ns: 'categories' })}
+            </Text>
+          </View>
+        )}
+      </View>
     </ScreenLayout>
   );
 }
@@ -69,24 +71,22 @@ export default function RevealWord() {
 const styles = StyleSheet.create({
   headerContainer: {
     paddingTop: verticalScale(spacing.md),
-    paddingBottom: verticalScale(spacing.xs),
     paddingHorizontal: scale(spacing.sm),
     alignItems: 'flex-end',
   },
   characterContainer: {
     alignItems: 'center',
-    paddingTop: verticalScale(spacing.lg),
   },
   wordVotedContainer: {
     paddingVertical: verticalScale(spacing.xl),
     paddingHorizontal: scale(spacing.md),
     backgroundColor: colors.orange[200],
-    marginTop: verticalScale(spacing.md),
   },
   secretWordContainer: {
-    paddingVertical: verticalScale(spacing.xl),
     paddingHorizontal: scale(spacing.md),
-    marginTop: verticalScale(spacing.lg),
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   label: {
     textAlign: 'center',

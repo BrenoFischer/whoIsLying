@@ -73,6 +73,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: "center",
-    paddingVertical: scale(spacing.xxxl)
+    paddingVertical: scale(spacing.md)
   }
 });

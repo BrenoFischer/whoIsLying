@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.white[100],
     borderRadius: radius.lg,
-    paddingVertical: verticalScale(spacing.lg),
+    paddingTop: verticalScale(spacing.lg),
     gap: verticalScale(spacing.md),
   },
   playerName: {

@@ -6,11 +6,12 @@ import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import ScreenLayout from '@/components/screenLayout';
 import { spacing } from '@/styles/spacing';
@@ -96,22 +97,27 @@ export default function EndOfMatches() {
     >
       <CustomModal setModalVisible={setModalOpen} modalVisible={modalOpen}>
         <View style={styles.modalContent}>
+          <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalOpen(false)}>
+            <Ionicons name="close" size={scale(24)} color={colors.orange[200]} />
+          </TouchableOpacity>
           <Text style={styles.modalTitle}>{t('Do you want to:')}</Text>
           <Character mood="bothCharacter" />
           <View style={styles.modalButtons}>
-            <Button text={t('Play one more round')} onPress={handlePlayerOneMoreRound} />
-            <Button text={t('Start a fresh new game')} onPress={handleStartNewGame} />
+            <Button text={t('Play one more round (keep scores)')} onPress={handlePlayerOneMoreRound} />
+            <Button text={t('New game (resets all scores)')} onPress={handleStartNewGame} variants='secondary' />
           </View>
         </View>
       </CustomModal>
 
-      <Text style={styles.title}>
-        {allWinners.length > 1 ? t('The grand winners are!') : t('The grand winner is!')}
-      </Text>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <Text style={styles.title}>
+          {allWinners.length > 1 ? t('The grand winners are!') : t('The grand winner is!')}
+        </Text>
 
-      {allWinners.map(p => (
-        <PlayerCard player={p} key={p.id} />
-      ))}
+        {allWinners.map(p => (
+          <PlayerCard player={p} key={p.id} />
+        ))}
+      </View>
     </ScreenLayout>
   );
 }
@@ -132,7 +138,7 @@ const styles = StyleSheet.create({
     marginHorizontal: scale(spacing.md),
     borderRadius: radius.md,
     marginVertical: verticalScale(spacing.md),
-    paddingVertical: verticalScale(spacing.lg),
+    paddingTop: verticalScale(spacing.lg),
     gap: verticalScale(spacing.sm),
   },
   playerName: {
@@ -143,7 +149,9 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     alignItems: 'center',
-    gap: verticalScale(spacing.lg),
+  },
+  modalCloseButton: {
+    alignSelf: 'flex-end',
   },
   modalTitle: {
     fontSize: fontSize.lg,
@@ -153,6 +161,6 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     width: '100%',
-    gap: verticalScale(spacing.xl),
+    gap: verticalScale(spacing.md),
   },
 });

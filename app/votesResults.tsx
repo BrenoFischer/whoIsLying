@@ -5,9 +5,9 @@ import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useTranslation } from '@/translations';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
 import ScreenLayout from '@/components/screenLayout';
 import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
@@ -23,6 +23,9 @@ type VotesByPlayerType = {
 export default function VotesResults() {
   const { game, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
+  const featuredCharacterSize = height * 0.2;
+  const listCharacterSize = height * 0.14;
 
   useEffect(() => {
     setCurrentScreen('/votesResults');
@@ -58,7 +61,7 @@ export default function VotesResults() {
   function PlayerCard(vote: VotesByPlayerType) {
     return (
       <View style={styles.allPlayerRow}>
-        <Character mood={vote.player.character} />
+        <Character mood={vote.player.character} size={listCharacterSize} />
         <View style={styles.allPlayerInfo}>
           <Text style={styles.allPlayersName}>{vote.player.name}</Text>
           <Text style={styles.allPlayersInfo}>{t('Votes')}: {vote.votes}</Text>
@@ -106,7 +109,7 @@ export default function VotesResults() {
               <View style={styles.playerCardInner}>
                 <View style={{ alignItems: 'center' }}>
                   <Text style={styles.playerName}>{vote.player.name}</Text>
-                  <Character mood={vote.player.character} />
+                  <Character mood={vote.player.character} size={featuredCharacterSize} />
                 </View>
                 <View style={styles.votesInfoContainer}>
                   <Text style={styles.votesInfo}>{votesLabel}</Text>
@@ -142,7 +145,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   mostVotedContainer: {
-    marginTop: verticalScale(spacing.xl),
     marginBottom: verticalScale(spacing.xxl),
     paddingHorizontal: scale(spacing.sm),
   },
@@ -152,14 +154,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: fontSize.lg,
     color: colors.orange[200],
-    marginBottom: verticalScale(spacing.sm),
+    marginBottom: verticalScale(spacing.lg),
   },
   playerCard: {
     backgroundColor: colors.orange[200],
     marginHorizontal: scale(spacing.sm),
+    paddingHorizontal: scale(spacing.md),
+    paddingTop: verticalScale(spacing.md),
     borderRadius: radius.md,
-    marginVertical: verticalScale(spacing.md),
-    paddingVertical: verticalScale(spacing.md),
   },
   playerCardInner: {
     flexDirection: 'row',
@@ -168,15 +170,15 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontFamily: 'Raleway',
-    fontSize: moderateScale(40),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
     color: colors.white[100],
   },
   votesInfoContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    maxWidth: scale(150),
   },
   votesInfo: {
     fontFamily: 'Raleway-Medium',
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
   allPlayersName: {
     color: colors.orange[200],
     fontFamily: 'Raleway',
-    fontSize: moderateScale(30),
+    fontSize: fontSize.lg,
     fontWeight: 'bold',
   },
   allPlayersInfo: {
