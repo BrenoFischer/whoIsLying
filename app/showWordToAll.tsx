@@ -137,15 +137,14 @@ export default function ShowWordToAll() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: verticalScale(spacing.md),
-    paddingBottom: verticalScale(spacing.xs),
+    paddingVertical: verticalScale(spacing.xs),
     flexDirection: "row", 
     alignItems: "center" ,
-    paddingHorizontal: scale(spacing.sm)
+    paddingHorizontal: scale(spacing.md)
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: moderateScale(14),
+    fontSize: fontSize.sm,
     fontFamily: 'Raleway-Medium',
     textAlign: 'center',
   },

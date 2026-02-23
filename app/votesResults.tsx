@@ -139,9 +139,8 @@ export default function VotesResults() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: verticalScale(spacing.md),
-    paddingBottom: verticalScale(spacing.xs),
-    paddingHorizontal: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.xs),
+    paddingHorizontal: scale(spacing.md),
     alignItems: 'flex-end',
   },
   mostVotedContainer: {

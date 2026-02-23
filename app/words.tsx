@@ -140,7 +140,7 @@ export default function Words() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: verticalScale(spacing.xs),
+    paddingVertical: verticalScale(spacing.xs),
     paddingHorizontal: scale(spacing.md),
     flexDirection: 'row',
     alignItems: 'center',

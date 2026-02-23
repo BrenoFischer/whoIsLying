@@ -123,7 +123,7 @@ export default function CreateGame() {
       header={
         <View style={styles.headerContainer}>
           <Elipse top={-80} />
-          <View style={{ alignItems: 'center', flexDirection: 'row', gap: scale(5), flex: 1, paddingHorizontal: scale(spacing.sm) }}>
+          <View style={{ alignItems: 'center', flexDirection: 'row', gap: scale(5), flex: 1 }}>
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
@@ -263,8 +263,9 @@ export default function CreateGame() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: verticalScale(spacing.md),
+    paddingTop: verticalScale(spacing.xs),
     paddingBottom: verticalScale(spacing.xs),
+    paddingHorizontal: scale(spacing.md),
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -368,7 +369,7 @@ const styles = StyleSheet.create({
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: moderateScale(14),
+    fontSize: fontSize.sm,
     fontFamily: 'Raleway-Medium',
   },
 });

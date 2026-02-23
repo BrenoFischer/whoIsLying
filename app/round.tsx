@@ -154,7 +154,6 @@ export default function RoundScreen() {
               flexDirection: 'row',
               gap: scale(5),
               flex: 1,
-              paddingHorizontal: scale(spacing.sm)
             }}
           >
             <Text style={styles.headerCategoryTitle}>
@@ -237,15 +236,14 @@ export default function RoundScreen() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: verticalScale(spacing.md),
-    paddingBottom: verticalScale(spacing.xs),
+    paddingVertical: verticalScale(spacing.xs),
     flexDirection: "row", 
     alignItems: "center" ,
-    paddingHorizontal: scale(spacing.sm)
+    paddingHorizontal: scale(spacing.md)
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',
-    fontSize: moderateScale(14),
+    fontSize: fontSize.sm,
     fontFamily: 'Raleway-Medium',
     color: colors.white[100],
     textAlign: 'center',

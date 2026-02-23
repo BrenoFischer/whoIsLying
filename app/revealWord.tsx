@@ -70,8 +70,8 @@ export default function RevealWord() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: verticalScale(spacing.md),
-    paddingHorizontal: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.xs),
+    paddingHorizontal: scale(spacing.md),
     alignItems: 'flex-end',
   },
   characterContainer: {
