@@ -26,7 +26,6 @@ const INITIAL_GAME: Game = {
   selectedWord: undefined,
   showingWordToPlayer: 0,
   votes: [],
-  maximumMatches: 2,
   currentMatch: 1,
 };
 
@@ -34,9 +33,7 @@ interface GameContextType {
   game: Game;
   createGame: (players: Player[]) => void;
   createNewGame: () => void;
-  setMaximumMatches: (maxQtd: number) => void;
   setLyingPlayer: (players: Player[]) => Player;
-  addNewMatch: () => void;
   setGameWord: (category: string) => void;
   getRandomWord: (category: string) => string;
   setSelectedWord: (newWord: string) => void;
@@ -212,14 +209,6 @@ export const GameContextProvider = ({
     return rounds;
   };
 
-  const setMaximumMatches = (maxQtd: number) => {
-    setGame(prev => ({ ...prev, maximumMatches: maxQtd }));
-  };
-
-  const addNewMatch = () => {
-    setGame(prev => ({ ...prev, currentMatch: prev.currentMatch + 1 }));
-  };
-
   const getRandomWord = (category: string) => {
     const categories: any = allCategories;
     const categoryWords: string[] = categories[category].content;
@@ -270,7 +259,6 @@ export const GameContextProvider = ({
       showingWordToPlayer: 0,
       votes: [],
       currentMatch: prev.currentMatch + 1,
-      maximumMatches: prev.maximumMatches + 1,
     }));
   };
 
@@ -418,8 +406,6 @@ export const GameContextProvider = ({
     <GameContext.Provider
       value={{
         game,
-        setMaximumMatches,
-        addNewMatch,
         createGame,
         createNewGame,
         setLyingPlayer,

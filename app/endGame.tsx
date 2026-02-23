@@ -15,7 +15,7 @@ import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 
 export default function EndGame() {
-  const { game, addNewMatch, setCurrentScreen } = useContext(GameContext);
+  const { game, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -45,12 +45,7 @@ export default function EndGame() {
   }
 
   const handleContinue = () => {
-    if (game.currentMatch >= game.maximumMatches) {
-      router.replace('/endOfMatches');
-    } else {
-      addNewMatch();
-      router.replace('/selectCategory');
-    }
+    router.replace('/endOfMatches');
   };
 
   return (

@@ -50,11 +50,12 @@ const { game, getCurrentWord } = useContext(GameContext);
 
     return(
         <SafeAreaView
+              edges={['bottom', 'left', 'right']}
               style={[
                 {
                   backgroundColor: colors.background[100],
                   overflow: 'hidden',
-                  height: '100%',
+                  flex: 1,
                 },
               ]}
             >
@@ -87,7 +88,7 @@ const { game, getCurrentWord } = useContext(GameContext);
 const styles = StyleSheet.create({
   headerContainer: {
     marginLeft: scale(30),
-    marginTop: verticalScale(60),
+    marginTop: verticalScale(20),
     flexDirection: 'row',
     justifyContent: 'space-around',
   },

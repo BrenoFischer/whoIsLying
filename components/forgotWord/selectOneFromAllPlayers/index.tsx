@@ -55,7 +55,6 @@ export default function SelectOneFromAllPlayers({setPlayer}: SelectOneFromAllPla
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: verticalScale(spacing.md),
     marginBottom: verticalScale(spacing.lg),
   },
 

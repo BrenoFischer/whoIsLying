@@ -129,7 +129,7 @@ export default function CreateGame() {
             </TouchableOpacity>
             <View>
               <Text style={styles.headerCategoryTitle}>
-                {t('Game')} {game.currentMatch} {t('of')} {game.maximumMatches}
+                {t('Game')} {game.currentMatch}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>

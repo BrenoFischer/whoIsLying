@@ -20,7 +20,7 @@ import CheckPlayerWord from '../forgotWord';
 import { GameContext } from '@/context/GameContext';
 import { radius } from '@/styles/radius';
 import { spacing } from '@/styles/spacing';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface HowToPlayProps {
@@ -32,8 +32,6 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
   const [slide, setSlide] = useState(0);
   const totalSlides = 7
   const { t } = useTranslation();
-
-  if(!showHowToPlay) return;
 
   const handleChangeSlide = (amount: number) => {
     const newSlide = slide + amount;
@@ -169,40 +167,42 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
     </View>,
   ]
 
-  return(
-    <CustomModal
-      setModalVisible={setShowHowToPlay}
-      modalVisible={showHowToPlay}
-      fixedHeight="85%"
+  return (
+    <Modal
+      transparent={false}
+      visible={showHowToPlay}
+      animationType="slide"
     >
-        <View style={{ minWidth: "100%" }}>
-          <View style={{marginBottom: verticalScale(20), alignSelf: "flex-end"}}>
-            <TouchableOpacity onPress={() => {setShowHowToPlay(false);}}>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.howToPlayContainer}>
+          <View style={styles.howToPlayHeader}>
+            <TouchableOpacity onPress={() => setShowHowToPlay(false)}>
               <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
-        </View>
 
-        <ScrollView
-          style={{ flex: 1, width: "100%" }}
-          contentContainerStyle={{ paddingBottom: verticalScale(60) }}
-          showsVerticalScrollIndicator={true}
-        >
-          {slides[slide]}
-        </ScrollView>
+          <ScrollView
+            style={styles.howToPlayContent}
+            contentContainerStyle={styles.howToPlayContentContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {slides[slide]}
+          </ScrollView>
 
-        <View style={{position: "absolute", bottom: "2%",flexDirection: 'row', gap: scale(15)}}>
-            <TouchableOpacity onPress={()=>{ handleChangeSlide(-1) }}>
+          <View style={styles.howToPlayNavigation}>
+            <TouchableOpacity onPress={() => handleChangeSlide(-1)}>
               <Ionicons name="arrow-back-outline" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
             <Text style={styles.titleInformation}>
               {slide + 1}/{totalSlides}
             </Text>
-            <TouchableOpacity onPress={()=>{ handleChangeSlide(1) }}>
+            <TouchableOpacity onPress={() => handleChangeSlide(1)}>
               <Ionicons name="arrow-forward-outline" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
-    </CustomModal>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </Modal>
   );
 }
 
@@ -247,6 +247,7 @@ export default function SidebarMenu() {
         visible={visible}
         animationType="slide"
       >
+        <SafeAreaProvider>
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={toggleMenu}>
@@ -357,6 +358,7 @@ export default function SidebarMenu() {
           </ScrollView>
         </View>
         </SafeAreaView>
+        </SafeAreaProvider>
       </Modal>
     </>
   );
@@ -462,5 +464,30 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     color: colors.black[100],
     marginBottom: verticalScale(12),
+  },
+  howToPlayContainer: {
+    flex: 1,
+    backgroundColor: colors.white[100],
+  },
+  howToPlayHeader: {
+    alignItems: 'flex-end',
+    paddingHorizontal: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.xs),
+  },
+  howToPlayContent: {
+    flex: 1,
+    paddingHorizontal: scale(spacing.md),
+  },
+  howToPlayContentContainer: {
+    paddingBottom: verticalScale(spacing.md),
+  },
+  howToPlayNavigation: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scale(spacing.lg),
+    paddingVertical: verticalScale(spacing.md),
+    borderTopWidth: 1,
+    borderTopColor: colors.orange[200],
   },
 });
