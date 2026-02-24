@@ -3,12 +3,11 @@ import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
-  SafeAreaView,
   View,
   TouchableOpacity,
   Modal,
-  StatusBar,
 } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/styles/colors';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -36,34 +35,38 @@ export default function ForgotWord({showForgotWord, setShowForgotWord}: ForgotWo
         transparent={false}
         visible={showForgotWord}
         animationType="slide"
-        statusBarTranslucent
       >
-      <StatusBar backgroundColor={colors.background[100]} barStyle="light-content" />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleCloseModal}>
-          <Ionicons name="close" size={28} color={colors.orange[200]} />
-        </TouchableOpacity>
-      </View>
-      {
-        player ?
-          <ShowWordToSinglePlayer player={player} setPlayer={setPlayer} setShowForgotWord={setShowForgotWord} />
-        :
-          <SelectOneFromAllPlayers setPlayer={setPlayer} />
-      }
-    </Modal>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={handleCloseModal}>
+                <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
+              </TouchableOpacity>
+            </View>
+            {
+              player ?
+                <ShowWordToSinglePlayer player={player} setPlayer={setPlayer} setShowForgotWord={setShowForgotWord} />
+              :
+                <SelectOneFromAllPlayers setPlayer={setPlayer} />
+            }
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </Modal>
     
   );
 }
 
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background[100],
+  },
   buttonContainer: {
-    position: 'absolute',
-    top: verticalScale(50),
-    right: scale(10),
     zIndex: 100,
     backgroundColor: colors.background[100],
     borderRadius: moderateScale(20),
     padding: scale(5),
+    alignSelf: 'flex-end',
   },
 });

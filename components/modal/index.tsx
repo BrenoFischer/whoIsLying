@@ -45,11 +45,12 @@ export default function CustomModal({
 
 const styles = StyleSheet.create({
   modalView: {
+    width: scale(280),
     margin: scale(20),
     backgroundColor: 'white',
     borderRadius: moderateScale(20),
     padding: scale(35),
-    alignItems: 'center',
+    alignItems: 'stretch',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

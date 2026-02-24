@@ -80,39 +80,8 @@ describe('GameContext', () => {
         selectedWord: undefined,
         showingWordToPlayer: 0,
         votes: [],
-        maximumMatches: 2,
         currentMatch: 1,
       });
-    });
-  });
-
-  describe('setMaximumMatches', () => {
-    it('should update maximum matches', () => {
-      const { result } = renderGameContext();
-
-      act(() => {
-        result.current.setMaximumMatches(5);
-      });
-
-      expect(result.current.game.maximumMatches).toBe(5);
-    });
-  });
-
-  describe('addNewMatch', () => {
-    it('should increment current match by 1', () => {
-      const { result } = renderGameContext();
-
-      act(() => {
-        result.current.addNewMatch();
-      });
-
-      expect(result.current.game.currentMatch).toBe(2);
-
-      act(() => {
-        result.current.addNewMatch();
-      });
-
-      expect(result.current.game.currentMatch).toBe(3);
     });
   });
 
@@ -453,8 +422,6 @@ describe('GameContext', () => {
 
       expect(typeof result.current.createGame).toBe('function');
       expect(typeof result.current.createNewGame).toBe('function');
-      expect(typeof result.current.setMaximumMatches).toBe('function');
-      expect(typeof result.current.addNewMatch).toBe('function');
       expect(typeof result.current.setGameWord).toBe('function');
       expect(typeof result.current.getRandomWord).toBe('function');
       expect(typeof result.current.setSelectedWord).toBe('function');

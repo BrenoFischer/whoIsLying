@@ -3,6 +3,8 @@
   "New game": "Novo jogo",
   "Start a new game": "Iniciar novo jogo",
   "Start a fresh new game": "Começar novo jogo",
+  "New game (resets all scores)": "Novo jogo (zera todos os pontos)",
+  "Play one more round (keep scores)": "Jogar mais uma rodada (mantém pontos)",
   "Continue with current game": "Continuar jogo atual",
   "Do you want to:": "Você quer:",
   "📖 How to Play": "📖 Como Jogar",
@@ -83,7 +85,7 @@
   "The grand winner is!": "O grande vencedor é!",
   "Play one more round": "Jogar mais uma rodada",
   "Choose your character": "Selecione o seu personagem",
-  "vote on the person you think is the impostor:": "vote na pessoa que você pensa que é impostor:",
+  "Vote on the person you think is the impostor:": "Vote na pessoa que você pensa que é impostor:",
   "The most voted player was:": "A pessoa mais votada foi:",
   "It is a tie, the most voted players were:": "Foi um empate, as pessoas mais votadas foram:",
   "With": "Com",
@@ -110,6 +112,7 @@
   "are calculated as follows": "são calculados da seguinte maneira",
   "Voted on the impostor": "Votou no impostor",
   "point": "apontar",
+  "Points": "Pontos",
   "The impostor receives": "O impostor recebe",
   "for every vote not on him": "Para cada voto que não foi nele",
   "if correctly guessed the secret word": "se adivinhou corretamente a palavra secreta",
@@ -117,5 +120,7 @@
   "questions": "perguntas",
   "Change": "Trocar",
   "Forgot your word": "Esqueceu a palavra",
-  "Select your name": "Selecione o seu nome"
+  "Select your name": "Selecione o seu nome",
+  "Recording...": "Gravando...",
+  "Forgot your word?": "Esqueceu a sua palavra?"
 }

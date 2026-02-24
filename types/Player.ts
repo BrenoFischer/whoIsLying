@@ -1,7 +1,7 @@
 export interface Player {
   id: string;
   name: string;
-  gender: string;
+  theme: string;
   character: string;
   score: number;
 }

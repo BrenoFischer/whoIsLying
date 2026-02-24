@@ -3,6 +3,8 @@
   "New game": "New game",
   "Start a new game": "Start a new game",
   "Start a fresh new game": "Start a fresh new game",
+  "New game (resets all scores)": "New game (resets all scores)",
+  "Play one more round (keep scores)": "Play one more round (keep scores)",
   "Continue with current game": "Continue with current game",
   "Do you want to:": "Do you want to:",
   "📖 How to Play": "📖 How to Play",
@@ -105,11 +107,12 @@
   "Reveal secret word": "Reveal secret word",
   "Scores": "Scores",
   "points": "points",
+  "Points": "Points",
   "The grand winners are!": "The grand winners are!",
   "The grand winner is!": "The grand winner is!",
   "Play one more round": "Play one more round",
   "Choose your character": "Choose your character",
-  "vote on the person you think is the impostor:": "vote on the person you think is the impostor:",
+  "Vote on the person you think is the impostor:": "Vote on the person you think is the impostor:",
   "The most voted player was:": "The most voted player was:",
   "It is a tie, the most voted players were:": "It is a tie, the most voted players were:",
   "With": "With",
@@ -117,5 +120,7 @@
   "Como jogar": "How to Play",
   "Change": "Change",
   "Forgot your word": "Forgot your word",
-  "Select your name": "Select your name"
+  "Select your name": "Select your name",
+  "Recording...": "Recording...",
+  "Forgot your word?: ": "Forgot your word?"
 }

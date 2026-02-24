@@ -8,6 +8,7 @@ import {
   Image,
   ImageBackground,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
@@ -21,6 +22,11 @@ import Character from '@/components/character';
 import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import Carousel from '@/components/carousel';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 const images = {
   foods: require('@/assets/images/foodCategory.png'),
@@ -35,11 +41,18 @@ const backgroundImages = {
 };
 
 export default function SelectCategory() {
-  const { setGameWord } = useContext(GameContext);
+  const { setGameWord, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCurrentScreen('/selectCategory');
+  }, []);
+  const { height } = useWindowDimensions();
 
   const categoriesArray = Object.keys(categories);
   const [selectedCategory, setSelectedCategory] = useState(categoriesArray[0] || '');
+
+  const characterSize = height * 0.22;
 
   const handleContinueWithSelectedCategory = () => {
     setGameWord(selectedCategory);
@@ -61,123 +74,107 @@ export default function SelectCategory() {
     const isAvailable = categoryData?.available ?? true;
 
     return (
-      <View style={[
-        styles.categoryCardContainer,
-        isActive && styles.categoryCardActive
-      ]}>
-        <ImageBackground
+      <View style={styles.categoryCardContainer}>
+        {/* <ImageBackground
           source={backgroundImages[categoryName as keyof typeof backgroundImages]}
           style={styles.categoryCardInner}
           imageStyle={styles.categoryCardBackgroundImage}
           resizeMode="cover"
-        >
+        > */}
+        <View style={styles.categoryCardInner}>
           <View style={styles.cardOverlay} />
           {!isAvailable && <View style={styles.lockedOverlay} />}
           <Text></Text>
           <Image
             source={images[categoryName as keyof typeof images]}
-            style={[
-              styles.categoryImage,
-              isActive && styles.categoryImageActive,
-            ]}
+            style={styles.categoryImage}
           />
           {!isAvailable && (
             <View style={styles.lockIconContainer}>
               <Ionicons name="lock-closed" size={moderateScale(40)} color={colors.background[100]} />
             </View>
           )}
-          <Text style={[
-            styles.categoryTitle,
-            isActive && styles.categoryTitleActive,
-          ]}>
+          <Text style={styles.categoryTitle}>
             {t(categoryName)}
           </Text>
-        </ImageBackground>
+        </View>
+        {/* </ImageBackground> */}
       </View>
     );
   };
 
   return (
-    <WithSidebar>
-      <SafeAreaView
-        style={{
-          backgroundColor: colors.background[100],
-          height: '100%',
-          overflow: 'hidden',
-        }}
-      >
-        <Elipse top={scale(-180)} />
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View>
-              <Text style={styles.pageTitle}>{t('Categories')}</Text>
-              <Text style={styles.subtitle}>
-                {t('Questions will be based on the selected category')}
-              </Text>
-            </View>
-            <View style={styles.charContainer}>
-              <Character mood={'bothCharacter'} size='medium' />
-            </View>
+    <ScreenLayout
+      footer={
+        <Button
+          text={t('Select category')}
+          variants={selectedCategory ? 'primary' : 'disabled'}
+          onPress={handleContinueWithSelectedCategory}
+        />
+      }
+    >
+      <Elipse top={scale(-180)} />
+
+      <View style={styles.contentWrapper}>
+        <SidebarMenu />
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.pageTitle}>{t('Categories')}</Text>
+            <Text style={styles.subtitle}>
+              {t('Questions will be based on the selected category')}
+            </Text>
           </View>
-          <View style={styles.carouselWrapper}>
-            <Carousel
-              data={categoriesArray}
-              renderItem={renderCategoryCard}
-              onIndexChange={handleCarouselIndexChange}
-              itemWidth={scale(200)}
-              spacing={scale(20)}
-            />
-          </View>
+
+          <Character mood={'bothCharacter'} size={characterSize} />
         </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            text={t('Select category')}
-            variants={selectedCategory ? 'primary' : 'disabled'}
-            onPress={handleContinueWithSelectedCategory}
+        <View style={styles.carouselWrapper}>
+          <Carousel
+            data={categoriesArray}
+            renderItem={renderCategoryCard}
+            onIndexChange={handleCarouselIndexChange}
+            itemWidth={scale(200)}
+            spacing={scale(20)}
           />
         </View>
-      </SafeAreaView>
-    </WithSidebar>
+      </View>
+  </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: verticalScale(20),
+  contentWrapper: {
     flex: 1,
-    position: "relative"
+    width: '100%',
+    overflow: 'hidden',
+    paddingTop: verticalScale(spacing.xs)
   },
   headerContainer: {
-    marginLeft: scale(20),
-    marginTop: verticalScale(30),
-    marginBottom: verticalScale(10)
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: scale(spacing.md)
   },
-  charContainer: {
-    position: "absolute",
-    right: scale(5)
+  headerTextContainer: {
+    flex: 1,
   },
   pageTitle: {
     fontFamily: 'Ralway',
-    fontSize: moderateScale(28),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
-    maxWidth: '50%',
-    marginVertical: verticalScale(10),
   },
   subtitle: {
-    fontSize: moderateScale(14),
+    fontSize: fontSize.md,
     fontFamily: 'Raleway-Medium',
-    maxWidth: '50%',
   },
   carouselWrapper: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: verticalScale(50),
+    width: '100%',
+    overflow: 'hidden',
   },
   categoryCardContainer: {
     width: '100%',
     minHeight: verticalScale(180),
-    maxHeight: verticalScale(220),
     backgroundColor: colors.orange[200],
     borderRadius: moderateScale(20),
     borderBottomWidth: scale(7),
@@ -191,12 +188,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: verticalScale(20),
+    paddingVertical: verticalScale(spacing.sm),
     backgroundColor: colors.white[100],
-    borderRadius: moderateScale(13),
+    borderRadius: moderateScale(radius.lg),
   },
   categoryCardBackgroundImage: {
     borderRadius: moderateScale(13),
+    backgroundColor: colors.white[100]
   },
   cardOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -215,48 +213,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 5,
   },
-  categoryCardActive: {
-    height: verticalScale(240),
-    opacity: 1,
-    transform: [{ scale: 1 }],
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 10,
-  },
   categoryTitle: {
     fontFamily: 'Ralway',
     textTransform: 'capitalize',
-    fontSize: moderateScale(18),
+    fontSize: fontSize.md,
     textAlign: 'center',
     color: colors.background[100],
     zIndex: 2,
-  },
-  categoryTitleActive: {
-    fontSize: moderateScale(22),
     fontWeight: 'bold',
   },
   categoryImage: {
     height: scale(90),
     width: scale(90),
-    resizeMode: 'contain',
-    zIndex: 0,
-  },
-  categoryImageActive: {
-    height: scale(120),
-    width: scale(120),
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
   },
 });

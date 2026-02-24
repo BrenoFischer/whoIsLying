@@ -19,9 +19,7 @@ export default function PlayerModal({
 }: PlayerModalProps) {
   const { language, t } = useTranslation();
   const buttonText =
-    t("I'm") +
-    (language === 'en' ? ' ' : player.gender === 'woman' ? ' a ' : ' o ') +
-    player.name;
+    t("I'm") + ' ' +player.name;
 
   return (
     <Modal

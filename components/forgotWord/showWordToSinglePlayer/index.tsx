@@ -3,6 +3,7 @@ import Character from "@/components/character";
 import PlayerModal from "@/components/playerModal";
 import { GameContext } from "@/context/GameContext";
 import { colors } from "@/styles/colors";
+import { spacing } from "@/styles/spacing";
 import { Player } from "@/types/Player";
 import { t } from "i18next";
 import { useContext, useState } from "react";
@@ -50,11 +51,12 @@ const { game, getCurrentWord } = useContext(GameContext);
 
     return(
         <SafeAreaView
+              edges={['bottom', 'left', 'right']}
               style={[
                 {
                   backgroundColor: colors.background[100],
                   overflow: 'hidden',
-                  height: '100%',
+                  flex: 1,
                 },
               ]}
             >
@@ -63,7 +65,7 @@ const { game, getCurrentWord } = useContext(GameContext);
                   <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
                   <Text style={styles.playerName}>{player.name}</Text>
                 </View>
-                <Character mood={player.character} size="medium" />
+                <Character mood={player.character} />
               </View>
               <View style={styles.secretWordContainer}>
                 <Text style={styles.secretWord}>{displayWord}</Text>
@@ -87,7 +89,7 @@ const { game, getCurrentWord } = useContext(GameContext);
 const styles = StyleSheet.create({
   headerContainer: {
     marginLeft: scale(30),
-    marginTop: verticalScale(60),
+    marginTop: verticalScale(20),
     flexDirection: 'row',
     justifyContent: 'space-around',
   },

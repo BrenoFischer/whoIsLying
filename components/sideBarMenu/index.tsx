@@ -4,10 +4,8 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Modal,
   ScrollView,
-  StatusBar,
 } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomModal from '@/components/modal';
@@ -16,11 +14,13 @@ import { colors } from '@/styles/colors';
 import Button from '../button';
 import Character from '../character';
 import { useNavigation } from 'expo-router';
-import { useAppReset } from '@/context/AppResetContext';
 import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
 import CheckPlayerWord from '../forgotWord';
 import { GameContext } from '@/context/GameContext';
+import { radius } from '@/styles/radius';
+import { spacing } from '@/styles/spacing';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface HowToPlayProps {
@@ -32,8 +32,6 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
   const [slide, setSlide] = useState(0);
   const totalSlides = 7
   const { t } = useTranslation();
-
-  if(!showHowToPlay) return;
 
   const handleChangeSlide = (amount: number) => {
     const newSlide = slide + amount;
@@ -169,40 +167,42 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
     </View>,
   ]
 
-  return(
-    <CustomModal
-      setModalVisible={setShowHowToPlay}
-      modalVisible={showHowToPlay}
-      fixedHeight="85%"
+  return (
+    <Modal
+      transparent={false}
+      visible={showHowToPlay}
+      animationType="slide"
     >
-        <View style={{ minWidth: "100%" }}>
-          <View style={{marginBottom: verticalScale(20), alignSelf: "flex-end"}}>
-            <TouchableOpacity onPress={() => {setShowHowToPlay(false);}}>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.howToPlayContainer}>
+          <View style={styles.howToPlayHeader}>
+            <TouchableOpacity onPress={() => setShowHowToPlay(false)}>
               <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
-        </View>
 
-        <ScrollView
-          style={{ flex: 1, width: "100%" }}
-          contentContainerStyle={{ paddingBottom: verticalScale(60) }}
-          showsVerticalScrollIndicator={true}
-        >
-          {slides[slide]}
-        </ScrollView>
+          <ScrollView
+            style={styles.howToPlayContent}
+            contentContainerStyle={styles.howToPlayContentContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {slides[slide]}
+          </ScrollView>
 
-        <View style={{position: "absolute", bottom: "2%",flexDirection: 'row', gap: scale(15)}}>
-            <TouchableOpacity onPress={()=>{ handleChangeSlide(-1) }}>
+          <View style={styles.howToPlayNavigation}>
+            <TouchableOpacity onPress={() => handleChangeSlide(-1)}>
               <Ionicons name="arrow-back-outline" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
             <Text style={styles.titleInformation}>
               {slide + 1}/{totalSlides}
             </Text>
-            <TouchableOpacity onPress={()=>{ handleChangeSlide(1) }}>
+            <TouchableOpacity onPress={() => handleChangeSlide(1)}>
               <Ionicons name="arrow-forward-outline" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
-    </CustomModal>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </Modal>
   );
 }
 
@@ -214,14 +214,13 @@ export default function SidebarMenu() {
   const [showForgotWord, setShowForgotWord] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
-  const { game } = useContext(GameContext)
-
-  const { resetApp } = useAppReset();
+  const { game, createNewGame } = useContext(GameContext);
+  
   const toggleMenu = () => setVisible(!visible);
 
   const handleStartNewGame = () => {
     setNewGameModalOpen(!newGameModalOpen);
-    resetApp();
+    createNewGame();
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -235,11 +234,13 @@ export default function SidebarMenu() {
     setLanguage(lan);
   };
 
+  const isForgotWordAvailable = game.players.length > 0 && game.currentScreen !== '/createGame' && game.currentScreen !== '/selectCategory';
+
   return (
     <>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={toggleMenu}>
-          <Ionicons name="menu" size={28} color={colors.orange[200]} />
+      <View>
+        <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
+          <Ionicons name="menu" size={scale(28)} color={colors.orange[200]} />
         </TouchableOpacity>
       </View>
 
@@ -247,13 +248,12 @@ export default function SidebarMenu() {
         transparent={false}
         visible={visible}
         animationType="slide"
-        statusBarTranslucent
       >
-        <StatusBar backgroundColor={colors.background[100]} barStyle="light-content" />
-        <View style={styles.modalContainer}>
+        <SafeAreaProvider>
+        <SafeAreaView style={styles.modalContainer}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={toggleMenu}>
-              <Ionicons name="close" size={28} color={colors.orange[200]} />
+              <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
           <View style={styles.backdrop}>
@@ -323,7 +323,7 @@ export default function SidebarMenu() {
                 <Character mood="bothCharacter" />
                 <View style={{ gap: verticalScale(40) }}>
                   <Button
-                    text={t('Start a fresh new game')}
+                    text={t('New game (resets all scores)')}
                     onPress={handleStartNewGame}
                   />
                   <Button
@@ -349,36 +349,34 @@ export default function SidebarMenu() {
             <View style={styles.startNewGameContainer}>
               <Button
                 text={t('Forgot your word') + '?'}
-                variants={game.players.length > 0 ? "secondary" : "disabled"}
+                variants={isForgotWordAvailable ? "secondary" : "disabled"}
                 onPress={() => { setShowForgotWord(true) }}
               />
             </View>
 
             <CheckPlayerWord showForgotWord={showForgotWord} setShowForgotWord={setShowForgotWord} />
 
-            <View style={{ marginBottom: verticalScale(150) }} />
+            <View style={{ marginBottom: verticalScale(40) }} />
           </ScrollView>
         </View>
-        </View>
+        </SafeAreaView>
+        </SafeAreaProvider>
       </Modal>
     </>
   );
 }
 
-const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background[100],
   },
   buttonContainer: {
-    position: 'absolute',
-    top: verticalScale(50),
-    right: scale(10),
     zIndex: 100,
     backgroundColor: colors.background[100],
-    borderRadius: moderateScale(20),
+    borderRadius: moderateScale(radius.pill),
     padding: scale(5),
+    alignSelf: "flex-end"
   },
   languageContainer: {
     marginVertical: verticalScale(20),
@@ -420,7 +418,6 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     flex: 1,
-    flexDirection: 'row',
   },
   titleInformation: {
     fontSize: moderateScale(20),
@@ -436,10 +433,10 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   sidebar: {
-    width: width,
+    flex: 1,
     backgroundColor: colors.background[100],
-    padding: scale(40),
-    paddingTop: verticalScale(80),
+    paddingHorizontal: scale(24),
+    paddingTop: verticalScale(16),
     elevation: 5,
   },
   menuItem: {
@@ -469,5 +466,30 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     color: colors.black[100],
     marginBottom: verticalScale(12),
+  },
+  howToPlayContainer: {
+    flex: 1,
+    backgroundColor: colors.white[100],
+  },
+  howToPlayHeader: {
+    alignItems: 'flex-end',
+    paddingHorizontal: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.xs),
+  },
+  howToPlayContent: {
+    flex: 1,
+    paddingHorizontal: scale(spacing.md),
+  },
+  howToPlayContentContainer: {
+    paddingBottom: verticalScale(spacing.md),
+  },
+  howToPlayNavigation: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scale(spacing.lg),
+    paddingVertical: verticalScale(spacing.md),
+    borderTopWidth: 1,
+    borderTopColor: colors.orange[200],
   },
 });

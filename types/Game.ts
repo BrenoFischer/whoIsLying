@@ -13,6 +13,6 @@ export interface Game {
   selectedWord: undefined | string;
   showingWordToPlayer: number;
   votes: Vote[];
-  maximumMatches: number;
   currentMatch: number;
+  currentScreen?: string;
 }

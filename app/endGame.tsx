@@ -4,43 +4,36 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
-import { useContext } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useContext, useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import ScreenLayout from '@/components/screenLayout';
+import SidebarMenu from '@/components/sideBarMenu';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function EndGame() {
-  const { game, addNewMatch } = useContext(GameContext);
+  const { game, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
 
-  const sortedWinningPlayers = game.players
-    .slice()
-    .sort((p1, p2) => p2.score - p1.score);
+  useEffect(() => {
+    setCurrentScreen('/endGame');
+  }, []);
 
-  function PlayerWithScore({
-    player,
-    index,
-  }: {
-    player: Player;
-    index: number;
-  }) {
+  const sortedPlayers = game.players.slice().sort((p1, p2) => p2.score - p1.score);
+
+  function PlayerWithScore({ player, index }: { player: Player; index: number }) {
     return (
       <View style={styles.playerCard}>
-          <View
-            style={{
-              marginLeft: scale(10),
-              flexDirection: 'row',
-              gap: scale(10),
-            }}
-          >
-            <Text style={styles.index}>{index + 1}</Text>
-            <Text style={styles.playerName}>{player.name}</Text>
-          </View>
-        <View style={styles.headerContainer}>
+        <View style={styles.playerCardHeader}>
+          <Text style={styles.index}>{index + 1}</Text>
+          <Text style={styles.playerName}>{player.name}</Text>
+        </View>
+        <View style={styles.playerCardBody}>
           <Character mood={player.character} />
-          <View
-            style={styles.textContainer}
-          >
+          <View style={styles.scoreContainer}>
             <Text style={styles.playerScore}>
               {player.score}{' '}
               <Text style={styles.playerPointsText}>{t('points')}</Text>
@@ -52,97 +45,84 @@ export default function EndGame() {
   }
 
   const handleContinue = () => {
-    const currentMatch = game.currentMatch;
-
-    if (currentMatch >= game.maximumMatches) {
-      router.replace('/endOfMatches');
-    } else {
-      addNewMatch();
-      router.replace('/selectCategory');
-    }
+    router.replace('/endOfMatches');
   };
 
   return (
-    <SafeAreaView
-      style={{
-        backgroundColor: colors.background[100],
-        overflow: 'hidden',
-        height: '100%',
-      }}
+    <ScreenLayout
+      scrollable
+      header={
+        <View style={styles.headerContainer}>
+          <SidebarMenu />
+        </View>
+      }
+      footer={<Button text={t('Continue')} onPress={handleContinue} />}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>{t('Scores')}:</Text>
-        {sortedWinningPlayers.map((p, idx) => {
-          return <PlayerWithScore key={p.id} player={p} index={idx} />;
-        })}
-      </ScrollView>
-      <View style={styles.buttonContainer}>
-        <Button text={t('Continue')} onPress={handleContinue} />
-      </View>
-    </SafeAreaView>
+      <Text style={styles.title}>{t('Scores')}:</Text>
+      {sortedPlayers.map((p, idx) => (
+        <PlayerWithScore key={p.id} player={p} index={idx} />
+      ))}
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    paddingBottom: verticalScale(120),
+  headerContainer: {
+    paddingVertical: verticalScale(spacing.xs),
+    paddingHorizontal: scale(spacing.md),
+    alignItems: 'flex-end',
   },
   title: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: moderateScale(20),
+    fontSize: fontSize.lg,
     color: colors.orange[200],
-    marginTop: verticalScale(40),
+    marginBottom: verticalScale(spacing.sm),
   },
   playerCard: {
     backgroundColor: colors.orange[200],
-    marginHorizontal: scale(13),
-    borderRadius: moderateScale(10),
-    marginVertical: verticalScale(20),
-    paddingTop: verticalScale(20),
+    marginHorizontal: scale(spacing.sm),
+    borderRadius: radius.md,
+    marginVertical: verticalScale(spacing.md),
+    paddingTop: verticalScale(spacing.md),
+    paddingHorizontal: scale(spacing.sm),
   },
-  headerContainer: {
+  playerCardHeader: {
+    flexDirection: 'row',
+    gap: scale(spacing.sm),
+    marginBottom: verticalScale(spacing.xs),
+  },
+  playerCardBody: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  index: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(40),
+    fontWeight: 'bold',
+    color: colors.black[100],
   },
   playerName: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.white[100],
   },
-  textContainer: {
+  scoreContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    flexWrap: 'wrap',
-    maxWidth: scale(150),
-  },
-  index: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(40),
-    fontWeight: 'bold',
-    color: colors.black[200],
+    flex: 1,
   },
   playerScore: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(30),
     fontWeight: 'bold',
+    color: colors.white[100],
   },
   playerPointsText: {
-    fontSize: moderateScale(20),
+    fontSize: fontSize.lg,
     fontWeight: 'normal',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
-    backgroundColor: colors.background[100],
   },
 });

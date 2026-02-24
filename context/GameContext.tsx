@@ -3,20 +3,37 @@ import { Player } from '@/types/Player';
 import { Round } from '@/types/Round';
 // import questions from '@/data/questions.json';
 import allCategories from '@/data/categories.json';
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
+import uuid from 'react-native-uuid';
+import * as FileSystem from 'expo-file-system';
 import { useTranslation, Language } from '@/translations';
 import {
   getRandomWordIndex,
   getQuestionByIndex,
 } from '@/utils/gameTranslations';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const GAME_STORAGE_KEY = 'game_state';
+
+const INITIAL_GAME: Game = {
+  players: [],
+  currentRound: 1,
+  rounds: [],
+  lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
+  category: undefined,
+  word: undefined,
+  wordIndex: undefined,
+  selectedWord: undefined,
+  showingWordToPlayer: 0,
+  votes: [],
+  currentMatch: 1,
+};
 
 interface GameContextType {
   game: Game;
   createGame: (players: Player[]) => void;
   createNewGame: () => void;
-  setMaximumMatches: (maxQtd: number) => void;
   setLyingPlayer: (players: Player[]) => Player;
-  addNewMatch: () => void;
   setGameWord: (category: string) => void;
   getRandomWord: (category: string) => string;
   setSelectedWord: (newWord: string) => void;
@@ -30,6 +47,10 @@ interface GameContextType {
   getCurrentWord: () => string;
   checkVoteForSecretWord: () => void;
   getCurrentQuestion: () => string;
+  saveRecordingToRound: (recording: string) => void;
+  getRoundAudio: () => string | undefined;
+  setCurrentScreen: (screen: string) => void;
+  isHydrated: boolean;
 }
 
 export const GameContext = createContext({} as GameContextType);
@@ -39,22 +60,49 @@ export const GameContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const newGame: Game = {
-    players: [],
-    currentRound: 1,
-    rounds: [],
-    lyingPlayer: { id: '', name: '', gender: '', character: '', score: 0 },
-    category: undefined,
-    word: undefined,
-    wordIndex: undefined,
-    selectedWord: undefined,
-    showingWordToPlayer: 0,
-    votes: [],
-    maximumMatches: 2,
-    currentMatch: 1,
-  };
+  const [game, setGame] = useState<Game>(INITIAL_GAME);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  const [game, setGame] = useState<Game>(newGame);
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(GAME_STORAGE_KEY);
+        if (stored) {
+          // Saved game exists — restore it, keeping audio URIs intact for Discussion
+          const parsedGame: Game = JSON.parse(stored);
+          setGame(parsedGame);
+        } else {
+          // No saved game — safe to delete any orphaned audio files from a crashed session
+          try {
+            const cacheDir = new FileSystem.Directory(FileSystem.Paths.cache);
+            const files = cacheDir.list();
+            files.forEach(entry => {
+              if (entry instanceof FileSystem.File && /^round_.*\.m4a$/.test(entry.name)) {
+                try {
+                  entry.delete();
+                } catch (e) {
+                  console.warn('Failed to delete leftover audio file:', entry.uri, e);
+                }
+              }
+            });
+          } catch (e) {
+            console.warn('Audio cache cleanup failed:', e);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to hydrate game state:', e);
+      } finally {
+        setIsHydrated(true);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    AsyncStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(game)).catch(e => {
+      console.warn('Failed to persist game state:', e);
+    });
+  }, [game, isHydrated]);
 
   const shuffleRounds = (rounds: Round[]) => {
     for (let i = rounds.length - 1; i > 0; i--) {
@@ -118,11 +166,13 @@ export const GameContextProvider = ({
       );
 
       const round: Round = {
+        id: uuid.v4().toString(),
         playerThatAsks,
         playerThatAnswers,
         question: questionData.question,
         questionIndex: questionData.questionIndex,
         questionSet: 'first',
+        audio: undefined
       };
 
       rounds.push(round);
@@ -141,11 +191,13 @@ export const GameContextProvider = ({
       );
 
       const round: Round = {
+        id: uuid.v4().toString(),
         playerThatAsks,
         playerThatAnswers,
         question: questionData.question,
         questionIndex: questionData.questionIndex,
         questionSet: 'second',
+        audio: undefined
       };
 
       auxRoundsArray.push(round);
@@ -157,15 +209,6 @@ export const GameContextProvider = ({
     return rounds;
   };
 
-  const setMaximumMatches = (maxQtd: number) => {
-    setGame({ ...game, maximumMatches: maxQtd });
-  };
-
-  const addNewMatch = () => {
-    const newMatch = game.currentMatch + 1;
-    setGame({ ...game, currentMatch: newMatch });
-  };
-
   const getRandomWord = (category: string) => {
     const categories: any = allCategories;
     const categoryWords: string[] = categories[category].content;
@@ -173,106 +216,112 @@ export const GameContextProvider = ({
   };
 
   const checkVoteForSecretWord = () => {
-    if (game.word === game.selectedWord) {
-      // Get the current lying player from the players array to ensure we have the latest score
-      const currentLyingPlayer = game.players.find(
-        p => p.id === game.lyingPlayer.id
+    setGame(prev => {
+      if (prev.word !== prev.selectedWord) return prev;
+
+      const currentLyingPlayer = prev.players.find(p => p.id === prev.lyingPlayer.id);
+      if (!currentLyingPlayer) return prev;
+
+      const updatedPlayers = prev.players.map(p =>
+        p.id === currentLyingPlayer.id ? { ...p, score: p.score + 2 } : p
       );
-      if (currentLyingPlayer) {
-        const updatedPlayers = updatePointsToPlayer(currentLyingPlayer, 2);
-        // Also update the lyingPlayer object with the new score
-        const updatedLyingPlayer = updatedPlayers.find(
-          p => p.id === game.lyingPlayer.id
-        );
-        setGame({
-          ...game,
-          players: updatedPlayers,
-          lyingPlayer: updatedLyingPlayer || game.lyingPlayer,
-        });
-      }
-    }
+      const updatedLyingPlayer = updatedPlayers.find(p => p.id === prev.lyingPlayer.id);
+
+      return {
+        ...prev,
+        players: updatedPlayers,
+        lyingPlayer: updatedLyingPlayer ?? prev.lyingPlayer,
+      };
+    });
   };
 
   const setGameWord = (category: string) => {
     const { index, word } = getRandomWordIndex(category);
-    setGame({ ...game, word, wordIndex: index, category });
+    setGame(prev => ({ ...prev, word, wordIndex: index, category }));
   };
 
   const setSelectedWord = (newWord: string) => {
-    setGame({ ...game, selectedWord: newWord });
+    setGame(prev => ({ ...prev, selectedWord: newWord }));
   };
 
   const resetGameWithExistingPlayers = () => {
-    const newGame = {
-      ...game,
+    // Keeps players with their current scores, resets everything else,
+    // and increments both counters so the match display stays consistent (e.g. "Game 3 of 3")
+    setGame(prev => ({
+      ...prev,
       currentRound: 1,
       rounds: [],
-      lyingPlayer: { id: '', name: '', gender: '', character: '', score: 0 },
-      category: game.category ? game.category : '',
-      word: game.word ? game.word : '',
-      wordIndex: game.wordIndex,
-      selectedWord: undefined,
-      showingWordToPlayer: 0,
-      votes: [],
-    };
-
-    return newGame;
-  };
-
-  const createNewGame = () => {
-    const players = game.players.map(p => {
-      return { ...p, score: 0 };
-    });
-
-    setGame({
-      ...game,
-      players,
-      currentRound: 1,
-      rounds: [],
-      lyingPlayer: { id: '', name: '', gender: '', character: '', score: 0 },
+      lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
       category: undefined,
       word: undefined,
       wordIndex: undefined,
       selectedWord: undefined,
       showingWordToPlayer: 0,
       votes: [],
-    });
+      currentMatch: prev.currentMatch + 1,
+    }));
+  };
+
+  const createNewGame = () => {
+    // Keeps players but resets their scores and all game state
+    setGame(prev => ({
+      ...prev,
+      players: prev.players.map(p => ({ ...p, score: 0 })),
+      currentRound: 1,
+      currentMatch: 1,
+      rounds: [],
+      lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
+      category: undefined,
+      word: undefined,
+      wordIndex: undefined,
+      selectedWord: undefined,
+      showingWordToPlayer: 0,
+      votes: [],
+      currentScreen: undefined,
+    }));
   };
 
   const setLyingPlayer = (players: Player[]) => {
     const lyingPlayer: Player =
-      players[Math.floor(Math.random() * players.length)]; //get a random player to be out of the round
+      players[Math.floor(Math.random() * players.length)];
 
-    setGame({ ...newGame, lyingPlayer });
+    setGame(() => ({ ...INITIAL_GAME, lyingPlayer }));
     return lyingPlayer;
   };
 
   const createGame = (newPlayers: Player[]) => {
-    const newGame = resetGameWithExistingPlayers();
-    const category = game.category ? game.category : '';
-    const rounds = setAllRounds(newPlayers, category);
-    const lyingPlayer = setLyingPlayer(newPlayers);
+    setGame(prev => {
+      const category = prev.category ?? '';
+      const rounds = setAllRounds(newPlayers, category);
+      const lyingPlayer = newPlayers[Math.floor(Math.random() * newPlayers.length)];
 
-    setGame({ ...newGame, players: newPlayers, rounds, lyingPlayer });
+      return {
+        ...prev,
+        players: newPlayers,
+        currentRound: 1,
+        rounds,
+        lyingPlayer,
+        selectedWord: undefined,
+        showingWordToPlayer: 0,
+        votes: [],
+      };
+    });
   };
 
   const nextRound = () => {
-    const newRound = game.currentRound + 1;
-    setGame({ ...game, currentRound: newRound });
+    setGame(prev => ({ ...prev, currentRound: prev.currentRound + 1 }));
   };
 
   const previousRound = () => {
-    const newRound = game.currentRound - 1;
-    setGame({ ...game, currentRound: newRound });
+    setGame(prev => ({ ...prev, currentRound: prev.currentRound - 1 }));
   };
 
   const showWordToNextPlayer = () => {
-    const nextPlayer = game.showingWordToPlayer + 1;
-    setGame({ ...game, showingWordToPlayer: nextPlayer });
+    setGame(prev => ({ ...prev, showingWordToPlayer: prev.showingWordToPlayer + 1 }));
   };
 
   const updatePlayers = (players: Player[]) => {
-    setGame({ ...game, players });
+    setGame(prev => ({ ...prev, players }));
   };
 
   const updatePointsToPlayer = (player: Player, points: number) => {
@@ -288,23 +337,28 @@ export const GameContextProvider = ({
   };
 
   const addVote = (playerThatVoted: Player, playerVoted: Player) => {
-    const newVotes = [...game.votes, { playerThatVoted, playerVoted }];
+    setGame(prev => {
+      const newVotes = [...prev.votes, { playerThatVoted, playerVoted }];
 
-    if (playerThatVoted.id === game.lyingPlayer.id) {
-      //the impostor does not compute points with his vote
-      setGame({ ...game, votes: newVotes });
-      return;
-    }
+      if (playerThatVoted.id === prev.lyingPlayer.id) {
+        //the impostor does not compute points with his vote
+        return { ...prev, votes: newVotes };
+      }
 
-    //add 3 points if player voted correctly on the impostor
-    if (playerVoted.id === game.lyingPlayer.id) {
-      const updatedPlayers = updatePointsToPlayer(playerThatVoted, 3);
-      setGame({ ...game, votes: newVotes, players: updatedPlayers });
-    } else {
-      //add 1 point to the impostor
-      const updatedPlayers = updatePointsToPlayer(game.lyingPlayer, 1);
-      setGame({ ...game, votes: newVotes, players: updatedPlayers });
-    }
+      //add 3 points if player voted correctly on the impostor
+      if (playerVoted.id === prev.lyingPlayer.id) {
+        const updatedPlayers = prev.players.map(p =>
+          p.id === playerThatVoted.id ? { ...p, score: p.score + 3 } : p
+        );
+        return { ...prev, votes: newVotes, players: updatedPlayers };
+      } else {
+        //add 1 point to the impostor
+        const updatedPlayers = prev.players.map(p =>
+          p.id === prev.lyingPlayer.id ? { ...p, score: p.score + 1 } : p
+        );
+        return { ...prev, votes: newVotes, players: updatedPlayers };
+      }
+    });
   };
 
   const getCurrentWord = () => {
@@ -328,12 +382,30 @@ export const GameContextProvider = ({
     ];
   };
 
+  const saveRecordingToRound = (recording: string) => {
+    setGame(prev => {
+      const newRounds = prev.rounds.map((round, idx) => {
+        if (idx === prev.currentRound - 1) {
+          return { ...round, audio: recording };
+        }
+        return round;
+      });
+      return { ...prev, rounds: newRounds };
+    });
+  };
+
+  const getRoundAudio = () => {
+    return game.rounds[game.currentRound - 1]?.audio
+  }
+
+  const setCurrentScreen = (screen: string) => {
+    setGame(prev => ({ ...prev, currentScreen: screen }));
+  };
+
   return (
     <GameContext.Provider
       value={{
         game,
-        setMaximumMatches,
-        addNewMatch,
         createGame,
         createNewGame,
         setLyingPlayer,
@@ -350,6 +422,10 @@ export const GameContextProvider = ({
         getCurrentWord,
         checkVoteForSecretWord,
         getCurrentQuestion,
+        saveRecordingToRound,
+        getRoundAudio,
+        setCurrentScreen,
+        isHydrated,
       }}
     >
       {children}
