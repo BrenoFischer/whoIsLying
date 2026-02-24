@@ -234,6 +234,8 @@ export default function SidebarMenu() {
     setLanguage(lan);
   };
 
+  const isForgotWordAvailable = game.players.length > 0 && game.currentScreen !== '/createGame' && game.currentScreen !== '/selectCategory';
+
   return (
     <>
       <View>
@@ -321,7 +323,7 @@ export default function SidebarMenu() {
                 <Character mood="bothCharacter" />
                 <View style={{ gap: verticalScale(40) }}>
                   <Button
-                    text={t('Start a fresh new game')}
+                    text={t('New game (resets all scores)')}
                     onPress={handleStartNewGame}
                   />
                   <Button
@@ -347,7 +349,7 @@ export default function SidebarMenu() {
             <View style={styles.startNewGameContainer}>
               <Button
                 text={t('Forgot your word') + '?'}
-                variants={game.players.length > 0 ? "secondary" : "disabled"}
+                variants={isForgotWordAvailable ? "secondary" : "disabled"}
                 onPress={() => { setShowForgotWord(true) }}
               />
             </View>
