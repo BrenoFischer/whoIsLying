@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
 import {
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -28,7 +27,8 @@ import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
 import { radius } from '@/styles/radius';
 import { fontSize } from '@/styles/fontSize';
-import { characters, CharacterTheme, themes } from '@/data/imagesData';
+import { characters, CharacterTheme } from '@/data/imagesData';
+import CharacterPicker from '@/components/characterPicker';
 
 const MAX_PLAYERS = 10;
 
@@ -42,7 +42,7 @@ export default function CreateGame() {
 
   const [players, setPlayers] = useState<Player[]>(game.players);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalThemeFilter, setModalThemeFilter] = useState<CharacterTheme | 'all'>('all');
+  const [characterPickerFilter, setCharacterPickerFilter] = useState<CharacterTheme | 'all'>('all');
 
   const usedCharacters = players.map(p => p.character);
   const availableCharacters = characters.filter(c => !usedCharacters.includes(c.name));
@@ -52,29 +52,17 @@ export default function CreateGame() {
     return characters.find(c => !used.includes(c.name))?.name ?? characters[0].name;
   });
 
-  // If the current preview image was taken by a just-added player, pick the next free one
+  // If the current preview image was taken by a just-added player, pick the next free one from the same theme, or if not possible, the next free one available
   useEffect(() => {
-    if (usedCharacters.includes(currentImageName)) {
-      const next = characters.find(c => !usedCharacters.includes(c.name));
-      if (next) setCurrentImageName(next.name);
-    }
-  }, [players]);
+    const filteredAvailable = availableCharacters.filter(c => characterPickerFilter === 'all' || c.theme === characterPickerFilter);
 
-  const filteredForModal = modalThemeFilter === 'all'
-    ? availableCharacters
-    : availableCharacters.filter(c => c.theme === modalThemeFilter);
+    if (!filteredAvailable.some(c => c.name === currentImageName)) {
+      setCurrentImageName(filteredAvailable[0]?.name ?? availableCharacters[0]?.name ?? characters[0].name);
+    }
+  }, [players, characterPickerFilter]);
 
   const currentImageTheme = characters.find(c => c.name === currentImageName)?.theme ?? 'male';
   const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS;
-
-  function hasAvailableForTheme(theme: CharacterTheme) {
-    return availableCharacters.some(c => c.theme === theme);
-  }
-
-  function themeIconColor(theme: CharacterTheme): string {
-    if (modalThemeFilter === theme) return colors.white[100];
-    return colors.orange[200];
-  }
 
   function setNewPlayer({ id, name, theme }: Player) {
     if (players.length >= MAX_PLAYERS) return;
@@ -148,64 +136,12 @@ export default function CreateGame() {
         </TouchableOpacity>
         <Text style={styles.modalTitle}>{t('Choose your character')}</Text>
 
-        <View style={styles.themeFilterRow}>
-          <TouchableOpacity
-            onPress={() => setModalThemeFilter('all')}
-            style={[styles.themeButton, modalThemeFilter === 'all' && styles.themeButtonSelected]}
-          >
-            <Text style={[
-              styles.themeAllText,
-              modalThemeFilter === 'all' && styles.themeAllTextSelected,
-            ]}>
-              {t('All')}
-            </Text>
-          </TouchableOpacity>
-
-          <View style={styles.themeSeparator} />
-
-          {themes.map(theme => (
-            <TouchableOpacity
-              key={theme}
-              onPress={() => setModalThemeFilter(theme)}
-              style={[
-                styles.themeButton,
-                modalThemeFilter === theme && styles.themeButtonSelected,
-                !hasAvailableForTheme(theme) && styles.themeButtonUnavailable,
-              ]}
-            >
-              {theme === 'male' && (
-                <MaterialIcons name="man" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-              {theme === 'female' && (
-                <MaterialIcons name="woman" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-              {theme === 'halloween' && (
-                <MaterialCommunityIcons name="ghost-outline" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-              {theme === 'music' && (
-                <MaterialCommunityIcons name="music-note" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <ScrollView style={styles.modalContainer} showsVerticalScrollIndicator={false}>
-          {filteredForModal.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t('No more available images for this theme')}</Text>
-            </View>
-          ) : (
-            <View style={styles.imagesGrid}>
-              {filteredForModal.map(char => (
-                <View key={char.name} style={styles.imageItem}>
-                  <TouchableOpacity onPress={() => handleSelectCharacter(char.name)}>
-                    <Character mood={char.name} size={80} />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          )}
-        </ScrollView>
+        <CharacterPicker
+          availableCharacters={availableCharacters}
+          onSelect={handleSelectCharacter}
+          themeFilter={characterPickerFilter}
+          onThemeFilterChange={setCharacterPickerFilter}
+        />
       </CustomModal>
       <View>
         <View style={styles.topContainer}>
@@ -306,66 +242,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway',
     fontSize: moderateScale(14),
     marginBottom: verticalScale(12),
-  },
-  themeFilterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: verticalScale(10),
-    gap: scale(4),
-  },
-  themeButton: {
-    paddingHorizontal: scale(8),
-    paddingVertical: verticalScale(4),
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.orange[200],
-  },
-  themeButtonSelected: {
-    backgroundColor: colors.orange[200],
-  },
-  themeButtonUnavailable: {
-    backgroundColor: colors.gray[200],
-  },
-  themeAllText: {
-    fontSize: fontSize.sm,
-    fontFamily: 'Raleway',
-    fontWeight: 'bold',
-    color: colors.orange[200],
-  },
-  themeAllTextSelected: {
-    color: colors.white[100],
-  },
-  themeSeparator: {
-    width: 1,
-    alignSelf: 'stretch',
-    backgroundColor: colors.white[100],
-    opacity: 0.4,
-    marginHorizontal: scale(4),
-  },
-  modalContainer: {
-    height: verticalScale(350),
-  },
-  emptyContainer: {
-    paddingVertical: verticalScale(40),
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontFamily: 'Raleway',
-    fontSize: fontSize.sm,
-    color: colors.gray[100],
-    textAlign: 'center',
-  },
-  imagesGrid: {
-    marginTop: verticalScale(5),
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingHorizontal: scale(5),
-  },
-  imageItem: {
-    width: '48%',
-    marginVertical: verticalScale(3),
-    alignItems: 'center',
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',

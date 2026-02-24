@@ -6,10 +6,8 @@ import {
   StyleSheet,
   Text,
   useWindowDimensions,
-  ScrollView,
 } from 'react-native';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
@@ -20,8 +18,8 @@ import Button from '../button';
 import { useTranslation } from '@/translations';
 import Character from '../character';
 import { fontSize } from '@/styles/fontSize';
-import { radius } from '@/styles/radius';
-import { characters, themes, CharacterTheme } from '@/data/imagesData';
+import { characters, CharacterTheme } from '@/data/imagesData';
+import CharacterPicker from '@/components/characterPicker';
 
 interface PlayerInputProps {
   player: Player;
@@ -49,7 +47,6 @@ export default function PlayerInput({
   const [newName, setNewName] = useState(player.name);
   const [modalOpen, setModalOpen] = useState(false);
   const [characterModalOpen, setCharacterModalOpen] = useState(false);
-  const [characterThemeFilter, setCharacterThemeFilter] = useState<CharacterTheme | 'all'>('all');
   const { t } = useTranslation();
 
   const screenHeight = useWindowDimensions().height;
@@ -57,19 +54,6 @@ export default function PlayerInput({
 
   // Map the available image names back to CharacterData to get themes
   const availableCharacterData = characters.filter(c => availableImages.includes(c.name));
-
-  const filteredCharacters = characterThemeFilter === 'all'
-    ? availableCharacterData
-    : availableCharacterData.filter(c => c.theme === characterThemeFilter);
-
-  function hasAvailableForTheme(theme: CharacterTheme) {
-    return availableCharacterData.some(c => c.theme === theme);
-  }
-
-  function themeIconColor(theme: CharacterTheme): string {
-    if (characterThemeFilter === theme) return colors.white[100];
-    return colors.orange[200];
-  }
 
   const handleSubmit = () => {
     if (editPlayer) editPlayer(player, newName);
@@ -123,64 +107,10 @@ export default function PlayerInput({
 
         <Text style={styles.characterModalTitle}>{t('Choose your character')}</Text>
 
-        <View style={styles.themeFilterRow}>
-          <TouchableOpacity
-            onPress={() => setCharacterThemeFilter('all')}
-            style={[styles.themeButton, characterThemeFilter === 'all' && styles.themeButtonSelected]}
-          >
-            <Text style={[
-              styles.themeAllText,
-              characterThemeFilter === 'all' && styles.themeAllTextSelected,
-            ]}>
-              {t('All')}
-            </Text>
-          </TouchableOpacity>
-
-          <View style={styles.themeSeparator} />
-
-          {themes.map(theme => (
-            <TouchableOpacity
-              key={theme}
-              onPress={() => setCharacterThemeFilter(theme)}
-              style={[
-                styles.themeButton,
-                characterThemeFilter === theme && styles.themeButtonSelected,
-                !hasAvailableForTheme(theme) && styles.themeButtonUnavailable,
-              ]}
-            >
-              {theme === 'male' && (
-                <MaterialIcons name="man" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-              {theme === 'female' && (
-                <MaterialIcons name="woman" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-              {theme === 'halloween' && (
-                <MaterialCommunityIcons name="ghost-outline" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-              {theme === 'music' && (
-                <MaterialCommunityIcons name="music-note" size={moderateScale(20)} color={themeIconColor(theme)} />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <ScrollView style={styles.characterModalContainer}>
-          {filteredCharacters.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t('No more available images for this theme')}</Text>
-            </View>
-          ) : (
-            <View style={styles.imagesGrid}>
-              {filteredCharacters.map(char => (
-                <View key={char.name} style={styles.imageItem}>
-                  <TouchableOpacity onPress={() => handleSelectCharacter(char.name)}>
-                    <Character mood={char.name} size={80} />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          )}
-        </ScrollView>
+        <CharacterPicker
+          availableCharacters={availableCharacterData}
+          onSelect={handleSelectCharacter}
+        />
       </CustomModal>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10), paddingTop: verticalScale(10) }}>
@@ -288,64 +218,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway',
     fontSize: moderateScale(14),
     marginBottom: verticalScale(12),
-  },
-  themeFilterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: verticalScale(10),
-    gap: scale(4),
-  },
-  themeButton: {
-    paddingHorizontal: scale(8),
-    paddingVertical: verticalScale(4),
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.orange[200],
-  },
-  themeButtonSelected: {
-    backgroundColor: colors.orange[200],
-  },
-  themeButtonUnavailable: {
-    opacity: 0.3,
-  },
-  themeAllText: {
-    fontSize: fontSize.sm,
-    fontFamily: 'Raleway',
-    fontWeight: 'bold',
-    color: colors.orange[200],
-  },
-  themeAllTextSelected: {
-    color: colors.white[100],
-  },
-  themeSeparator: {
-    width: 1,
-    alignSelf: 'stretch',
-    backgroundColor: colors.white[100],
-    opacity: 0.4,
-    marginHorizontal: scale(4),
-  },
-  characterModalContainer: {
-    height: verticalScale(350),
-  },
-  emptyContainer: {
-    paddingVertical: verticalScale(40),
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontFamily: 'Raleway',
-    fontSize: fontSize.sm,
-    color: colors.gray[100],
-    textAlign: 'center',
-  },
-  imagesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingHorizontal: scale(5),
-  },
-  imageItem: {
-    width: '48%',
-    marginVertical: verticalScale(3),
-    alignItems: 'center',
   },
 });
