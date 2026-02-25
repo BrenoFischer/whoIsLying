@@ -45,4 +45,7 @@ export const colors = {
     100: '#F5D4C1',
     200: '#FFAC4B',
   },
+  green: {
+    100: "#1DB954"
+  }
 };

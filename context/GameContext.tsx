@@ -247,20 +247,35 @@ export const GameContextProvider = ({
   const resetGameWithExistingPlayers = () => {
     // Keeps players with their current scores, resets everything else,
     // and increments both counters so the match display stays consistent (e.g. "Game 3 of 3")
-    setGame(prev => ({
-      ...prev,
-      currentRound: 1,
-      rounds: [],
-      lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
-      category: undefined,
-      word: undefined,
-      wordIndex: undefined,
-      selectedWord: undefined,
-      showingWordToPlayer: 0,
-      votes: [],
-      currentMatch: prev.currentMatch + 1,
-    }));
-  };
+    setGame(prev => {
+      const sortedPlayers = [...prev.players].sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score; // Sort by score descending
+        }
+        return a.id.localeCompare(b.id); // If scores are equal, sort by ID (or any other consistent criteria)
+      });
+
+      const previousRankings = sortedPlayers.map((player, idx) => ({
+        playerId: player.id,
+        position: idx + 1,
+      }));
+
+      return {
+        ...prev,
+        previousRankings,
+        currentRound: 1,
+        rounds: [],
+        lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
+        category: undefined,
+        word: undefined,
+        wordIndex: undefined,
+        selectedWord: undefined,
+        showingWordToPlayer: 0,
+        votes: [],
+        currentMatch: prev.currentMatch + 1,
+      }
+    });
+    };
 
   const createNewGame = () => {
     // Keeps players but resets their scores and all game state

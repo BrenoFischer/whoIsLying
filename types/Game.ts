@@ -15,4 +15,5 @@ export interface Game {
   votes: Vote[];
   currentMatch: number;
   currentScreen?: string;
+  previousRankings?: { playerId: string; position: number }[];
 }
