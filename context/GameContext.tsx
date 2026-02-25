@@ -258,6 +258,7 @@ export const GameContextProvider = ({
       const previousRankings = sortedPlayers.map((player, idx) => ({
         playerId: player.id,
         position: idx + 1,
+        previousScore: player.score,
       }));
 
       return {
@@ -293,6 +294,7 @@ export const GameContextProvider = ({
       showingWordToPlayer: 0,
       votes: [],
       currentScreen: undefined,
+      previousRankings: undefined,
     }));
   };
 
