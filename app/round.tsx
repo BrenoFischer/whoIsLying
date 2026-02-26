@@ -201,7 +201,7 @@ export default function RoundScreen() {
           <Text style={styles.playerThatAnswers}>{t('asks')}</Text>{' '}
           {playerThatAnswers.name}
         </Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={styles.charactersRow}>
           <Character mood={playerThatAsks.character} />
           <Character mood={playerThatAnswers.character} flip />
         </View>
@@ -292,5 +292,10 @@ const styles = StyleSheet.create({
   },
   arrowTouchable: {
     padding: moderateScale(8),
-  }
+  },
+  charactersRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    height: moderateScale(180),
+  },
 });
