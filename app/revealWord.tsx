@@ -5,6 +5,11 @@ import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import ScreenLayout from '@/components/screenLayout';
@@ -20,6 +25,17 @@ export default function RevealWord() {
   useEffect(() => {
     setCurrentScreen('/revealWord');
   }, []);
+
+  const revealAnim = useSharedValue(0);
+  useEffect(() => {
+    if (secretWordRevealed) {
+      revealAnim.value = withTiming(1, { duration: 400 });
+    }
+  }, [secretWordRevealed]);
+  const revealAnimStyle = useAnimatedStyle(() => ({
+    opacity: revealAnim.value,
+    transform: [{ translateY: (1 - revealAnim.value) * 16 }],
+  }));
 
   const handleContinue = () => {
     checkVoteForSecretWord();
@@ -56,12 +72,12 @@ export default function RevealWord() {
         </View>
 
         {secretWordRevealed && (
-          <View style={styles.secretWordContainer}>
+          <Animated.View style={[styles.secretWordContainer, revealAnimStyle]}>
             <Text style={styles.label}>{t('The secret word was:')}</Text>
             <Text style={[styles.word, { color: colors.orange[200] }]}>
               {t(getCurrentWord(), { ns: 'categories' })}
             </Text>
-          </View>
+          </Animated.View>
         )}
       </View>
     </ScreenLayout>
