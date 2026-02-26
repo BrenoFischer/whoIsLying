@@ -1,6 +1,7 @@
 {
   "foods": {
     "available": true,
+    "description": "foodsDescription",
     "content": [
       "Strogonoff",
       "Cabbage",
@@ -68,6 +69,7 @@
   },
   "animals": {
     "available": true,
+    "description": "animalsDescription",
     "content": [
       "Lion",
       "Polar bear",
@@ -133,6 +135,7 @@
   },
   "halloween": {
     "available": true,
+    "description": "halloweenDescription",
     "content": [
       "Vampire",
       "Skeleton",

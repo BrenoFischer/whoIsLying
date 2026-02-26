@@ -1,5 +1,5 @@
 import { GameContext } from '@/context/GameContext';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import {
   Text,
   SafeAreaView,
@@ -27,6 +27,7 @@ import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
+import FlipCard, { FlipCardRef } from '@/components/flipCard';
 
 const images = {
   foods: require('@/assets/images/foodCategory.png'),
@@ -51,6 +52,7 @@ export default function SelectCategory() {
 
   const categoriesArray = Object.keys(categories);
   const [selectedCategory, setSelectedCategory] = useState(categoriesArray[0] || '');
+  const cardRefs = useRef<(FlipCardRef | null)[]>([]);
 
   const characterSize = height * 0.22;
 
@@ -60,6 +62,8 @@ export default function SelectCategory() {
   };
 
   const handleCarouselIndexChange = (index: number) => {
+    cardRefs.current.forEach((ref) => ref?.flipToFront());
+
     const categoryName = categoriesArray[index];
     const categoryData = categories[categoryName as keyof typeof categories];
     if (categoryData?.available) {
@@ -73,33 +77,40 @@ export default function SelectCategory() {
     const categoryData = categories[categoryName as keyof typeof categories];
     const isAvailable = categoryData?.available ?? true;
 
-    return (
-      <View style={styles.categoryCardContainer}>
-        {/* <ImageBackground
-          source={backgroundImages[categoryName as keyof typeof backgroundImages]}
-          style={styles.categoryCardInner}
-          imageStyle={styles.categoryCardBackgroundImage}
-          resizeMode="cover"
-        > */}
-        <View style={styles.categoryCardInner}>
-          <View style={styles.cardOverlay} />
-          {!isAvailable && <View style={styles.lockedOverlay} />}
-          <Text></Text>
-          <Image
-            source={images[categoryName as keyof typeof images]}
-            style={styles.categoryImage}
-          />
-          {!isAvailable && (
-            <View style={styles.lockIconContainer}>
-              <Ionicons name="lock-closed" size={moderateScale(40)} color={colors.background[100]} />
-            </View>
-          )}
-          <Text style={styles.categoryTitle}>
-            {t(categoryName)}
-          </Text>
-        </View>
-        {/* </ImageBackground> */}
+    const front = (
+      <View style={styles.categoryCardInner}>
+        <View style={styles.cardOverlay} />
+        {!isAvailable && <View style={styles.lockedOverlay} />}
+        <Text></Text>
+        <Image
+          source={images[categoryName as keyof typeof images]}
+          style={styles.categoryImage}
+        />
+        {!isAvailable && (
+          <View style={styles.lockIconContainer}>
+            <Ionicons name="lock-closed" size={moderateScale(40)} color={colors.background[100]} />
+          </View>
+        )}
+        <Text style={styles.categoryTitle}>
+          {t(categoryName)}
+        </Text>
       </View>
+    );
+
+    const back = (
+      <View style={styles.categoryCardBack}>
+        <Text style={styles.backCategoryTitle}>{t(categoryName)}</Text>
+        <Text style={styles.backDescription}>{t(categoryData?.description ?? '')}</Text>
+      </View>
+    );
+
+    return (
+      <FlipCard
+        ref={(el) => { cardRefs.current[index] = el; }}
+        style={styles.categoryCardContainer}
+        front={front}
+        back={back}
+      />
     );
   };
 
@@ -192,6 +203,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white[100],
     borderRadius: moderateScale(radius.lg),
   },
+  categoryCardBack: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: verticalScale(spacing.md),
+    paddingHorizontal: scale(spacing.md),
+    backgroundColor: colors.white[100],
+    borderRadius: moderateScale(radius.lg),
+    gap: verticalScale(spacing.sm),
+  },
   categoryCardBackgroundImage: {
     borderRadius: moderateScale(13),
     backgroundColor: colors.white[100]
@@ -221,6 +242,21 @@ const styles = StyleSheet.create({
     color: colors.background[100],
     zIndex: 2,
     fontWeight: 'bold',
+  },
+  backCategoryTitle: {
+    fontFamily: 'Ralway',
+    textTransform: 'capitalize',
+    fontSize: fontSize.md,
+    textAlign: 'center',
+    color: colors.background[100],
+    fontWeight: 'bold',
+  },
+  backDescription: {
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway-Medium',
+    textAlign: 'center',
+    color: colors.gray[300],
+    lineHeight: moderateScale(18),
   },
   categoryImage: {
     height: scale(90),
