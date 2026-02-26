@@ -5,4 +5,5 @@ export const fontSize = {
     md: moderateScale(16),
     lg: moderateScale(20),
     xl: moderateScale(28),
+    xxl: moderateScale(34),
 };

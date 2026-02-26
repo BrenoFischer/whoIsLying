@@ -1,5 +1,6 @@
 import { GameContext } from '@/context/GameContext';
 import React, { useContext, useState, useEffect } from 'react';
+import categories from '@/data/categories.json';
 import {
   StyleSheet,
   Text,
@@ -7,6 +8,12 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { colors } from '@/styles/colors';
@@ -22,6 +29,7 @@ import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
 import { Ionicons } from '@expo/vector-icons';
 import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
 
 export default function ShowWordToAll() {
   const { game, showWordToNextPlayer, getCurrentWord, setCurrentScreen } =
@@ -35,6 +43,20 @@ export default function ShowWordToAll() {
   const [isLyingPlayer, setIsLyingPlayer] = useState(false);
   const [rawWord, setRawWord] = useState('');
   const [modalVisible, setModalVisible] = useState(true);
+
+  // Reveal animation
+  const revealAnim = useSharedValue(0);
+  useEffect(() => {
+    if (wordRevealed) {
+      revealAnim.value = withTiming(1, { duration: 500 });
+    } else {
+      revealAnim.value = 0;
+    }
+  }, [wordRevealed]);
+  const revealAnimStyle = useAnimatedStyle(() => ({
+    opacity: revealAnim.value,
+    transform: [{ scale: interpolate(revealAnim.value, [0, 1], [0.85, 1]) }],
+  }));
 
   const currentPlayer = game.players[game.showingWordToPlayer];
 
@@ -50,6 +72,15 @@ export default function ShowWordToAll() {
       ? t("Pretend you know the word and try to discover it based on people's answers.")
       : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.')
     : '';
+
+  const categoryData = game.category
+    ? categories[game.category as keyof typeof categories]
+    : null;
+  const wordDescKey =
+    wordRevealed && !isLyingPlayer && rawWord && categoryData?.wordDescriptions
+      ? (categoryData.wordDescriptions as Record<string, string>)[rawWord]
+      : null;
+  const displayDescription = wordDescKey ? t(wordDescKey, { ns: 'categories' }) : '';
 
   function handleRevealWord() {
     const playerIsLying = game.lyingPlayer.id === currentPlayer.id;
@@ -127,8 +158,57 @@ export default function ShowWordToAll() {
         modalVisible={modalVisible}
       />
       <View style={styles.secretWordContainer}>
-        <Text style={styles.secretWord}>{displayWord}</Text>
-        <Text style={styles.subtitle}>{displaySubtitle}</Text>
+        <View style={styles.flexSpacer} />
+
+        {/* Card — always visible; outer border changes color for impostor */}
+        <View style={[styles.wordCard, isLyingPlayer && styles.wordCardImpostor]}>
+          <View style={[styles.wordCardInner, isLyingPlayer && styles.wordCardInnerImpostor]}>
+
+            {!wordRevealed ? (
+              /* Placeholder: locked state before reveal */
+              <View style={styles.placeholderContent}>
+                <Ionicons
+                  name="lock-closed"
+                  size={moderateScale(32)}
+                  color={colors.gray[300]}
+                />
+              </View>
+            ) : (
+              /* Revealed content: fades in + scales up */
+              <Animated.View style={[styles.revealedContent, revealAnimStyle]}>
+                {/* Label row */}
+                <View style={styles.cardLabelRow}>
+                  <Text style={[styles.cardLabel, isLyingPlayer && styles.cardLabelImpostor]}>
+                    {isLyingPlayer ? t('Your role') : t('Secret word')}
+                  </Text>
+                  {isLyingPlayer && (
+                    <Ionicons
+                      name="glasses-outline"
+                      size={moderateScale(16)}
+                      color={colors.purple[100]}
+                    />
+                  )}
+                </View>
+
+                {/* Main word / role */}
+                <Text style={[styles.secretWord, isLyingPlayer && styles.secretWordImpostor]}>
+                  {displayWord}
+                </Text>
+
+                {/* Word description (non-impostor only) */}
+                {displayDescription ? (
+                  <Text style={styles.wordDescription}>{displayDescription}</Text>
+                ) : null}
+              </Animated.View>
+            )}
+
+          </View>
+        </View>
+
+        {/* Advice text — lives in a flex: 1 box below the card, mirroring the spacer above */}
+        <View style={styles.subtitleContainer}>
+          <Text style={styles.subtitle}>{displaySubtitle}</Text>
+        </View>
       </View>
     </ScreenLayout>
 
@@ -138,7 +218,7 @@ export default function ShowWordToAll() {
 const styles = StyleSheet.create({
   headerContainer: {
     paddingVertical: verticalScale(spacing.xs),
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center" ,
     paddingHorizontal: scale(spacing.md)
   },
@@ -177,21 +257,94 @@ const styles = StyleSheet.create({
   },
   secretWordContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: scale(5),
+    paddingHorizontal: scale(spacing.md),
+  },
+  // Card outer frame — always visible
+  wordCard: {
+    width: '100%',
+    backgroundColor: colors.orange[200],
+    borderRadius: moderateScale(20),
+    borderBottomWidth: scale(7),
+    borderEndWidth: scale(7),
+    borderTopWidth: scale(0),
+    borderLeftWidth: scale(0),
+    borderColor: colors.orange[200],
+    overflow: 'hidden',
+  },
+  wordCardImpostor: {
+    backgroundColor: colors.purple[100],
+    borderColor: colors.purple[100],
+  },
+  wordCardInner: {
+    backgroundColor: colors.white[100],
+    borderRadius: moderateScale(radius.lg),
+    paddingVertical: verticalScale(spacing.lg),
+    paddingHorizontal: scale(spacing.md),
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: verticalScale(130),
+  },
+  wordCardInnerImpostor: {
+    backgroundColor: colors.purple[300],
+  },
+  // Placeholder (before reveal)
+  placeholderContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Revealed content (animated)
+  revealedContent: {
+    width: '100%',
+    alignItems: 'center',
+    gap: verticalScale(spacing.sm),
+  },
+  cardLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(spacing.xs),
+  },
+  cardLabel: {
+    fontFamily: 'Raleway-Medium',
+    fontSize: fontSize.sm,
+    color: colors.gray[300],
+    textTransform: 'uppercase',
+    letterSpacing: moderateScale(1),
+  },
+  cardLabelImpostor: {
+    color: colors.purple[100],
   },
   secretWord: {
-    color: colors.white[100],
-    fontSize: fontSize.xl,
+    fontFamily: 'Ralway',
+    fontWeight: 'bold',
+    color: colors.background[100],
+    fontSize: fontSize.xxl,
     textAlign: 'center',
+  },
+  secretWordImpostor: {
+    color: colors.white[100],
+    fontSize: fontSize.lg,
+  },
+  flexSpacer: {
+    flex: 1,
+  },
+  subtitleContainer: {
+    flex: 1,
+    paddingTop: verticalScale(spacing.md),
+    alignItems: 'center',
+    width: '100%',
   },
   subtitle: {
     fontFamily: 'Ralway',
     fontSize: fontSize.sm,
     fontWeight: 'bold',
     color: colors.orange[200],
-    paddingTop: verticalScale(spacing.sm),
+    textAlign: 'center',
+  },
+  wordDescription: {
+    fontFamily: 'Raleway-Medium',
+    fontSize: fontSize.sm,
+    color: colors.background[100],
     textAlign: 'center',
   },
 });
