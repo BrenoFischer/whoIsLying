@@ -34,6 +34,8 @@ export default function Votes() {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>(undefined);
 
   const characterSize = height * 0.15;
+  const maxListHeight = height * 0.45;
+  const [listHeight, setListHeight] = useState(0);
 
   const handleNextPlayer = () => {
     const newIndex = playerIndex + 1;
@@ -92,10 +94,15 @@ export default function Votes() {
         <Character mood={player.character} size={characterSize} />
       </View>
 
-      <View style={styles.tableContainer}>
+      <View style={[styles.tableContainer, listHeight ? { height: listHeight } : undefined]}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          onContentSizeChange={(_, contentHeight) => {
+            // Cap to maxListHeight so the card doesn't overflow the screen on large player counts.
+            // Add tableContainer's top + bottom padding so the card wraps the content exactly.
+            setListHeight(Math.min(contentHeight, maxListHeight) + scale(spacing.md) * 2);
+          }}
         >
           <View style={styles.voteOptionsContainer}>
             {restOfPlayers.map(p => (
@@ -157,7 +164,6 @@ const styles = StyleSheet.create({
     color: colors.white[100],
   },
   tableContainer: {
-    flex: 1,
     marginHorizontal: scale(spacing.md),
     padding: scale(spacing.md),
     backgroundColor: colors.white[100],
