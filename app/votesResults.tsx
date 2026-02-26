@@ -31,7 +31,7 @@ export default function VotesResults() {
     setCurrentScreen('/votesResults');
   }, []);
 
-  const votesByPlayer: VotesByPlayerType[] = game.players.map(p => ({
+  let votesByPlayer: VotesByPlayerType[] = game.players.map(p => ({
     player: p,
     votes: 0,
     playersThatVoted: [],
@@ -45,6 +45,8 @@ export default function VotesResults() {
       }
     }
   });
+
+  votesByPlayer = votesByPlayer.sort((a, b) => b.votes - a.votes);
 
   function getMostVotedPlayer() {
     let highestVoted = [votesByPlayer[0]];
@@ -160,6 +162,7 @@ const styles = StyleSheet.create({
     marginHorizontal: scale(spacing.sm),
     paddingHorizontal: scale(spacing.md),
     paddingTop: verticalScale(spacing.md),
+    marginBottom: verticalScale(spacing.sm),
     borderRadius: radius.md,
   },
   playerCardInner: {
