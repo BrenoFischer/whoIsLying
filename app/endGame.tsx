@@ -179,7 +179,7 @@ export default function EndGame() {
       for (let i = 1; i <= matchScore; i++) {
         if (!animationActiveRef.current) return;
         await new Promise<void>(resolve => setTimeout(resolve, COUNT_INTERVAL_MS));
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setDisplayedMatchScores(prev => {
           const next = [...prev];
           next[idx] = i;

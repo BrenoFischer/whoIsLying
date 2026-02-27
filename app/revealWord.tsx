@@ -16,6 +16,7 @@ import ScreenLayout from '@/components/screenLayout';
 import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
+import * as Haptics from 'expo-haptics';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
@@ -42,6 +43,11 @@ export default function RevealWord() {
     router.replace('/endGame');
   };
 
+  const revealWord = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setSecretWordRevealed(true);
+  }
+
   return (
     <ScreenLayout
       header={
@@ -53,7 +59,7 @@ export default function RevealWord() {
         secretWordRevealed ? (
           <Button text={t('Continue')} onPress={handleContinue} />
         ) : (
-          <Button text={t('Reveal secret word')} onPress={() => setSecretWordRevealed(true)} />
+          <Button text={t('Reveal secret word')} onPress={revealWord} />
         )
       }
     >

@@ -20,7 +20,7 @@ import { colors } from '@/styles/colors';
 import Character from '@/components/character';
 import Elipse from '@/components/elipse';
 import PlayerModal from '@/components/playerModal';
-import WithSidebar from '@/components/withSideBar';
+import * as Haptics from 'expo-haptics';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Dot from '@/components/dot';
@@ -83,6 +83,7 @@ export default function ShowWordToAll() {
   const displayDescription = wordDescKey ? t(wordDescKey, { ns: 'categories' }) : '';
 
   function handleRevealWord() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const playerIsLying = game.lyingPlayer.id === currentPlayer.id;
     setIsLyingPlayer(playerIsLying);
     setRawWord(getCurrentWord());

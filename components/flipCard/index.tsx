@@ -10,6 +10,7 @@ import Animated, {
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors } from '@/styles/colors';
 import { moderateScale, scale } from 'react-native-size-matters';
+import * as Haptics from 'expo-haptics';
 
 export interface FlipCardRef {
   flipToFront: () => void;
@@ -33,6 +34,7 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(({ front, back, style },
   }));
 
   const handleFlip = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     rotation.value =
       rotation.value < 0.5
         ? withTiming(1, { duration: FLIP_DURATION })

@@ -1,4 +1,5 @@
 import { colors } from '@/styles/colors';
+import { spacing } from '@/styles/spacing';
 import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions, ScrollView, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { scale } from 'react-native-size-matters';
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: SCREEN_WIDTH * 0.15,
     alignItems: 'center',
+    paddingBottom: scale(spacing.xs),
   },
   itemContainer: {
     justifyContent: 'center',
