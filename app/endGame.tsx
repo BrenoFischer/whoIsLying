@@ -12,6 +12,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import * as Haptics from 'expo-haptics';
 import { Dimensions, LayoutChangeEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTranslation } from '@/translations';
@@ -25,7 +26,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDE_DURATION_MS = 400;
-const COUNT_INTERVAL_MS = 60;
+const COUNT_INTERVAL_MS = 120;
 
 type RankedPlayer = {
   id: string;
@@ -178,6 +179,7 @@ export default function EndGame() {
       for (let i = 1; i <= matchScore; i++) {
         if (!animationActiveRef.current) return;
         await new Promise<void>(resolve => setTimeout(resolve, COUNT_INTERVAL_MS));
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setDisplayedMatchScores(prev => {
           const next = [...prev];
           next[idx] = i;
