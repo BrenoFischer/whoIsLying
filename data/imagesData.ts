@@ -24,6 +24,11 @@ export const characters: CharacterData[] = [
   { name: 'highlight', theme: 'female' },
   { name: 'rock', theme: 'music' },
   { name: 'eighties', theme: 'music' },
+  { name: 'diana', theme: 'female' },
+  { name: 'pumpkinMale', theme: 'halloween' },
+  { name: 'pumpkinFemale', theme: 'halloween' },
+  { name: 'frank', theme: 'halloween' },
+  { name: 'frankFemale', theme: 'halloween' },
 ];
 
 export const themes: CharacterTheme[] = ['male', 'female', 'halloween', 'music'];

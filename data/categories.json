@@ -20,7 +20,19 @@
       "Beef Lasagna": "beefLasagnaDesc",
       "Vegan Lasagna": "veganLasagnaDesc",
       "French fries with cheddar": "frenchFriesWithCheddarDesc",
-      "Sushi": "sushiDesc"
+      "Sushi": "sushiDesc",
+      "Chocolate cake": "chocolateCakeDesc",
+      "Tacos": "tacosDesc",
+      "Guacamole": "guacamoleDesc",
+      "Paella": "paellaDesc",
+      "Croissant": "croissantDesc",
+      "Ramen": "ramenDesc",
+      "Pancakes": "pancakesDesc",
+      "Grilled salmon": "grilledSalmonDesc",
+      "Cheese fondue": "cheeseFondueDesc",
+      "Hot dog": "hotDogDesc",
+      "Tiramisu": "tiramisuDesc",
+      "Tomato soup": "tomatoSoupDesc"
     },
     "content": [
       "Strogonoff",
@@ -40,7 +52,19 @@
       "Beef Lasagna",
       "Vegan Lasagna",
       "French fries with cheddar",
-      "Sushi"
+      "Sushi",
+      "Chocolate cake",
+      "Tacos",
+      "Guacamole",
+      "Paella",
+      "Croissant",
+      "Ramen",
+      "Pancakes",
+      "Grilled salmon",
+      "Cheese fondue",
+      "Hot dog",
+      "Tiramisu",
+      "Tomato soup"
     ],
     "firstSetOfQuestions": [
       "Does this food have a strong smell that you can recognize immediately?",
@@ -106,7 +130,21 @@
       "Bat": "batDesc",
       "Whale shark": "whaleSharkDesc",
       "Cat": "catDesc",
-      "Dog": "dogDesc"
+      "Dog": "dogDesc",
+      "Elephant": "elephantDesc",
+      "Penguin": "penguinDesc",
+      "Tiger": "tigerDesc",
+      "Dolphin": "dolphinDesc",
+      "Giraffe": "giraffeDesc",
+      "Kangaroo": "kangarooDesc",
+      "Chameleon": "chameleonDesc",
+      "Peacock": "peacockDesc",
+      "Gorilla": "gorillaDesc",
+      "Jellyfish": "jellyfishDesc",
+      "Eagle": "eagleDesc",
+      "Panda": "pandaDesc",
+      "Crocodile": "crocodileDesc",
+      "Seahorse": "seahorseDesc"
     },
     "content": [
       "Lion",
@@ -124,7 +162,21 @@
       "Bat",
       "Whale shark",
       "Cat",
-      "Dog"
+      "Dog",
+      "Elephant",
+      "Penguin",
+      "Tiger",
+      "Dolphin",
+      "Giraffe",
+      "Kangaroo",
+      "Chameleon",
+      "Peacock",
+      "Gorilla",
+      "Jellyfish",
+      "Eagle",
+      "Panda",
+      "Crocodile",
+      "Seahorse"
     ],
     "firstSetOfQuestions": [
       "Does this animal live in water for most of its life?",
@@ -196,7 +248,15 @@
       "Ghoul": "ghoulDesc",
       "Cyclops": "cyclopsDesc",
       "Medusa": "medusaDesc",
-      "Minotaur": "minotaurDesc"
+      "Minotaur": "minotaurDesc",
+      "Frankenstein": "frankensteinDesc",
+      "Jack-o'-lantern": "jackOLanternDesc",
+      "Kraken": "krakenDesc",
+      "Wendigo": "wendigoDesc",
+      "Doppelganger": "doppelgangerDesc",
+      "Cerberus": "cerberusDesc",
+      "Poltergeist": "poltergeistDesc",
+      "Chimera": "chimeraDesc"
     },
     "content": [
       "Vampire",
@@ -220,7 +280,15 @@
       "Ghoul",
       "Cyclops",
       "Medusa",
-      "Minotaur"
+      "Minotaur",
+      "Frankenstein",
+      "Jack-o'-lantern",
+      "Kraken",
+      "Wendigo",
+      "Doppelganger",
+      "Cerberus",
+      "Poltergeist",
+      "Chimera"
     ],
     "firstSetOfQuestions": [
       "Is this something that appears only at night?",
