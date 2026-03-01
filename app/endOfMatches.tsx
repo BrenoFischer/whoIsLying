@@ -7,6 +7,12 @@ import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext, useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+} from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from '@/translations';
@@ -48,6 +54,30 @@ export default function EndOfMatches() {
   };
 
   const allWinners = getWinners();
+
+  // --- Intro animation ---
+  const titleScale = useSharedValue(1.8);
+  const titleOpacity = useSharedValue(0);
+  const cardsOpacity = useSharedValue(0);
+  const cardsTranslateY = useSharedValue(verticalScale(40));
+
+  useEffect(() => {
+    titleOpacity.value = withTiming(1, { duration: 300 });
+    titleScale.value = withDelay(700, withTiming(1.0, { duration: 500 }));
+    cardsOpacity.value = withDelay(800, withTiming(1, { duration: 400 }));
+    cardsTranslateY.value = withDelay(800, withTiming(0, { duration: 400 }));
+  }, []);
+
+  const animatedTitleStyle = useAnimatedStyle(() => ({
+    opacity: titleOpacity.value,
+    transform: [{ scale: titleScale.value }],
+  }));
+
+  const animatedCardsStyle = useAnimatedStyle(() => ({
+    opacity: cardsOpacity.value,
+    transform: [{ translateY: cardsTranslateY.value }],
+  }));
+  // --- End intro animation ---
 
   function PlayerCard({ player }: { player: Player }) {
     return (
@@ -110,13 +140,15 @@ export default function EndOfMatches() {
       </CustomModal>
 
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Text style={styles.title}>
+        <Animated.Text style={[styles.title, animatedTitleStyle]}>
           {allWinners.length > 1 ? t('The grand winners are!') : t('The grand winner is!')}
-        </Text>
+        </Animated.Text>
 
-        {allWinners.map(p => (
-          <PlayerCard player={p} key={p.id} />
-        ))}
+        <Animated.View style={animatedCardsStyle}>
+          {allWinners.map(p => (
+            <PlayerCard player={p} key={p.id} />
+          ))}
+        </Animated.View>
       </View>
     </ScreenLayout>
   );
