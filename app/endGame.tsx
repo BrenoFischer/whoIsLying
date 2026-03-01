@@ -118,7 +118,7 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
 );
 
 export default function EndGame() {
-  const { game, setCurrentScreen } = useContext(GameContext);
+  const { game, setCurrentScreen, getSortedPlayers } = useContext(GameContext);
   const { t } = useTranslation();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -126,14 +126,7 @@ export default function EndGame() {
     setCurrentScreen('/endGame');
   }, []);
 
-  const sortedPlayers = useMemo(
-    () =>
-      [...game.players].sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return a.id.localeCompare(b.id);
-      }),
-    [game.players],
-  );
+  const sortedPlayers = useMemo(() => getSortedPlayers(), [game.players]);
 
   const rankingWithDiff = useMemo(
     () =>

@@ -50,6 +50,7 @@ interface GameContextType {
   saveRecordingToRound: (recording: string) => void;
   getRoundAudio: () => string | undefined;
   setCurrentScreen: (screen: string) => void;
+  getSortedPlayers: () => Player[];
   isHydrated: boolean;
 }
 
@@ -103,6 +104,14 @@ export const GameContextProvider = ({
       console.warn('Failed to persist game state:', e);
     });
   }, [game, isHydrated]);
+
+  const sortPlayers = (players: Player[]) =>
+    [...players].sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.id.localeCompare(b.id);
+    });
+
+  const getSortedPlayers = () => sortPlayers(game.players);
 
   const shuffleRounds = (rounds: Round[]) => {
     for (let i = rounds.length - 1; i > 0; i--) {
@@ -248,12 +257,7 @@ export const GameContextProvider = ({
     // Keeps players with their current scores, resets everything else,
     // and increments both counters so the match display stays consistent (e.g. "Game 3 of 3")
     setGame(prev => {
-      const sortedPlayers = [...prev.players].sort((a, b) => {
-        if (b.score !== a.score) {
-          return b.score - a.score; // Sort by score descending
-        }
-        return a.id.localeCompare(b.id); // If scores are equal, sort by ID (or any other consistent criteria)
-      });
+      const sortedPlayers = sortPlayers(prev.players);
 
       const previousRankings = sortedPlayers.map((player, idx) => ({
         playerId: player.id,
@@ -442,6 +446,7 @@ export const GameContextProvider = ({
         saveRecordingToRound,
         getRoundAudio,
         setCurrentScreen,
+        getSortedPlayers,
         isHydrated,
       }}
     >

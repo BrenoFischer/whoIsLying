@@ -21,6 +21,8 @@ import { GameContext } from '@/context/GameContext';
 import { radius } from '@/styles/radius';
 import { spacing } from '@/styles/spacing';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import PlayerInput from '../playerInput';
+import { fontSize } from '@/styles/fontSize';
 
 
 interface HowToPlayProps {
@@ -44,7 +46,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
   const slides = [
     //Slide 1
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={styles.slideCharacterWrapper}>
         <Character mood="slide1" />
       </View>
       <Text style={styles.subtitleBlack}>{t('All players except')}{' '}
@@ -58,7 +60,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 2
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={styles.slideCharacterWrapper}>
         <Character mood="slide2" />
       </View>
       <Text style={styles.subtitleBlack}><Text style={styles.specialText}>{t('Questions')}</Text>{' '}
@@ -75,7 +77,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 3
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={styles.slideCharacterWrapper}>
         <Character mood="slide3" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -94,7 +96,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 4
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={styles.slideCharacterWrapper}>
         <Character mood="slide4" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -110,7 +112,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 5
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={styles.slideCharacterWrapper}>
         <Character mood="slide5" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -127,7 +129,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 6
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={styles.slideCharacterWrapper}>
         <Character mood="slide6" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -144,7 +146,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
 
     //Slide 7
     <View>
-      <View style={{marginBottom: verticalScale(20), alignItems: "center"}}>
+      <View style={styles.slideCharacterWrapper}>
         <Character mood="slide7" />
       </View>
       <Text style={styles.subtitleBlack}>
@@ -212,10 +214,11 @@ export default function SidebarMenu() {
   const [newGameModalOpen, setNewGameModalOpen] = useState(false);
   const [howToPlayModalOpen, setHowToPlayModalOpen] = useState(false);
   const [showForgotWord, setShowForgotWord] = useState(false);
+  const [showRanking, setShowRanking] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
-  const { game, createNewGame } = useContext(GameContext);
-  
+  const { game, createNewGame, getSortedPlayers } = useContext(GameContext);
+
   const toggleMenu = () => setVisible(!visible);
 
   const handleStartNewGame = () => {
@@ -258,7 +261,7 @@ export default function SidebarMenu() {
           </View>
           <View style={styles.backdrop}>
             <ScrollView style={styles.sidebar}>
-            <View style={{alignSelf: "center"}}>
+            <View style={styles.characterCenter}>
               <Character mood="umpa" />
             </View>
             <View style={styles.languageContainer}>
@@ -299,7 +302,7 @@ export default function SidebarMenu() {
               </View>
             </View>
 
-            <View style={styles.startNewGameContainer}>
+            <View style={styles.menuButtonContainer}>
               <Button
                 text={t('Start a new game')}
                 onPress={() => {
@@ -313,15 +316,13 @@ export default function SidebarMenu() {
               modalVisible={newGameModalOpen}
             >
               <>
-                <View>
-                  <View style={{ marginBottom: verticalScale(30) }}>
-                    <Text style={styles.titleInformation}>
-                      {t('Do you want to:')}
-                    </Text>
-                  </View>
+                <View style={styles.newGameModalTitle}>
+                  <Text style={styles.titleInformation}>
+                    {t('Do you want to:')}
+                  </Text>
                 </View>
                 <Character mood="bothCharacter" />
-                <View style={{ gap: verticalScale(40) }}>
+                <View style={styles.newGameModalButtons}>
                   <Button
                     text={t('New game (resets all scores)')}
                     onPress={handleStartNewGame}
@@ -337,7 +338,7 @@ export default function SidebarMenu() {
               </>
             </CustomModal>
 
-            <View style={styles.startNewGameContainer}>
+            <View style={styles.menuButtonContainer}>
               <Button
                 text={t('Como jogar')}
                 onPress={() => { setHowToPlayModalOpen(true) }}
@@ -346,7 +347,42 @@ export default function SidebarMenu() {
 
             <HowToPlay setShowHowToPlay={setHowToPlayModalOpen} showHowToPlay={howToPlayModalOpen} />
 
-            <View style={styles.startNewGameContainer}>
+            <View style={styles.menuButtonContainer}>
+              <Button
+                text={t('Ranking')}
+                variants={game.players.length > 0 ? "secondary" : "disabled"}
+                onPress={() => { setShowRanking(true) }}
+              />
+            </View>
+
+            <Modal
+              transparent={false}
+              visible={showRanking}
+              animationType="slide"
+            >
+              <SafeAreaProvider>
+                <SafeAreaView style={styles.showRankingContainer}>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity onPress={() => setShowRanking(false)}>
+                      <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.rankingTitleWrapper}>
+                    <Text style={styles.rankingTitle}>{t('Leaderboard')}</Text>
+                  </View>
+                  <ScrollView
+                    style={styles.rankingScrollView}
+                    contentContainerStyle={styles.rankingScrollContent}
+                  >
+                    {getSortedPlayers().map((player) => (
+                      <PlayerInput key={player.id} player={player} notEditable />
+                    ))}
+                  </ScrollView>
+                </SafeAreaView>
+              </SafeAreaProvider>
+            </Modal>
+
+            <View style={styles.menuButtonContainer}>
               <Button
                 text={t('Forgot your word') + '?'}
                 variants={isForgotWordAvailable ? "secondary" : "disabled"}
@@ -356,7 +392,7 @@ export default function SidebarMenu() {
 
             <CheckPlayerWord showForgotWord={showForgotWord} setShowForgotWord={setShowForgotWord} />
 
-            <View style={{ marginBottom: verticalScale(40) }} />
+            <View style={styles.sidebarBottomSpacer} />
           </ScrollView>
         </View>
         </SafeAreaView>
@@ -377,6 +413,9 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(radius.pill),
     padding: scale(5),
     alignSelf: "flex-end"
+  },
+  characterCenter: {
+    alignSelf: 'center',
   },
   languageContainer: {
     marginVertical: verticalScale(20),
@@ -412,9 +451,15 @@ const styles = StyleSheet.create({
   activeLangText: {
     color: colors.background[100],
   },
-  startNewGameContainer: {
-    marginVertical: "4%",
-    alignSelf: "center",
+  menuButtonContainer: {
+    marginVertical: '4%',
+    alignSelf: 'center',
+  },
+  newGameModalTitle: {
+    marginBottom: verticalScale(30),
+  },
+  newGameModalButtons: {
+    gap: verticalScale(40),
   },
   backdrop: {
     flex: 1,
@@ -425,38 +470,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.black[100],
   },
-  altText: {
-    marginTop: verticalScale(10),
-    fontFamily: 'Raleway',
-    fontSize: moderateScale(18),
-    fontWeight: 'bold',
-    color: colors.orange[200],
-  },
-  sidebar: {
-    flex: 1,
-    backgroundColor: colors.background[100],
-    paddingHorizontal: scale(24),
-    paddingTop: verticalScale(16),
-    elevation: 5,
-  },
-  menuItem: {
-    fontFamily: 'Sigmar',
-    color: colors.orange[200],
-    fontSize: moderateScale(25),
-    marginVertical: verticalScale(15),
-  },
-  subtitle: {
-    fontFamily: 'Raleway',
-    fontSize: moderateScale(18),
-    color: colors.white[100],
-    marginBottom: verticalScale(20),
-  },
-  text: {
-    fontFamily: 'Raleway',
-    fontSize: moderateScale(16),
-    color: colors.white[100],
-    marginBottom: verticalScale(5),
-  },
   specialText: {
     color: colors.orange[200],
     fontWeight: 'bold',
@@ -466,6 +479,16 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     color: colors.black[100],
     marginBottom: verticalScale(12),
+  },
+  sidebar: {
+    flex: 1,
+    backgroundColor: colors.background[100],
+    paddingHorizontal: scale(24),
+    paddingTop: verticalScale(16),
+    elevation: 5,
+  },
+  sidebarBottomSpacer: {
+    marginBottom: verticalScale(40),
   },
   howToPlayContainer: {
     flex: 1,
@@ -491,5 +514,33 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(spacing.md),
     borderTopWidth: 1,
     borderTopColor: colors.orange[200],
+  },
+  slideCharacterWrapper: {
+    marginBottom: verticalScale(20),
+    alignItems: 'center',
+  },
+  showRankingContainer: {
+    flex: 1,
+    backgroundColor: colors.background[100],
+  },
+  rankingTitleWrapper: {
+    alignItems: 'center',
+  },
+  rankingTitle: {
+    fontSize: fontSize.xl,
+    fontFamily: 'Raleway-Medium',
+    color: colors.orange[200],
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingBottom: verticalScale(spacing.sm),
+  },
+  rankingScrollView: {
+    marginTop: verticalScale(20),
+  },
+  rankingScrollContent: {
+    gap: verticalScale(5),
+    alignItems: 'center',
+    paddingHorizontal: scale(spacing.md),
+    paddingBottom: verticalScale(spacing.md),
   },
 });
