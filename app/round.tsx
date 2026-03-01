@@ -1,5 +1,13 @@
 import { GameContext } from '@/context/GameContext';
 import React, { useContext, useEffect, useState } from 'react';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  withDelay,
+  runOnJS,
+} from 'react-native-reanimated';
 import {
   StyleSheet,
   Text,
@@ -77,8 +85,68 @@ export default function RoundScreen() {
 
   const round = game.rounds[game.currentRound - 1];
 
+  // --- Intro animation ---
+  const [showIntro, setShowIntro] = useState(true);
+  const word1Scale = useSharedValue(1);
+  const word1Opacity = useSharedValue(0);
+  const word2Scale = useSharedValue(1);
+  const word2Opacity = useSharedValue(0);
+  const word3Scale = useSharedValue(1);
+  const word3Opacity = useSharedValue(0);
+  const overlayOpacity = useSharedValue(1);
+
+  useEffect(() => {
+    setShowIntro(true);
+    word1Scale.value = 1;
+    word1Opacity.value = 0;
+    word2Scale.value = 1;
+    word2Opacity.value = 0;
+    word3Scale.value = 1;
+    word3Opacity.value = 0;
+    overlayOpacity.value = 1;
+
+    word1Opacity.value = withTiming(1, { duration: 150 });
+    word1Scale.value = withSequence(
+      withTiming(1.3, { duration: 150 }),
+      withTiming(1.0, { duration: 200 }),
+    );
+
+    word2Opacity.value = withDelay(500, withTiming(1, { duration: 150 }));
+    word2Scale.value = withDelay(500, withSequence(
+      withTiming(1.3, { duration: 150 }),
+      withTiming(1.0, { duration: 200 }),
+    ));
+
+    word3Opacity.value = withDelay(1000, withTiming(1, { duration: 150 }));
+    word3Scale.value = withDelay(1000, withSequence(
+      withTiming(1.3, { duration: 150 }),
+      withTiming(1.0, { duration: 200 }),
+    ));
+
+    overlayOpacity.value = withDelay(1600, withTiming(0, { duration: 400 }, (finished) => {
+      if (finished) runOnJS(setShowIntro)(false);
+    }));
+  }, [game.currentRound]);
+
+  const animatedWord1Style = useAnimatedStyle(() => ({
+    opacity: word1Opacity.value,
+    transform: [{ scale: word1Scale.value }],
+  }));
+  const animatedWord2Style = useAnimatedStyle(() => ({
+    opacity: word2Opacity.value,
+    transform: [{ scale: word2Scale.value }],
+  }));
+  const animatedWord3Style = useAnimatedStyle(() => ({
+    opacity: word3Opacity.value,
+    transform: [{ scale: word3Scale.value }],
+  }));
+  const introOverlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: overlayOpacity.value,
+  }));
+  // --- End intro animation ---
+
   if (!round) {
-    return null; 
+    return null;
   }
 
   const playerThatAsks = round.playerThatAsks;
@@ -145,6 +213,7 @@ export default function RoundScreen() {
   };
 
   return (
+    <>
     <ScreenLayout
       header={
         <View style={styles.headerContainer}>
@@ -231,6 +300,21 @@ export default function RoundScreen() {
           <Text style={styles.question}>{question}</Text>
         </View>
     </ScreenLayout>
+
+    {showIntro && (
+      <Animated.View style={[StyleSheet.absoluteFillObject, styles.introOverlay, introOverlayAnimatedStyle]}>
+        <Animated.Text style={[styles.introWord, animatedWord1Style]}>
+          {playerThatAsks.name}
+        </Animated.Text>
+        <Animated.Text style={[styles.introWord, styles.introWordAsks, animatedWord2Style]}>
+          {t('asks')}
+        </Animated.Text>
+        <Animated.Text style={[styles.introWord, animatedWord3Style]}>
+          {playerThatAnswers.name}
+        </Animated.Text>
+      </Animated.View>
+    )}
+    </>
   );
 }
 
@@ -292,6 +376,24 @@ const styles = StyleSheet.create({
   },
   arrowTouchable: {
     padding: moderateScale(8),
+  },
+  introOverlay: {
+    backgroundColor: colors.background[100],
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: verticalScale(8),
+  },
+  introWord: {
+    fontFamily: 'Raleway-Medium',
+    fontSize: fontSize.xxl,
+    fontWeight: 'bold',
+    color: colors.white[100],
+    textAlign: 'center',
+    paddingHorizontal: scale(20),
+  },
+  introWordAsks: {
+    color: colors.orange[200],
+    fontSize: fontSize.xl,
   },
   charactersRow: {
     flexDirection: 'row',
