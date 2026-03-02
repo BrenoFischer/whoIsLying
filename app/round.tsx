@@ -95,35 +95,31 @@ export default function RoundScreen() {
   const word3Opacity = useSharedValue(0);
   const overlayOpacity = useSharedValue(1);
 
-  useEffect(() => {
-    setShowIntro(true);
-    word1Scale.value = 1;
-    word1Opacity.value = 0;
-    word2Scale.value = 1;
-    word2Opacity.value = 0;
-    word3Scale.value = 1;
-    word3Opacity.value = 0;
-    overlayOpacity.value = 1;
+  const OPACITY_DURATION = 100;
+  const SCALE_DURATION = 250;
+  const SCALE_BACK_DURATION = 200;
+  const WORD_DELAY = OPACITY_DURATION + SCALE_DURATION + SCALE_BACK_DURATION;
 
-    word1Opacity.value = withTiming(1, { duration: 150 });
+  useEffect(() => {
+    word1Opacity.value = withTiming(1, { duration: OPACITY_DURATION });
     word1Scale.value = withSequence(
-      withTiming(1.3, { duration: 150 }),
-      withTiming(1.0, { duration: 200 }),
+      withTiming(1.3, { duration: SCALE_DURATION }),
+      withTiming(1.0, { duration: SCALE_BACK_DURATION }),
     );
 
-    word2Opacity.value = withDelay(500, withTiming(1, { duration: 150 }));
-    word2Scale.value = withDelay(500, withSequence(
-      withTiming(1.3, { duration: 150 }),
-      withTiming(1.0, { duration: 200 }),
+    word2Opacity.value = withDelay(WORD_DELAY, withTiming(1, { duration: OPACITY_DURATION }));
+    word2Scale.value = withDelay(WORD_DELAY, withSequence(
+      withTiming(1.3, { duration: SCALE_DURATION }),
+      withTiming(1.0, { duration: SCALE_BACK_DURATION }),
     ));
 
-    word3Opacity.value = withDelay(1000, withTiming(1, { duration: 150 }));
-    word3Scale.value = withDelay(1000, withSequence(
-      withTiming(1.3, { duration: 150 }),
-      withTiming(1.0, { duration: 200 }),
+    word3Opacity.value = withDelay(WORD_DELAY * 2, withTiming(1, { duration: OPACITY_DURATION }));
+    word3Scale.value = withDelay(WORD_DELAY * 2, withSequence(
+      withTiming(1.3, { duration: SCALE_DURATION }),
+      withTiming(1.0, { duration: SCALE_BACK_DURATION }),
     ));
 
-    overlayOpacity.value = withDelay(1600, withTiming(0, { duration: 400 }, (finished) => {
+    overlayOpacity.value = withDelay(WORD_DELAY * 3 + 600, withTiming(0, { duration: 400 }, (finished) => {
       if (finished) runOnJS(setShowIntro)(false);
     }));
   }, [game.currentRound]);
@@ -202,6 +198,16 @@ export default function RoundScreen() {
     if (isRecording) {
       await handleStopRecording();
     }
+    // Reset overlay synchronously before the round state updates so there's
+    // no frame where the new round content is visible without the overlay.
+    overlayOpacity.value = 1;
+    word1Opacity.value = 0;
+    word2Opacity.value = 0;
+    word3Opacity.value = 0;
+    word1Scale.value = 1;
+    word2Scale.value = 1;
+    word3Scale.value = 1;
+    setShowIntro(true);
     nextRound();
   };
 
@@ -345,7 +351,6 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
   },
   recordingContainer: {
-    marginTop: verticalScale(8),
     backgroundColor: colors.gray[300],
     paddingVertical: scale(15),
     paddingHorizontal: scale(15),
@@ -398,6 +403,6 @@ const styles = StyleSheet.create({
   charactersRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    height: moderateScale(180),
+    maxHeight: moderateScale(180),
   },
 });
