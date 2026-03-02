@@ -5,7 +5,7 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, use } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -83,6 +83,7 @@ export default function EndOfMatches() {
     return (
       <View style={styles.playerCard}>
         <Text style={styles.playerName}>{player.name}</Text>
+        <Text style={styles.playerScore}>{player.score} pts</Text>
         <Character mood={player.character} />
       </View>
     );
@@ -171,13 +172,19 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     marginVertical: verticalScale(spacing.md),
     paddingTop: verticalScale(spacing.lg),
-    gap: verticalScale(spacing.sm),
+    gap: verticalScale(spacing.xs),
   },
   playerName: {
     fontFamily: 'Raleway',
-    fontSize: moderateScale(40),
+    fontSize: fontSize.xxl,
     fontWeight: 'bold',
     color: colors.orange[200],
+  },
+  playerScore: {
+    fontFamily: 'Raleway',
+    fontSize: fontSize.lg,
+    fontWeight: 'bold',
+    color: colors.background[100],
   },
   modalContent: {
     alignItems: 'center',
