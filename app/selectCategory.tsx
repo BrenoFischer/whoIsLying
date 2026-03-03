@@ -28,6 +28,7 @@ import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 import FlipCard, { FlipCardRef } from '@/components/flipCard';
+import ConfigMenu from '@/components/configMenu';
 
 const images = {
   foods: require('@/assets/images/foodCategory.png'),
@@ -127,6 +128,7 @@ export default function SelectCategory() {
       <Elipse top={scale(-180)} />
 
       <View style={styles.contentWrapper}>
+        <ConfigMenu />
         <SidebarMenu />
         <View style={styles.headerContainer}>
           <View style={styles.headerTextContainer}>

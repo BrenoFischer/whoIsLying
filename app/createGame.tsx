@@ -29,6 +29,7 @@ import { radius } from '@/styles/radius';
 import { fontSize } from '@/styles/fontSize';
 import { characters, CharacterTheme } from '@/data/imagesData';
 import CharacterPicker from '@/components/characterPicker';
+import ConfigMenu from '@/components/configMenu';
 
 const MAX_PLAYERS = 10;
 
@@ -126,6 +127,7 @@ export default function CreateGame() {
               </View>
             </View>
           </View>
+          <ConfigMenu />
           <SidebarMenu />
         </View>
       }

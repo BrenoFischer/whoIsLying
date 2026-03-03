@@ -44,6 +44,7 @@ export const colors = {
   orange: {
     100: '#F5D4C1',
     200: '#FFAC4B',
+    300: '#F4BB44',
   },
   green: {
     100: "#1DB954"
