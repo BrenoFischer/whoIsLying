@@ -1,8 +1,8 @@
 import { colors } from '@/styles/colors';
 import { spacing } from '@/styles/spacing';
 import { ReactNode } from 'react';
-import { StyleProp, ViewStyle, StyleSheet, KeyboardAvoidingView, View, ScrollView, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleProp, ViewStyle, StyleSheet, KeyboardAvoidingView, View, ScrollView, Platform, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scale } from 'react-native-size-matters';
 
 type ScreenLayoutProps = {
@@ -22,11 +22,18 @@ export default function ScreenLayout({
   scrollable = false,
   withKeyboardAvoiding = true,
 }: ScreenLayoutProps) {
+  const insets = useSafeAreaInsets();
+  // On Android, StatusBar.currentHeight is a synchronous native constant — no async
+  // measurement needed, so the layout never jumps. On iOS, rely on safe area insets
+  // which are synchronous when SafeAreaProvider is initialised with initialWindowMetrics.
+  const topPadding = Platform.OS === 'android'
+    ? (StatusBar.currentHeight ?? insets.top)
+    : insets.top;
 
   const ContentWrapper = scrollable ? ScrollView : View;
 
   return (
-  <SafeAreaView style={[styles.container, style]}>
+    <View style={[styles.container, { paddingTop: topPadding }, style]}>
       <View style={styles.wrapper}>
           {header && <View>{header}</View>}
 
@@ -47,9 +54,9 @@ export default function ScreenLayout({
             </ContentWrapper>
           </KeyboardAvoidingView>
 
-          {footer && <View style={styles.footer}>{footer}</View>}
+          {footer && <View style={[styles.footer, { paddingBottom: scale(spacing.md) + insets.bottom }]}>{footer}</View>}
       </View>
-  </SafeAreaView>
+    </View>
   );
 }
 
@@ -73,6 +80,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: "center",
-    paddingVertical: scale(spacing.md)
+    paddingTop: scale(spacing.md),
   }
 });

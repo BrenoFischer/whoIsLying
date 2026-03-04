@@ -37,7 +37,7 @@ const { game, getCurrentWord } = useContext(GameContext);
 
   function handleRevealWord() {
     if(player) {
-      const playerIsLying = game.lyingPlayer.id === player.id;
+      const playerIsLying = game.lyingPlayers.some(lp => lp.id === player.id);
       setIsLyingPlayer(playerIsLying);
       setRawWord(getCurrentWord());
       setWordRevealed(true);

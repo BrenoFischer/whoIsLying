@@ -16,15 +16,17 @@ import { radius } from '@/styles/radius';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ToggleButton } from '../toggleButton';
 import { spacing } from '@/styles/spacing';
+import { GameContext } from '@/context/GameContext';
 
 interface ConfigMenuProps {
 
 }
 
 export default function ConfigMenu({}: ConfigMenuProps) {
+  const { setNumberOfImpostors, game } = useContext(GameContext);
     const [menuOpened, setMenuOpened] = useState(false);
     const [ someSetting, setSomeSetting ] = useState(false);
-    const [impostorCount, setImpostorCount] = useState(1);
+    const [impostorCount, setImpostorCount] = useState(game.config.numberOfImpostors);
     const [randomImpostors, setRandomImpostors] = useState(false);
 
     const { t } = useTranslation();
@@ -34,18 +36,24 @@ export default function ConfigMenu({}: ConfigMenuProps) {
     };
 
     const decreaseImpostors = () => {
-        if (impostorCount > 1) setImpostorCount(impostorCount - 1);
+      if (impostorCount > 1) {
+        setImpostorCount(impostorCount - 1);
+        setNumberOfImpostors(impostorCount - 1);
+      }
     };
 
     const increaseImpostors = () => {
-        if (impostorCount < 3) setImpostorCount(impostorCount + 1);
+        if (impostorCount < 3) {
+          setImpostorCount(impostorCount + 1);
+          setNumberOfImpostors(impostorCount + 1);
+        }
     };
 
     return(
         <>
             <View>
                 <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
-                    <Entypo name="cog" size={28} color={colors.orange[200]} />
+                    <Entypo name="cog" size={scale(28)} color={colors.orange[200]} />
                 </TouchableOpacity>
             </View>
             <Modal
@@ -117,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background[100],
     borderRadius: moderateScale(radius.pill),
     padding: scale(5),
-    alignSelf: "flex-start"
+    alignSelf: "flex-end",
   },
   closeButton: {
     zIndex: 100,

@@ -128,8 +128,10 @@ export default function SelectCategory() {
       <Elipse top={scale(-180)} />
 
       <View style={styles.contentWrapper}>
-        <ConfigMenu />
-        <SidebarMenu />
+        <View style={styles.menuButtonsRow}>
+          <ConfigMenu />
+          <SidebarMenu />
+        </View>
         <View style={styles.headerContainer}>
           <View style={styles.headerTextContainer}>
             <Text style={styles.pageTitle}>{t('Categories')}</Text>
@@ -159,7 +161,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     overflow: 'hidden',
-    paddingTop: verticalScale(spacing.xs)
+    paddingTop: verticalScale(spacing.xs),
+  },
+  menuButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: scale(spacing.md),
+    gap: scale(spacing.xs),
   },
   headerContainer: {
     flexDirection: "row",

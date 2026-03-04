@@ -19,11 +19,12 @@ const INITIAL_GAME: Game = {
   players: [],
   currentRound: 1,
   rounds: [],
-  lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
+  lyingPlayers: [],
+  config: { numberOfImpostors: 1 },
   category: undefined,
   word: undefined,
   wordIndex: undefined,
-  selectedWord: undefined,
+  impostorVotes: [],
   showingWordToPlayer: 0,
   votes: [],
   currentMatch: 1,
@@ -33,14 +34,16 @@ interface GameContextType {
   game: Game;
   createGame: (players: Player[]) => void;
   createNewGame: () => void;
-  setLyingPlayer: (players: Player[]) => Player;
+  getLyingPlayers: () => Player[];
+  setNumberOfImpostors: (count: number) => void;
+  checkIfPlayerIsLiar: (playerId: string) => boolean;
   setGameWord: (category: string) => void;
   getRandomWord: (category: string) => string;
-  setSelectedWord: (newWord: string) => void;
+  setImpostorVotes: (votes: { player: Player; word: string }[]) => void;
   nextRound: () => void;
   previousRound: () => void;
   showWordToNextPlayer: () => void;
-  addVote: (playerThatVoted: Player, playerVoted: Player) => void;
+  addVote: (playerThatVoted: Player, playersVoted: Player[]) => void;
   updatePlayers: (players: Player[]) => void;
   updatePointsToPlayer: (player: Player, points: number) => Player[];
   resetGameWithExistingPlayers: () => void;
@@ -69,9 +72,14 @@ export const GameContextProvider = ({
       try {
         const stored = await AsyncStorage.getItem(GAME_STORAGE_KEY);
         if (stored) {
-          // Saved game exists — restore it, keeping audio URIs intact for Discussion
+          // Saved game exists — restore it, keeping audio URIs intact for Discussion.
+          // Merge with INITIAL_GAME so any new fields (e.g. config) always have defaults.
           const parsedGame: Game = JSON.parse(stored);
-          setGame(parsedGame);
+          setGame({
+            ...INITIAL_GAME,
+            ...parsedGame,
+            config: { ...INITIAL_GAME.config, ...(parsedGame.config ?? {}) },
+          });
         } else {
           // No saved game — safe to delete any orphaned audio files from a crashed session
           try {
@@ -220,27 +228,38 @@ export const GameContextProvider = ({
 
   const getRandomWord = (category: string) => {
     const categories: any = allCategories;
-    const categoryWords: string[] = categories[category].content;
+    const categoryWords: string[] = categories[category]?.content ?? [];
+    if (categoryWords.length === 0) return '';
     return categoryWords[Math.floor(Math.random() * categoryWords.length)];
+  };
+
+  const setNumberOfImpostors = (count: number) => {
+    setGame(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        numberOfImpostors: count
+      }
+    }));
+  };
+
+  const checkIfPlayerIsLiar = (playerId: string) => {
+    return game.lyingPlayers.some((lyingPlayer: Player) => lyingPlayer.id === playerId);
   };
 
   const checkVoteForSecretWord = () => {
     setGame(prev => {
-      if (prev.word !== prev.selectedWord) return prev;
+      if (prev.impostorVotes.length === 0) return prev;
 
-      const currentLyingPlayer = prev.players.find(p => p.id === prev.lyingPlayer.id);
-      if (!currentLyingPlayer) return prev;
-
-      const updatedPlayers = prev.players.map(p =>
-        p.id === currentLyingPlayer.id ? { ...p, score: p.score + 2 } : p
-      );
-      const updatedLyingPlayer = updatedPlayers.find(p => p.id === prev.lyingPlayer.id);
-
-      return {
-        ...prev,
-        players: updatedPlayers,
-        lyingPlayer: updatedLyingPlayer ?? prev.lyingPlayer,
-      };
+      let updatedPlayers = [...prev.players];
+      for (const vote of prev.impostorVotes) {
+        if (vote.word === prev.word) {
+          updatedPlayers = updatedPlayers.map(p =>
+            p.id === vote.player.id ? { ...p, score: p.score + 2 } : p
+          );
+        }
+      }
+      return { ...prev, players: updatedPlayers };
     });
   };
 
@@ -249,8 +268,8 @@ export const GameContextProvider = ({
     setGame(prev => ({ ...prev, word, wordIndex: index, category }));
   };
 
-  const setSelectedWord = (newWord: string) => {
-    setGame(prev => ({ ...prev, selectedWord: newWord }));
+  const setImpostorVotes = (votes: { player: Player; word: string }[]) => {
+    setGame(prev => ({ ...prev, impostorVotes: votes }));
   };
 
   const resetGameWithExistingPlayers = () => {
@@ -270,11 +289,11 @@ export const GameContextProvider = ({
         previousRankings,
         currentRound: 1,
         rounds: [],
-        lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
+        lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0 }],
         category: undefined,
         word: undefined,
         wordIndex: undefined,
-        selectedWord: undefined,
+        impostorVotes: [],
         showingWordToPlayer: 0,
         votes: [],
         currentMatch: prev.currentMatch + 1,
@@ -290,11 +309,11 @@ export const GameContextProvider = ({
       currentRound: 1,
       currentMatch: 1,
       rounds: [],
-      lyingPlayer: { id: '', name: '', theme: '', character: '', score: 0 },
+      lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0 }],
       category: undefined,
       word: undefined,
       wordIndex: undefined,
-      selectedWord: undefined,
+      impostorVotes: [],
       showingWordToPlayer: 0,
       votes: [],
       currentScreen: undefined,
@@ -302,27 +321,30 @@ export const GameContextProvider = ({
     }));
   };
 
-  const setLyingPlayer = (players: Player[]) => {
-    const lyingPlayer: Player =
-      players[Math.floor(Math.random() * players.length)];
+  const chooseRandomLyingPlayers = (players: Player[]) => {
+    const shuffled: Player[] = [...players].sort(() => 0.5 - Math.random());
+    const lyingPlayers = shuffled.slice(0, game.config.numberOfImpostors);
 
-    setGame(() => ({ ...INITIAL_GAME, lyingPlayer }));
-    return lyingPlayer;
+    return lyingPlayers;
+  };
+
+  const getLyingPlayers = () => {
+    return game.lyingPlayers;
   };
 
   const createGame = (newPlayers: Player[]) => {
     setGame(prev => {
       const category = prev.category ?? '';
       const rounds = setAllRounds(newPlayers, category);
-      const lyingPlayer = newPlayers[Math.floor(Math.random() * newPlayers.length)];
+      const lyingPlayers = chooseRandomLyingPlayers(newPlayers);
 
       return {
         ...prev,
         players: newPlayers,
         currentRound: 1,
         rounds,
-        lyingPlayer,
-        selectedWord: undefined,
+        lyingPlayers,
+        impostorVotes: [],
         showingWordToPlayer: 0,
         votes: [],
       };
@@ -357,17 +379,17 @@ export const GameContextProvider = ({
     return updatedPlayers;
   };
 
-  const addVote = (playerThatVoted: Player, playerVoted: Player) => {
+  const addVote = (playerThatVoted: Player, playersVoted: Player[]) => {
     setGame(prev => {
-      const newVotes = [...prev.votes, { playerThatVoted, playerVoted }];
+      const newVotes = [...prev.votes, { playerThatVoted, playersVoted }];
 
-      if (playerThatVoted.id === prev.lyingPlayer.id) {
+      if (playerThatVoted.id === prev.lyingPlayers[0].id) {
         //the impostor does not compute points with his vote
         return { ...prev, votes: newVotes };
       }
 
       //add 3 points if player voted correctly on the impostor
-      if (playerVoted.id === prev.lyingPlayer.id) {
+      if (playersVoted.some(p => p.id === prev.lyingPlayers[0].id)) {
         const updatedPlayers = prev.players.map(p =>
           p.id === playerThatVoted.id ? { ...p, score: p.score + 3 } : p
         );
@@ -375,7 +397,7 @@ export const GameContextProvider = ({
       } else {
         //add 1 point to the impostor
         const updatedPlayers = prev.players.map(p =>
-          p.id === prev.lyingPlayer.id ? { ...p, score: p.score + 1 } : p
+          p.id === prev.lyingPlayers[0].id ? { ...p, score: p.score + 1 } : p
         );
         return { ...prev, votes: newVotes, players: updatedPlayers };
       }
@@ -385,6 +407,7 @@ export const GameContextProvider = ({
   const getCurrentWord = () => {
     if (!game.category || game.wordIndex === undefined) return '';
     const categories: any = allCategories;
+    if (!categories[game.category]?.content) return '';
     return categories[game.category].content[game.wordIndex];
   };
 
@@ -429,10 +452,12 @@ export const GameContextProvider = ({
         game,
         createGame,
         createNewGame,
-        setLyingPlayer,
         setGameWord,
         getRandomWord,
-        setSelectedWord,
+        getLyingPlayers,
+        setNumberOfImpostors,
+        checkIfPlayerIsLiar,
+        setImpostorVotes,
         nextRound,
         previousRound,
         showWordToNextPlayer,

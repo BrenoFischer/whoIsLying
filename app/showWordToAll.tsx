@@ -32,7 +32,7 @@ import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 
 export default function ShowWordToAll() {
-  const { game, showWordToNextPlayer, getCurrentWord, setCurrentScreen } =
+  const { game, showWordToNextPlayer, getCurrentWord, setCurrentScreen, checkIfPlayerIsLiar } =
     useContext(GameContext);
   const { t } = useTranslation();
 
@@ -84,7 +84,7 @@ export default function ShowWordToAll() {
 
   function handleRevealWord() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const playerIsLying = game.lyingPlayer.id === currentPlayer.id;
+    const playerIsLying = checkIfPlayerIsLiar(currentPlayer.id);
     setIsLyingPlayer(playerIsLying);
     setRawWord(getCurrentWord());
     setWordRevealed(true);

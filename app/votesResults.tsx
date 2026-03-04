@@ -38,12 +38,13 @@ export default function VotesResults() {
   }));
 
   game.votes.forEach(vote => {
-    for (let i = 0; i < game.players.length; i++) {
-      if (votesByPlayer[i].player.id === vote.playerVoted.id) {
-        votesByPlayer[i].votes += 1;
-        votesByPlayer[i].playersThatVoted.push(vote.playerThatVoted);
+    vote.playersVoted.forEach(playerVoted => {
+      const entry = votesByPlayer.find(e => e.player.id === playerVoted.id);
+      if (entry) {
+        entry.votes += 1;
+        entry.playersThatVoted.push(vote.playerThatVoted);
       }
-    }
+    });
   });
 
   votesByPlayer = votesByPlayer.sort((a, b) => b.votes - a.votes);
@@ -67,17 +68,6 @@ export default function VotesResults() {
         <View style={styles.allPlayerInfo}>
           <Text style={styles.allPlayersName}>{vote.player.name}</Text>
           <Text style={styles.allPlayersInfo}>{t('Votes')}: {vote.votes}</Text>
-          {vote.votes > 0 && (
-            <Text style={styles.allPlayersInfoVotes}>
-              (
-              {vote.playersThatVoted.map((p, idx) =>
-                idx >= vote.playersThatVoted.length - 1
-                  ? <Text key={p.id}>{p.name}</Text>
-                  : <Text key={p.id}>{p.name}, </Text>
-              )}
-              )
-            </Text>
-          )}
         </View>
       </View>
     );
@@ -119,8 +109,8 @@ export default function VotesResults() {
                     (
                     {vote.playersThatVoted.map((player, idx) =>
                       idx >= vote.playersThatVoted.length - 1
-                        ? <Text key={player.id} style={{ color: colors.white[100] }}>{player.name}</Text>
-                        : <Text key={player.id} style={{ color: colors.white[100] }}>{player.name}, </Text>
+                        ? <Text key={player.id + idx} style={{ color: colors.white[100] }}>{player.name}</Text>
+                        : <Text key={player.id + idx} style={{ color: colors.white[100] }}>{player.name}, </Text>
                     )}
                     )
                   </Text>
@@ -133,7 +123,7 @@ export default function VotesResults() {
 
       <Text style={styles.allPlayersText}>{t('All players')}:</Text>
       <View style={styles.allPlayersContainer}>
-        {votesByPlayer.map(vote => <PlayerCard {...vote} key={vote.player.id} />)}
+        {votesByPlayer.map((vote, idx) => <PlayerCard {...vote} key={vote.player.id + idx} />)}
       </View>
     </ScreenLayout>
   );
@@ -217,12 +207,6 @@ const styles = StyleSheet.create({
   },
   allPlayersInfo: {
     color: colors.white[100],
-    fontFamily: 'Raleway',
-    fontSize: fontSize.sm,
-    fontWeight: 'bold',
-  },
-  allPlayersInfoVotes: {
-    color: colors.orange[200],
     fontFamily: 'Raleway',
     fontSize: fontSize.sm,
     fontWeight: 'bold',

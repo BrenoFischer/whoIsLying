@@ -113,7 +113,7 @@ export default function CreateGame() {
         <View style={styles.headerContainer}>
           <Elipse top={-80} />
           <View style={{ alignItems: 'center', flexDirection: 'row', gap: scale(5), flex: 1 }}>
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => router.replace('/selectCategory')}>
               <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
             <View>
