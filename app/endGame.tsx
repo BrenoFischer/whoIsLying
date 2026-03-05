@@ -138,6 +138,7 @@ export default function EndGame() {
         const positionDiff =
           previousPosition !== undefined ? previousPosition - currentPosition : null;
         const matchScore = Math.max(0, player.score - previousScore);
+        console.log(player.name, player.matchScore)
         return { ...player, currentPosition, positionDiff, previousScore, matchScore };
       }),
     [sortedPlayers, game.previousRankings],

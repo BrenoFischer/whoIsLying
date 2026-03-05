@@ -20,7 +20,7 @@ import * as Haptics from 'expo-haptics';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
-  const { game, checkVoteForSecretWord, getCurrentWord, setCurrentScreen } = useContext(GameContext);
+  const { game, resolveScoreOfTheMatch, getCurrentWord, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
   const { height } = useWindowDimensions();
 
@@ -40,7 +40,7 @@ export default function RevealWord() {
   }));
 
   const handleContinue = () => {
-    checkVoteForSecretWord();
+    resolveScoreOfTheMatch();
     router.replace('/endGame');
   };
 

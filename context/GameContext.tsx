@@ -45,15 +45,14 @@ interface GameContextType {
   showWordToNextPlayer: () => void;
   addVote: (playerThatVoted: Player, playersVoted: Player[]) => void;
   updatePlayers: (players: Player[]) => void;
-  updatePointsToPlayer: (player: Player, points: number) => Player[];
   resetGameWithExistingPlayers: () => void;
   getCurrentWord: () => string;
-  checkVoteForSecretWord: () => void;
   getCurrentQuestion: () => string;
   saveRecordingToRound: (recording: string) => void;
   getRoundAudio: () => string | undefined;
   setCurrentScreen: (screen: string) => void;
   getSortedPlayers: () => Player[];
+  resolveScoreOfTheMatch: () => void;
   isHydrated: boolean;
 }
 
@@ -247,21 +246,6 @@ export const GameContextProvider = ({
     return game.lyingPlayers.some((lyingPlayer: Player) => lyingPlayer.id === playerId);
   };
 
-  const checkVoteForSecretWord = () => {
-    setGame(prev => {
-      if (prev.impostorVotes.length === 0) return prev;
-
-      let updatedPlayers = [...prev.players];
-      for (const vote of prev.impostorVotes) {
-        if (vote.word === prev.word) {
-          updatedPlayers = updatedPlayers.map(p =>
-            p.id === vote.player.id ? { ...p, score: p.score + 2 } : p
-          );
-        }
-      }
-      return { ...prev, players: updatedPlayers };
-    });
-  };
 
   const setGameWord = (category: string) => {
     const { index, word } = getRandomWordIndex(category);
@@ -289,7 +273,7 @@ export const GameContextProvider = ({
         previousRankings,
         currentRound: 1,
         rounds: [],
-        lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0 }],
+        lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0, matchScore: { scoreEvents: [], totalScore: 0 } }],
         category: undefined,
         word: undefined,
         wordIndex: undefined,
@@ -309,7 +293,7 @@ export const GameContextProvider = ({
       currentRound: 1,
       currentMatch: 1,
       rounds: [],
-      lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0 }],
+      lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0, matchScore: { scoreEvents: [], totalScore: 0 } }],
       category: undefined,
       word: undefined,
       wordIndex: undefined,
@@ -367,42 +351,118 @@ export const GameContextProvider = ({
     setGame(prev => ({ ...prev, players }));
   };
 
-  const updatePointsToPlayer = (player: Player, points: number) => {
-    const updatedPlayers = game.players.map(p => {
-      if (player.id === p.id) {
-        return { ...p, score: p.score + points };
-      } else {
-        return p;
-      }
-    });
-
-    return updatedPlayers;
-  };
+  const updateScoreOfTheMatchToPlayer = (players: Player[], player: Player, events: string[], total: number): Player[] => {
+    return players.map(p =>
+      p.id === player.id
+        ? { ...p, matchScore: { scoreEvents: events, totalScore: total } }
+        : p
+    );
+  }
 
   const addVote = (playerThatVoted: Player, playersVoted: Player[]) => {
     setGame(prev => {
       const newVotes = [...prev.votes, { playerThatVoted, playersVoted }];
-
-      if (playerThatVoted.id === prev.lyingPlayers[0].id) {
-        //the impostor does not compute points with his vote
-        return { ...prev, votes: newVotes };
-      }
-
-      //add 3 points if player voted correctly on the impostor
-      if (playersVoted.some(p => p.id === prev.lyingPlayers[0].id)) {
-        const updatedPlayers = prev.players.map(p =>
-          p.id === playerThatVoted.id ? { ...p, score: p.score + 3 } : p
-        );
-        return { ...prev, votes: newVotes, players: updatedPlayers };
-      } else {
-        //add 1 point to the impostor
-        const updatedPlayers = prev.players.map(p =>
-          p.id === prev.lyingPlayers[0].id ? { ...p, score: p.score + 1 } : p
-        );
-        return { ...prev, votes: newVotes, players: updatedPlayers };
-      }
+      return { ...prev, votes: newVotes };
     });
   };
+
+  const resolveScoreOfTheMatch = () => {
+    //Compute points for all players, saving on MatchScore array
+    setGame(prev => {
+      let updatedPlayers = prev.players.map(p => ({
+        ...p,
+        matchScore: { scoreEvents: [] as string[], totalScore: 0 },
+      }));
+      let globalImpostorsUncovered: string[] = [];
+
+      //scan votes array
+      prev.votes.forEach(vote => {
+        const playerThatVoted = vote.playerThatVoted;
+        let impostorsUncovered: string[] = [];
+        let eventsForPlayer: string[] = [];
+        let totalPointsForPlayer = 0;
+
+        const voterIsImpostor = prev.lyingPlayers.some(lp => lp.id === playerThatVoted.id);
+
+        if(voterIsImpostor) {
+          //impostors will not obtain +1pt because they cannot uncover themselves
+          impostorsUncovered.push(playerThatVoted.id)
+        }
+
+        //scan all players voted
+        vote.playersVoted.forEach(playerVoted => {
+          const votedIsImpostor = prev.lyingPlayers.find(lp => lp.id === playerVoted.id);
+
+          //if civilian
+          if (!voterIsImpostor) {
+            //civilian scores +2; +5; +10 points for each impostor voted
+            if (votedIsImpostor) {
+              //impostor uncovered
+              impostorsUncovered.push(playerVoted.id);
+              if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id)) globalImpostorsUncovered.push(playerVoted.id);
+              if (impostorsUncovered.length === 1) {
+                eventsForPlayer.push(`+2 pts for uncovering 1 impostor`);
+                totalPointsForPlayer += 2;
+              } else if (impostorsUncovered.length === 2) {
+                eventsForPlayer.push(`+3 pts for uncovering 2 impostors!`);
+                totalPointsForPlayer += 3;
+              } else if (impostorsUncovered.length === 3) {
+                eventsForPlayer.push(`+5 pts for uncovering 3 impostors!!!`);
+                totalPointsForPlayer += 5;
+              }
+            }
+          } else {
+            //if impostor, scores +2 points for each other impostor uncovered
+            if (votedIsImpostor) {
+              impostorsUncovered.push(playerVoted.id);
+              if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id)) globalImpostorsUncovered.push(playerVoted.id);
+              eventsForPlayer.push(`+2 pts for uncovering ${playerVoted.name}`);
+              totalPointsForPlayer += 2;
+            }
+          }
+          //all impostors that were not uncovered scores +1pt
+          prev.lyingPlayers.forEach(lyingPlayer => {
+            if (!impostorsUncovered.find(p => p === lyingPlayer.id)) {
+              const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
+              const playerEvents = [...current.matchScore.scoreEvents, '+1 pt for being undiscovered for a player'];
+              updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore + 1);
+            }
+          });
+        });
+        //add matchScore for playerThatVoted
+        updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, playerThatVoted, eventsForPlayer, totalPointsForPlayer);
+      });
+
+      //all impostors that were not uncovered at all, +3/5/10pts - but it'll remove the +1 per player previously earned
+      prev.lyingPlayers.forEach(lyingPlayer => {
+        if (!globalImpostorsUncovered.find(p => p === lyingPlayer.id)) {
+          const numberOfImpostors = prev.config.numberOfImpostors
+          const pointsToAdd = numberOfImpostors === 1 ? 3 : numberOfImpostors === 2 ? 5 : 10
+          const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
+          const playerEvents = [...current.matchScore.scoreEvents.filter(e => e !== '+1 pt for being undiscovered for a player'), `+${pointsToAdd} pts for not being discovered at all!`];
+          updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore + pointsToAdd - prev.players.length - 1);
+        }
+      });
+
+      //scan impostor votes for secret words
+      prev.impostorVotes.forEach(vote => {
+        //if impostor guessed right the secret word, +3pts
+        if(vote.word === prev.word) {
+          const current = updatedPlayers.find(p => p.id === vote.player.id)!;
+          const playerEvents = [...current.matchScore.scoreEvents, '+3 pts for guessing right the secret word'];
+          updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, vote.player, playerEvents, current.matchScore.totalScore + 3);
+        }
+      });
+
+      return {
+        ...prev,
+        players: updatedPlayers.map(p => ({
+          ...p,
+          score: p.score + p.matchScore.totalScore,
+        })),
+      };
+    });
+  }
 
   const getCurrentWord = () => {
     if (!game.category || game.wordIndex === undefined) return '';
@@ -462,16 +522,15 @@ export const GameContextProvider = ({
         previousRound,
         showWordToNextPlayer,
         addVote,
-        updatePointsToPlayer,
         updatePlayers,
         resetGameWithExistingPlayers,
         getCurrentWord,
-        checkVoteForSecretWord,
         getCurrentQuestion,
         saveRecordingToRound,
         getRoundAudio,
         setCurrentScreen,
         getSortedPlayers,
+        resolveScoreOfTheMatch,
         isHydrated,
       }}
     >
