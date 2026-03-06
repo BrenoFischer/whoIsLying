@@ -20,7 +20,7 @@ import CheckPlayerWord from '../forgotWord';
 import { GameContext } from '@/context/GameContext';
 import { radius } from '@/styles/radius';
 import { spacing } from '@/styles/spacing';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PlayerInput from '../playerInput';
 import { fontSize } from '@/styles/fontSize';
 
@@ -32,6 +32,7 @@ interface HowToPlayProps {
 
 function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
   const [slide, setSlide] = useState(0);
+  const insets = useSafeAreaInsets();
   const totalSlides = 7
   const { t } = useTranslation();
 
@@ -175,8 +176,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
       visible={showHowToPlay}
       animationType="slide"
     >
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.howToPlayContainer}>
+        <View style={[styles.howToPlayContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
           <View style={styles.howToPlayHeader}>
             <TouchableOpacity onPress={() => setShowHowToPlay(false)}>
               <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
@@ -202,8 +202,7 @@ function HowToPlay({showHowToPlay, setShowHowToPlay}: HowToPlayProps) {
               <Ionicons name="arrow-forward-outline" size={scale(28)} color={colors.orange[200]} />
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
-      </SafeAreaProvider>
+        </View>
     </Modal>
   );
 }
@@ -218,6 +217,7 @@ export default function SidebarMenu() {
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
   const { game, createNewGame, getSortedPlayers } = useContext(GameContext);
+  const insets = useSafeAreaInsets();
 
   const toggleMenu = () => setVisible(!visible);
 
@@ -252,8 +252,7 @@ export default function SidebarMenu() {
         visible={visible}
         animationType="slide"
       >
-        <SafeAreaProvider>
-        <SafeAreaView style={styles.modalContainer}>
+        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={toggleMenu}>
               <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
@@ -360,8 +359,7 @@ export default function SidebarMenu() {
               visible={showRanking}
               animationType="slide"
             >
-              <SafeAreaProvider>
-                <SafeAreaView style={styles.showRankingContainer}>
+                <View style={[styles.showRankingContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity onPress={() => setShowRanking(false)}>
                       <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
@@ -378,8 +376,7 @@ export default function SidebarMenu() {
                       <PlayerInput key={player.id} player={player} notEditable />
                     ))}
                   </ScrollView>
-                </SafeAreaView>
-              </SafeAreaProvider>
+                </View>
             </Modal>
 
             <View style={styles.menuButtonContainer}>
@@ -395,8 +392,7 @@ export default function SidebarMenu() {
             <View style={styles.sidebarBottomSpacer} />
           </ScrollView>
         </View>
-        </SafeAreaView>
-        </SafeAreaProvider>
+        </View>
       </Modal>
     </>
   );

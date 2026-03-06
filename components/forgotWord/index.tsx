@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/styles/colors';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -23,7 +23,8 @@ interface ForgotWordProps {
 }
 
 export default function ForgotWord({showForgotWord, setShowForgotWord}: ForgotWordProps) {
-  const [player, setPlayer] = useState<Player | undefined>(undefined)
+  const [player, setPlayer] = useState<Player | undefined>(undefined);
+  const insets = useSafeAreaInsets();
 
   const handleCloseModal = () => {
     setShowForgotWord(false);
@@ -36,21 +37,19 @@ export default function ForgotWord({showForgotWord, setShowForgotWord}: ForgotWo
         visible={showForgotWord}
         animationType="slide"
       >
-        <SafeAreaProvider>
-          <SafeAreaView style={styles.container}>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity onPress={handleCloseModal}>
-                <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
-              </TouchableOpacity>
-            </View>
-            {
-              player ?
-                <ShowWordToSinglePlayer player={player} setPlayer={setPlayer} setShowForgotWord={setShowForgotWord} />
-              :
-                <SelectOneFromAllPlayers setPlayer={setPlayer} />
-            }
-          </SafeAreaView>
-        </SafeAreaProvider>
+        <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={handleCloseModal}>
+              <Ionicons name="close" size={scale(28)} color={colors.orange[200]} />
+            </TouchableOpacity>
+          </View>
+          {
+            player ?
+              <ShowWordToSinglePlayer player={player} setPlayer={setPlayer} setShowForgotWord={setShowForgotWord} />
+            :
+              <SelectOneFromAllPlayers setPlayer={setPlayer} />
+          }
+        </View>
       </Modal>
     
   );
