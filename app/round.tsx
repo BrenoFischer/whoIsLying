@@ -1,5 +1,5 @@
 import { GameContext } from '@/context/GameContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,6 +14,8 @@ import {
   SafeAreaView,
   View,
   TouchableOpacity,
+  AppState,
+  Linking,
 } from 'react-native';
 import Button from '@/components/button';
 import { colors } from '@/styles/colors';
@@ -52,28 +54,45 @@ export default function RoundScreen() {
 
   const [ isRecording, setIsRecording ] = useState(false);
   const [audioUri, setAudioUri] = useState<string | null >(null);
+  const [micPermissionGranted, setMicPermissionGranted] = useState<boolean | null>(null);
 
   const audioRecorder = useAudioRecorder(RecordingPresets.LOW_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder, 900);
 
   useEffect(() => {
     const currentAudio = getRoundAudio();
-    setAudioUri(currentAudio ?? null); 
+    setAudioUri(currentAudio ?? null);
   }, [game.currentRound]);
 
   useEffect(() => {
     (async () => {
       const status = await AudioModule.requestRecordingPermissionsAsync();
-      if (!status.granted) {
-        alert('Permission to access microphone was denied');
+      setMicPermissionGranted(status.granted);
+      if (status.granted) {
+        setAudioModeAsync({
+          playsInSilentMode: true,
+          allowsRecording: true,
+        });
       }
-
-      setAudioModeAsync({
-        playsInSilentMode: true,
-        allowsRecording: true,
-      });
     })();
   }, []);
+
+  // Re-check permission when the user returns from Settings
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', async (nextState) => {
+      if (nextState === 'active' && micPermissionGranted === false) {
+        const status = await AudioModule.getRecordingPermissionsAsync();
+        if (status.granted) {
+          setMicPermissionGranted(true);
+          setAudioModeAsync({
+            playsInSilentMode: true,
+            allowsRecording: true,
+          });
+        }
+      }
+    });
+    return () => subscription.remove();
+  }, [micPermissionGranted]);
 
   const totalRounds = game.players.length * 2;
 
@@ -150,7 +169,8 @@ export default function RoundScreen() {
   const question = t(getCurrentQuestion(), { ns: 'categories' });
 
   const startRecording = async () => {
-    setIsRecording(true)
+    if (!micPermissionGranted) return;
+    setIsRecording(true);
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record({ forDuration: 50 });
   };
@@ -281,7 +301,7 @@ export default function RoundScreen() {
           <Character mood={playerThatAnswers.character} flip />
         </View>
         <View style={styles.recordingContainer}>
-          {isRecording ?
+          {isRecording ? (
             <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
               <TouchableOpacity onPress={handleStopRecording}>
                 <FontAwesome6 name="circle-stop" size={24} color={colors.orange[200]} />
@@ -291,15 +311,25 @@ export default function RoundScreen() {
               </Text>
               <View />
             </View>
-          :
-            <TouchableOpacity onPress={() => {startRecording()}}>
-              <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
-                <FontAwesome6 name="microphone" size={24} color={colors.orange[200]} />
-                <Text style={styles.recordingText}>{audioUri ? "Record a new answer" : "Record answer"}</Text>
+          ) : micPermissionGranted === false ? (
+            <TouchableOpacity onPress={() => Linking.openSettings()}>
+              <View style={{ justifyContent: "space-between", flexDirection: 'row', gap: scale(5) }}>
+                <FontAwesome6 name="microphone-slash" size={24} color={colors.gray[100]} />
+                <Text style={[styles.recordingText, styles.recordingTextDenied]}>
+                  {t('No mic permission. Tap to open settings')}
+                </Text>
                 <View />
               </View>
             </TouchableOpacity>
-          }
+          ) : (
+            <TouchableOpacity onPress={startRecording}>
+              <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
+                <FontAwesome6 name="microphone" size={24} color={colors.orange[200]} />
+                <Text style={styles.recordingText}>{audioUri ? t('Record a new answer') : t('Record answer')}</Text>
+                <View />
+              </View>
+            </TouchableOpacity>
+          )}
           </View>
         </View>
         <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -363,6 +393,10 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
     fontFamily: 'Ralway',
     fontWeight: 'bold',
+  },
+  recordingTextDenied: {
+    color: colors.gray[100],
+    fontSize: fontSize.sm,
   },
   question: {
     fontSize: fontSize.lg,
