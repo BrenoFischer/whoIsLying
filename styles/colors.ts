@@ -39,14 +39,21 @@ export const colors = {
 
   red: {
     100: '#FF0000',
+    200: '#FF6B6B',
+    300: '#FF1744',
   },
 
   orange: {
     100: '#F5D4C1',
     200: '#FFAC4B',
     300: '#F4BB44',
+    400: '#FF6B2B',
   },
   green: {
-    100: "#1DB954"
+    100: "#1DB954",
+    200: "#4DFFB4",
+  },
+  yellow: {
+    100: "#FFE566",
   }
 };

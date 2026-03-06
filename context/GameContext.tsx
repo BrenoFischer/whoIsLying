@@ -351,7 +351,7 @@ export const GameContextProvider = ({
     setGame(prev => ({ ...prev, players }));
   };
 
-  const updateScoreOfTheMatchToPlayer = (players: Player[], player: Player, events: string[], total: number): Player[] => {
+  const updateScoreOfTheMatchToPlayer = (players: Player[], player: Player, events: { text: string; points: number }[], total: number): Player[] => {
     return players.map(p =>
       p.id === player.id
         ? { ...p, matchScore: { scoreEvents: events, totalScore: total } }
@@ -371,7 +371,7 @@ export const GameContextProvider = ({
     setGame(prev => {
       let updatedPlayers = prev.players.map(p => ({
         ...p,
-        matchScore: { scoreEvents: [] as string[], totalScore: 0 },
+        matchScore: { scoreEvents: [] as { text: string; points: number }[], totalScore: 0 },
       }));
       let globalImpostorsUncovered: string[] = [];
 
@@ -379,7 +379,7 @@ export const GameContextProvider = ({
       prev.votes.forEach(vote => {
         const playerThatVoted = vote.playerThatVoted;
         let impostorsUncovered: string[] = [];
-        let eventsForPlayer: string[] = [];
+        let eventsForPlayer: { text: string; points: number }[] = [];
         let totalPointsForPlayer = 0;
 
         const voterIsImpostor = prev.lyingPlayers.some(lp => lp.id === playerThatVoted.id);
@@ -401,13 +401,13 @@ export const GameContextProvider = ({
               impostorsUncovered.push(playerVoted.id);
               if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id)) globalImpostorsUncovered.push(playerVoted.id);
               if (impostorsUncovered.length === 1) {
-                eventsForPlayer.push(`+2 pts for uncovering 1 impostor`);
+                eventsForPlayer.push({ text: `Detected 1 impostor`, points: 2 });
                 totalPointsForPlayer += 2;
               } else if (impostorsUncovered.length === 2) {
-                eventsForPlayer.push(`+3 pts for uncovering 2 impostors!`);
+                eventsForPlayer.push({ text: `Detected 2 impostors!`, points: 3 });
                 totalPointsForPlayer += 3;
               } else if (impostorsUncovered.length === 3) {
-                eventsForPlayer.push(`+5 pts for uncovering 3 impostors!!!`);
+                eventsForPlayer.push({ text: `Detected 3 impostors!!!`, points: 5 });
                 totalPointsForPlayer += 5;
               }
             }
@@ -416,19 +416,21 @@ export const GameContextProvider = ({
             if (votedIsImpostor) {
               impostorsUncovered.push(playerVoted.id);
               if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id)) globalImpostorsUncovered.push(playerVoted.id);
-              eventsForPlayer.push(`+2 pts for uncovering ${playerVoted.name}`);
+              eventsForPlayer.push({ text: `Detected ${playerVoted.name}`, points: 2 });
               totalPointsForPlayer += 2;
             }
           }
-          //all impostors that were not uncovered scores +1pt
-          prev.lyingPlayers.forEach(lyingPlayer => {
-            if (!impostorsUncovered.find(p => p === lyingPlayer.id)) {
-              const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
-              const playerEvents = [...current.matchScore.scoreEvents, '+1 pt for being undiscovered for a player'];
-              updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore + 1);
-            }
-          });
         });
+
+        // +1 pt per impostor not uncovered by this voter — runs once per voter, not per voted suspect
+        prev.lyingPlayers.forEach(lyingPlayer => {
+          if (!impostorsUncovered.find(p => p === lyingPlayer.id)) {
+            const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
+            const playerEvents = [...current.matchScore.scoreEvents, { text: 'Undetected by a player', points: 1 }];
+            updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore + 1);
+          }
+        });
+
         //add matchScore for playerThatVoted
         updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, playerThatVoted, eventsForPlayer, totalPointsForPlayer);
       });
@@ -439,8 +441,11 @@ export const GameContextProvider = ({
           const numberOfImpostors = prev.config.numberOfImpostors
           const pointsToAdd = numberOfImpostors === 1 ? 3 : numberOfImpostors === 2 ? 5 : 10
           const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
-          const playerEvents = [...current.matchScore.scoreEvents.filter(e => e !== '+1 pt for being undiscovered for a player'), `+${pointsToAdd} pts for not being discovered at all!`];
-          updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore + pointsToAdd - prev.players.length - 1);
+          const undiscoveredCount = current.matchScore.scoreEvents.filter(e => e.text === 'Undetected by a player').length;
+          const filteredEvents = current.matchScore.scoreEvents.filter(e => e.text !== 'Undetected by a player');
+          // Replace accumulated +1 pts with the flat bonus; store points: pointsToAdd so the animation ticks correctly
+          const playerEvents = [...filteredEvents, { text: `Never detected!!!`, points: pointsToAdd }];
+          updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore - undiscoveredCount + pointsToAdd);
         }
       });
 
@@ -449,7 +454,7 @@ export const GameContextProvider = ({
         //if impostor guessed right the secret word, +3pts
         if(vote.word === prev.word) {
           const current = updatedPlayers.find(p => p.id === vote.player.id)!;
-          const playerEvents = [...current.matchScore.scoreEvents, '+3 pts for guessing right the secret word'];
+          const playerEvents = [...current.matchScore.scoreEvents, { text: 'Right word guess', points: 3 }];
           updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, vote.player, playerEvents, current.matchScore.totalScore + 3);
         }
       });
