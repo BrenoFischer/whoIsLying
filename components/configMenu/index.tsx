@@ -9,6 +9,7 @@ import {
 import { useTranslation } from '@/translations';
 import { Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { colors } from '@/styles/colors';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -23,10 +24,10 @@ interface ConfigMenuProps {
 }
 
 export default function ConfigMenu({}: ConfigMenuProps) {
-  const { setNumberOfImpostors, game } = useContext(GameContext);
+  const { setNumberOfImpostors, game, setSetsOfQuestions } = useContext(GameContext);
     const [menuOpened, setMenuOpened] = useState(false);
-    const [ someSetting, setSomeSetting ] = useState(false);
     const [impostorCount, setImpostorCount] = useState(game.config.numberOfImpostors);
+    const [questionsCount, setQuestionsCount] = useState(game.config.setsOfQuestions);
     const [randomImpostors, setRandomImpostors] = useState(false);
 
     const { t } = useTranslation();
@@ -48,6 +49,20 @@ export default function ConfigMenu({}: ConfigMenuProps) {
           setNumberOfImpostors(impostorCount + 1);
         }
     };
+
+    const increaseQuestions = () => {
+      if (questionsCount < 3) {
+        setQuestionsCount(questionsCount + 1);
+        setSetsOfQuestions(questionsCount + 1);
+      }
+    }
+
+    const decreaseQuestions = () => {
+      if (questionsCount > 1) {
+        setQuestionsCount(questionsCount - 1);
+        setSetsOfQuestions(questionsCount - 1);
+      }
+    }
 
     return(
         <>
@@ -111,6 +126,34 @@ export default function ConfigMenu({}: ConfigMenuProps) {
                       <ToggleButton value={randomImpostors} onValueChange={setRandomImpostors} />
                     </View>
 
+                    <Text style={styles.sectionSubtitle}>{t('Sets of questions')}</Text>
+
+                    <View style={styles.settingRow}>
+                      <View style={styles.settingLabelContainer}>
+                        <FontAwesome name="question" size={24} color={colors.orange[200]} />
+                        <Text style={styles.settingLabel}>{t('Questions per player')}</Text>
+                      </View>
+                      <View style={styles.counterContainer}>
+                        <TouchableOpacity
+                          onPress={decreaseQuestions}
+                          style={[styles.counterButton, questionsCount === 1 && styles.counterButtonDisabled]}
+                          activeOpacity={0.7}
+                        >
+                          <Text style={[styles.counterButtonText, questionsCount === 1 && styles.counterButtonTextDisabled]}>−</Text>
+                        </TouchableOpacity>
+                        <View style={styles.counterValueContainer}>
+                          <Text style={styles.counterValue}>{questionsCount}</Text>
+                        </View>
+                        <TouchableOpacity
+                          onPress={increaseQuestions}
+                          style={[styles.counterButton, questionsCount === 3 && styles.counterButtonDisabled]}
+                          activeOpacity={0.7}
+                        >
+                          <Text style={[styles.counterButtonText, questionsCount === 3 && styles.counterButtonTextDisabled]}>+</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
                   </ScrollView>
                 </SafeAreaView>
                 </SafeAreaProvider>
@@ -165,6 +208,7 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(spacing.md),
     borderBottomWidth: 1,
     borderBottomColor: colors.gray[300] + '40',
+    marginBottom: verticalScale(spacing.lg)
   },
   settingRowDisabled: {
     opacity: 0.35,
@@ -173,12 +217,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: scale(spacing.sm),
+    flex: 1,
+    marginRight: scale(spacing.sm),
   },
   settingLabel: {
     fontFamily: 'Ralway',
     fontSize: moderateScale(16),
     fontWeight: '600',
     color: colors.white[100],
+    flex: 1,
   },
   counterContainer: {
     flexDirection: 'row',

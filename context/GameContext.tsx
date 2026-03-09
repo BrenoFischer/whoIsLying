@@ -1,16 +1,12 @@
 import { Game } from '@/types/Game';
 import { Player } from '@/types/Player';
-import { Round } from '@/types/Round';
-// import questions from '@/data/questions.json';
+import { Round, ExposureLevel } from '@/types/Round';
 import allCategories from '@/data/categories.json';
 import { createContext, useState, useContext, useEffect } from 'react';
 import uuid from 'react-native-uuid';
 import * as FileSystem from 'expo-file-system';
 import { useTranslation, Language } from '@/translations';
-import {
-  getRandomWordIndex,
-  getQuestionByIndex,
-} from '@/utils/gameTranslations';
+import { getRandomWordIndex } from '@/utils/gameTranslations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GAME_STORAGE_KEY = 'game_state';
@@ -20,7 +16,7 @@ const INITIAL_GAME: Game = {
   currentRound: 1,
   rounds: [],
   lyingPlayers: [],
-  config: { numberOfImpostors: 1 },
+  config: { numberOfImpostors: 1, setsOfQuestions: 2 },
   category: undefined,
   word: undefined,
   wordIndex: undefined,
@@ -37,6 +33,7 @@ interface GameContextType {
   getLyingPlayers: () => Player[];
   setNumberOfImpostors: (count: number) => void;
   checkIfPlayerIsLiar: (playerId: string) => boolean;
+  setSetsOfQuestions: (sets: number) => void;
   setGameWord: (category: string) => void;
   getRandomWord: (category: string) => string;
   setImpostorVotes: (votes: { player: Player; word: string }[]) => void;
@@ -128,101 +125,157 @@ export const GameContextProvider = ({
     return rounds;
   };
 
-  const getRandomQuestionFromSet = (
-    setOfQuestions: string[],
-    usedIndices: Set<number>
-  ) => {
-    const availableIndices = Array.from(
-      { length: setOfQuestions.length },
-      (_, i) => i
-    ).filter(i => !usedIndices.has(i));
+  // ─── Exposure-based question distribution ────────────────────────────────
+  //
+  // Questions are classified as low / medium / high exposure:
+  //   LOW    — open-ended, creative. Impostor can use generic answers safely.
+  //   MEDIUM — some specificity; a mix of opinion and factual questions.
+  //   HIGH   — binary yes/no or very specific. Likely to expose an impostor.
+  //
+  // Distribution per set when the game is configured with 1 / 2 / 3 sets:
+  //
+  //   1 set:  50% low · 30% medium · 20% high   (balanced, but skewed easy)
+  //
+  //   2 sets: set 1 → 70% low · 30% medium ·  0% high  (early game, safe)
+  //           set 2 → 10% low · 40% medium · 50% high  (pressure ramps up)
+  //
+  //   3 sets: set 1 → 100% low ·   0% medium ·  0% high  (all easy start)
+  //           set 2 →  30% low ·  50% medium · 20% high  (mixed middle)
+  //           set 3 →   0% low ·  30% medium · 70% high  (tough finale)
+  //
+  const SET_DISTRIBUTIONS: Record<number, { low: number; medium: number; high: number }[]> = {
+    1: [{ low: 0.5, medium: 0.3, high: 0.2 }],
+    2: [
+      { low: 0.7, medium: 0.3, high: 0.0 },
+      { low: 0.1, medium: 0.4, high: 0.5 },
+    ],
+    3: [
+      { low: 1.0, medium: 0.0, high: 0.0 },
+      { low: 0.3, medium: 0.5, high: 0.2 },
+      { low: 0.0, medium: 0.3, high: 0.7 },
+    ],
+  };
 
-    if (availableIndices.length === 0) {
+  // Distribute `n` questions across exposure levels according to given ratios.
+  // Uses largest-remainder rounding so the counts always sum to exactly n.
+  const distributeByExposure = (
+    n: number,
+    ratios: { low: number; medium: number; high: number }
+  ): Record<ExposureLevel, number> => {
+    const entries: [ExposureLevel, number][] = [
+      ['low', ratios.low],
+      ['medium', ratios.medium],
+      ['high', ratios.high],
+    ];
+    const floored = entries.map(([level, ratio]) => ({
+      level,
+      count: Math.floor(n * ratio),
+      remainder: (n * ratio) % 1,
+    }));
+    let total = floored.reduce((sum, e) => sum + e.count, 0);
+    const remaining = n - total;
+    // Give the leftover slots to the levels with the largest remainders
+    floored.sort((a, b) => b.remainder - a.remainder);
+    for (let i = 0; i < remaining; i++) floored[i].count++;
+    return Object.fromEntries(floored.map(e => [e.level, e.count])) as Record<ExposureLevel, number>;
+  };
+
+  // Pick one random question from a pool, avoiding already-used indices.
+  // Clears the used-index set and retries if every question has been used.
+  const pickOneFromPool = (pool: string[], usedIndices: Set<number>) => {
+    const available = Array.from({ length: pool.length }, (_, i) => i).filter(
+      i => !usedIndices.has(i)
+    );
+    if (available.length === 0) {
       usedIndices.clear();
-      return getRandomQuestionFromSet(setOfQuestions, usedIndices);
+      return pickOneFromPool(pool, usedIndices);
     }
-
-    const randomIndex =
-      availableIndices[Math.floor(Math.random() * availableIndices.length)];
-    const randomQuestion = setOfQuestions[randomIndex];
-    usedIndices.add(randomIndex);
-
-    return { question: randomQuestion, questionIndex: randomIndex };
+    const idx = available[Math.floor(Math.random() * available.length)];
+    usedIndices.add(idx);
+    return { question: pool[idx], questionIndex: idx };
   };
 
   const setAllRounds = (
     newPlayers: Player[],
     category: string,
+    setsOfQuestions: number,
   ): Round[] => {
-    //the order of questions will always follow the crescent order of Players on the array
-    //a 3 player game will have 1 round of questions: A->B, B->C, C->A
-    //the next round of questions will be: A->C, C->B, B->A
-    //after that, all rounds order will be randomized.
-    const numberOfPlayers = newPlayers.length;
-    let rounds: Round[] = [];
-    let auxRoundsArray: Round[] = [];
-
+    // Each set uses a different player-pair rotation so everyone interacts with
+    // different partners across sets:
+    //   set 1 — forward chain:   player[i] → player[i+1]
+    //   set 2 — backward chain:  player[i] → player[i-1]
+    //   set 3 — skip-one chain:  player[i] → player[i+2]
+    // Every set is independently shuffled before being appended.
+    const n = newPlayers.length;
     const categories: any = allCategories;
-    const firstSetOfQuestions: string[] =
-      categories[category].firstSetOfQuestions;
-    const secondSetOfQuestions: string[] =
-      categories[category].secondSetOfQuestions;
+    const questionPool: { low: string[]; medium: string[]; high: string[] } =
+      categories[category].questions;
 
-    const usedFirstIndices = new Set<number>();
-    const usedSecondIndices = new Set<number>();
+    // Separate used-index trackers per exposure level (shared across all sets
+    // so the same question is never repeated across different sets either).
+    const usedIndices: Record<ExposureLevel, Set<number>> = {
+      low: new Set(),
+      medium: new Set(),
+      high: new Set(),
+    };
 
-    //insert first set of rounds and shuffle
-    for (let i = 0; i < numberOfPlayers; i++) {
-      const playerThatAsks = newPlayers[i];
-      const playerThatAnswers =
-        i === numberOfPlayers - 1 ? newPlayers[0] : newPlayers[i + 1];
-      const questionData = getRandomQuestionFromSet(
-        firstSetOfQuestions,
-        usedFirstIndices
-      );
+    const distributions = SET_DISTRIBUTIONS[setsOfQuestions] ?? SET_DISTRIBUTIONS[2];
 
-      const round: Round = {
+    // Build the player-pair list for each set number (1-indexed)
+    const getPairs = (setNumber: number): [Player, Player][] => {
+      const pairs: [Player, Player][] = [];
+      if (setNumber === 1) {
+        for (let i = 0; i < n; i++)
+          pairs.push([newPlayers[i], newPlayers[(i + 1) % n]]);
+      } else if (setNumber === 2) {
+        for (let i = 0; i < n; i++)
+          pairs.push([newPlayers[i], newPlayers[(i - 1 + n) % n]]);
+      } else {
+        for (let i = 0; i < n; i++)
+          pairs.push([newPlayers[i], newPlayers[(i + 2) % n]]);
+      }
+      return pairs;
+    };
+
+    let allRounds: Round[] = [];
+
+    for (let s = 0; s < setsOfQuestions; s++) {
+      const setNumber = (s + 1) as 1 | 2 | 3;
+      const distribution = distributions[s];
+      const counts = distributeByExposure(n, distribution);
+      const pairs = getPairs(setNumber);
+
+      // Build a list of (exposure, questionData) in the right proportions
+      const questionsForSet: { exposure: ExposureLevel; question: string; questionIndex: number }[] = [];
+      for (const level of ['low', 'medium', 'high'] as ExposureLevel[]) {
+        for (let q = 0; q < counts[level]; q++) {
+          const { question, questionIndex } = pickOneFromPool(questionPool[level], usedIndices[level]);
+          questionsForSet.push({ exposure: level, question, questionIndex });
+        }
+      }
+      // Shuffle the question assignments so exposure levels aren't clumped together
+      for (let i = questionsForSet.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questionsForSet[i], questionsForSet[j]] = [questionsForSet[j], questionsForSet[i]];
+      }
+
+      // Pair each player-pair with a question
+      let setRounds: Round[] = pairs.map((pair, idx) => ({
         id: uuid.v4().toString(),
-        playerThatAsks,
-        playerThatAnswers,
-        question: questionData.question,
-        questionIndex: questionData.questionIndex,
-        questionSet: 'first',
-        audio: undefined
-      };
+        playerThatAsks: pair[0],
+        playerThatAnswers: pair[1],
+        question: questionsForSet[idx].question,
+        questionIndex: questionsForSet[idx].questionIndex,
+        questionSet: setNumber,
+        exposure: questionsForSet[idx].exposure,
+        audio: undefined,
+      }));
 
-      rounds.push(round);
+      setRounds = shuffleRounds(setRounds);
+      allRounds = allRounds.concat(setRounds);
     }
 
-    rounds = shuffleRounds(rounds);
-
-    //insert second set of rounds
-    for (let i = numberOfPlayers - 1; i >= 0; i--) {
-      const playerThatAsks = newPlayers[i];
-      const playerThatAnswers =
-        i === 0 ? newPlayers[numberOfPlayers - 1] : newPlayers[i - 1];
-      const questionData = getRandomQuestionFromSet(
-        secondSetOfQuestions,
-        usedSecondIndices
-      );
-
-      const round: Round = {
-        id: uuid.v4().toString(),
-        playerThatAsks,
-        playerThatAnswers,
-        question: questionData.question,
-        questionIndex: questionData.questionIndex,
-        questionSet: 'second',
-        audio: undefined
-      };
-
-      auxRoundsArray.push(round);
-    }
-
-    auxRoundsArray = shuffleRounds(auxRoundsArray);
-    rounds = rounds.concat(auxRoundsArray);
-
-    return rounds;
+    return allRounds;
   };
 
   const getRandomWord = (category: string) => {
@@ -246,6 +299,9 @@ export const GameContextProvider = ({
     return game.lyingPlayers.some((lyingPlayer: Player) => lyingPlayer.id === playerId);
   };
 
+  const setSetsOfQuestions = (sets: number) => {
+    setGame(prev => ({ ...prev, config: {...prev.config, setsOfQuestions: sets}}));
+  }
 
   const setGameWord = (category: string) => {
     const { index, word } = getRandomWordIndex(category);
@@ -319,7 +375,8 @@ export const GameContextProvider = ({
   const createGame = (newPlayers: Player[]) => {
     setGame(prev => {
       const category = prev.category ?? '';
-      const rounds = setAllRounds(newPlayers, category);
+      const setsOfQuestions = prev.config.setsOfQuestions;
+      const rounds = setAllRounds(newPlayers, category, setsOfQuestions);
       const lyingPlayers = chooseRandomLyingPlayers(newPlayers);
 
       return {
@@ -477,18 +534,9 @@ export const GameContextProvider = ({
   };
 
   const getCurrentQuestion = (): string => {
-    if (!game.category || game.rounds.length === 0) return '';
+    if (game.rounds.length === 0) return '';
     const currentRound = game.rounds[game.currentRound - 1];
-    if (!currentRound) return '';
-
-    const categories: any = allCategories;
-    const questionSet =
-      currentRound.questionSet === 'first'
-        ? 'firstSetOfQuestions'
-        : 'secondSetOfQuestions';
-    return categories[game.category][questionSet][
-      currentRound.questionIndex
-    ];
+    return currentRound?.question ?? '';
   };
 
   const saveRecordingToRound = (recording: string) => {
@@ -522,6 +570,7 @@ export const GameContextProvider = ({
         getLyingPlayers,
         setNumberOfImpostors,
         checkIfPlayerIsLiar,
+        setSetsOfQuestions,
         setImpostorVotes,
         nextRound,
         previousRound,

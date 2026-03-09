@@ -15,24 +15,6 @@ export const getWordByIndex = (
   return categories[category].content[index];
 };
 
-export const getQuestionByIndex = (
-  category: string,
-  questionSet: 'first' | 'second',
-  index: number,
-): string => {
-  const categories: any = allCategories;
-  const key =
-    questionSet === 'first' ? 'firstSetOfQuestions' : 'secondSetOfQuestions';
-
-  if (!categories[category]?.[key]) {
-    throw new Error(
-      `Questions not found for category "${category}", and question set "${questionSet}"`
-    );
-  }
-
-  return categories[category][key][index];
-};
-
 export const getRandomWordIndex = (
   category: string,
 ): { index: number; word: string } => {
