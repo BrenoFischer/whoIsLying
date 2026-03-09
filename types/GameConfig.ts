@@ -1,4 +1,4 @@
 export interface GameConfig {
-    numberOfImpostors: number;
-    setsOfQuestions: number;
+  numberOfImpostors: number;
+  setsOfQuestions: number;
 }

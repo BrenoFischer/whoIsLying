@@ -17,9 +17,8 @@ export default function PlayerModal({
   setModalVisible,
   player,
 }: PlayerModalProps) {
-  const { language, t } = useTranslation();
-  const buttonText =
-    t("I'm") + ' ' +player.name;
+  const { t } = useTranslation();
+  const buttonText = t("I'm") + ' ' + player.name;
 
   return (
     <Modal

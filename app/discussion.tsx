@@ -1,13 +1,17 @@
 import Button from '@/components/button';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Elipse from '@/components/elipse';
-import WithSidebar from '@/components/withSideBar';
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import {
@@ -43,11 +47,11 @@ export default function Discussion() {
       shouldRouteThroughEarpiece: false,
       allowsRecording: false,
     });
-  }, [])
+  }, []);
 
   const agregateByPlayerRounds = useMemo(() => {
-    if(!game.rounds?.length) return [];
-    
+    if (!game.rounds?.length) return [];
+
     let agregatedArray = [game.rounds[0]];
 
     for (let i = 1; i < rounds.length; i++) {
@@ -93,7 +97,7 @@ export default function Discussion() {
         player.pause();
       }
       player.replace({ uri: round.audio });
-      player.play()
+      player.play();
       setCurrentRoundId(round.id);
     } catch (e) {
       console.warn('Audio error:', e);
@@ -123,9 +127,7 @@ export default function Discussion() {
 
   return (
     <ScreenLayout
-      footer={ 
-        <Button text={t('Continue')} onPress={handleNextPage} />
-      }
+      footer={<Button text={t('Continue')} onPress={handleNextPage} />}
       header={
         <>
           <Elipse left={scale(-20)} />
@@ -135,9 +137,9 @@ export default function Discussion() {
               alignItems: 'center',
               justifyContent: 'center',
               paddingTop: spacing.lg,
-              paddingHorizontal: spacing.sm
+              paddingHorizontal: spacing.sm,
             }}
-            >
+          >
             <View style={{ paddingBottom: verticalScale(30) }}>
               <Text style={styles.title}>{t('Discussion time!')}</Text>
               <Text style={styles.subtitle}>
@@ -152,44 +154,47 @@ export default function Discussion() {
     >
       <View style={styles.table}>
         <ScrollView showsVerticalScrollIndicator={false}>
-            {agregateByPlayerRounds.map((round, index) => {
-              return (
-                <View key={`${round.playerThatAnswers.id}-${index}`}>
-                  <Text style={styles.playerName}>
-                    {round.playerThatAnswers.name}
-                  </Text>
-                  <Text style={styles.question}>{t(round.question, {ns: 'categories'})}</Text>
-                  {round.audio && (
-                    <View
-                      style={styles.audioContainer}
-                    >
-                      <TouchableOpacity
-                        onPress={() => handleToggleAudio(round)}
-                      >
-                        <FontAwesome6
-                          name={
-                            round.id === currentRoundId && playerStatus.playing
-                              ? 'pause'
-                              : 'play'
-                          }
-                          size={20}
-                          color={colors.orange[200]}
-                        />
-                      </TouchableOpacity>
+          {agregateByPlayerRounds.map((round, index) => {
+            return (
+              <View key={`${round.playerThatAnswers.id}-${index}`}>
+                <Text style={styles.playerName}>
+                  {round.playerThatAnswers.name}
+                </Text>
+                <Text style={styles.question}>
+                  {t(round.question, { ns: 'categories' })}
+                </Text>
+                {round.audio && (
+                  <View style={styles.audioContainer}>
+                    <TouchableOpacity onPress={() => handleToggleAudio(round)}>
+                      <FontAwesome6
+                        name={
+                          round.id === currentRoundId && playerStatus.playing
+                            ? 'pause'
+                            : 'play'
+                        }
+                        size={20}
+                        color={colors.orange[200]}
+                      />
+                    </TouchableOpacity>
 
-                      {currentRoundId === round.id && (
-                        <Text style={{ fontSize: moderateScale(14), color: colors.white[100] }}>
-                          {formatTime(playerStatus.currentTime)} /{' '}
-                          {formatTime(playerStatus.duration)}
-                        </Text>
-                      )}
-                    </View>
-                  )}
-                </View>
-              );
-            })}
+                    {currentRoundId === round.id && (
+                      <Text
+                        style={{
+                          fontSize: moderateScale(14),
+                          color: colors.white[100],
+                        }}
+                      >
+                        {formatTime(playerStatus.currentTime)} /{' '}
+                        {formatTime(playerStatus.duration)}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </View>
+            );
+          })}
         </ScrollView>
-          </View>
+      </View>
     </ScreenLayout>
   );
 }
@@ -205,7 +210,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontFamily: 'Raleway-Medium',
     textAlign: 'center',
-    marginTop: verticalScale(4)
+    marginTop: verticalScale(4),
   },
   table: {
     padding: scale(20),
@@ -220,7 +225,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: moderateScale(8),
     elevation: 5,
-    flex: 1
+    flex: 1,
   },
   playerName: {
     fontSize: moderateScale(17),
@@ -239,6 +244,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background[100],
     paddingVertical: scale(10),
     paddingHorizontal: scale(15),
-    borderRadius: scale(10)
-  }
+    borderRadius: scale(10),
+  },
 });

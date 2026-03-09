@@ -7,7 +7,13 @@ import { Player } from '@/types/Player';
 import { router } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from '@/translations';
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { scale, verticalScale } from 'react-native-size-matters';
 import ScreenLayout from '@/components/screenLayout';
 import { spacing } from '@/styles/spacing';
@@ -18,8 +24,13 @@ import Dot from '@/components/dot';
 import SidebarMenu from '@/components/sideBarMenu';
 
 export default function Words() {
-  const { game, getRandomWord, setImpostorVotes, getCurrentWord, setCurrentScreen } =
-    useContext(GameContext);
+  const {
+    game,
+    getRandomWord,
+    setImpostorVotes,
+    getCurrentWord,
+    setCurrentScreen,
+  } = useContext(GameContext);
   const { t } = useTranslation();
   const { height } = useWindowDimensions();
 
@@ -34,7 +45,9 @@ export default function Words() {
   const [modalVisible, setModalVisible] = useState(true);
   const [selectedWord, setSelectedWord] = useState('');
   const [allWords, setAllWords] = useState<string[]>([]);
-  const [collectedVotes, setCollectedVotes] = useState<{ player: Player; word: string }[]>([]);
+  const [collectedVotes, setCollectedVotes] = useState<
+    { player: Player; word: string }[]
+  >([]);
 
   const currentImpostor = impostors[impostorIndex];
 
@@ -63,7 +76,10 @@ export default function Words() {
   }, []);
 
   const handleContinue = () => {
-    const newVotes = [...collectedVotes, { player: currentImpostor, word: selectedWord }];
+    const newVotes = [
+      ...collectedVotes,
+      { player: currentImpostor, word: selectedWord },
+    ];
 
     if (impostorIndex + 1 >= impostors.length) {
       setImpostorVotes(newVotes);
@@ -81,7 +97,10 @@ export default function Words() {
     return (
       <TouchableOpacity
         onPress={() => setSelectedWord(word)}
-        style={[styles.wordContainer, isSelected && styles.wordContainerSelected]}
+        style={[
+          styles.wordContainer,
+          isSelected && styles.wordContainerSelected,
+        ]}
       >
         <Text style={[styles.wordText, isSelected && styles.wordTextSelected]}>
           {t(word, { ns: 'categories' })}
@@ -102,7 +121,8 @@ export default function Words() {
               <>
                 <Dot color={colors.white[100]} />
                 <Text style={styles.headerTitle}>
-                  {t('Impostor')} {impostorIndex + 1} {t('of')} {impostors.length}
+                  {t('Impostor')} {impostorIndex + 1} {t('of')}{' '}
+                  {impostors.length}
                 </Text>
               </>
             )}

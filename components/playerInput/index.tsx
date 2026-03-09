@@ -18,7 +18,7 @@ import Button from '../button';
 import { useTranslation } from '@/translations';
 import Character from '../character';
 import { fontSize } from '@/styles/fontSize';
-import { characters, CharacterTheme } from '@/data/imagesData';
+import { characters } from '@/data/imagesData';
 import CharacterPicker from '@/components/characterPicker';
 
 interface PlayerInputProps {
@@ -53,7 +53,9 @@ export default function PlayerInput({
   const characterSize = screenHeight * 0.1;
 
   // Map the available image names back to CharacterData to get themes
-  const availableCharacterData = characters.filter(c => availableImages.includes(c.name));
+  const availableCharacterData = characters.filter(c =>
+    availableImages.includes(c.name)
+  );
 
   const handleSubmit = () => {
     if (editPlayer) editPlayer(player, newName);
@@ -76,11 +78,13 @@ export default function PlayerInput({
   const isSecondary = variant === 'secondary';
 
   return (
-    <View style={[
-      styles.container,
-      isSecondary && styles.containerSecondary,
-      selected && styles.containerSelected,
-    ]}>
+    <View
+      style={[
+        styles.container,
+        isSecondary && styles.containerSecondary,
+        selected && styles.containerSelected,
+      ]}
+    >
       <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
         <View>
           <Text style={styles.modalTitle}>
@@ -100,12 +104,24 @@ export default function PlayerInput({
         </View>
       </CustomModal>
 
-      <CustomModal modalVisible={characterModalOpen} setModalVisible={setCharacterModalOpen}>
-        <TouchableOpacity style={{ position: 'absolute', top: scale(15), right: scale(15) }} onPress={() => setCharacterModalOpen(false)}>
-          <MaterialIcons name="close" size={moderateScale(24)} color={colors.orange[200]} />
+      <CustomModal
+        modalVisible={characterModalOpen}
+        setModalVisible={setCharacterModalOpen}
+      >
+        <TouchableOpacity
+          style={{ position: 'absolute', top: scale(15), right: scale(15) }}
+          onPress={() => setCharacterModalOpen(false)}
+        >
+          <MaterialIcons
+            name="close"
+            size={moderateScale(24)}
+            color={colors.orange[200]}
+          />
         </TouchableOpacity>
 
-        <Text style={styles.characterModalTitle}>{t('Choose your character')}</Text>
+        <Text style={styles.characterModalTitle}>
+          {t('Choose your character')}
+        </Text>
 
         <CharacterPicker
           availableCharacters={availableCharacterData}
@@ -113,10 +129,19 @@ export default function PlayerInput({
         />
       </CustomModal>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10), paddingTop: verticalScale(10) }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: scale(10),
+          paddingTop: verticalScale(10),
+        }}
+      >
         <View style={{ alignItems: 'center', gap: verticalScale(5) }}>
           {showScore && (
-            <Text style={styles.playerScore}><Text style={styles.playerScoreValue}>{player.score} pts</Text></Text>
+            <Text style={styles.playerScore}>
+              <Text style={styles.playerScoreValue}>{player.score} pts</Text>
+            </Text>
           )}
           {notEditable ? (
             <Character mood={player.character} size={characterSize} />
@@ -126,9 +151,26 @@ export default function PlayerInput({
             </TouchableOpacity>
           )}
         </View>
-        <View style={[{ flex: 1 }, notEditable && { alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center' }]}>
+        <View
+          style={[
+            { flex: 1 },
+            notEditable && {
+              alignSelf: 'stretch',
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+          ]}
+        >
           {notEditable ? (
-            <Text style={[styles.playerName, styles.playerNameCentered, isSecondary && styles.playerNameSecondary]}>{player.name}</Text>
+            <Text
+              style={[
+                styles.playerName,
+                styles.playerNameCentered,
+                isSecondary && styles.playerNameSecondary,
+              ]}
+            >
+              {player.name}
+            </Text>
           ) : (
             <TextInput
               placeholder={t('Add a new name')}

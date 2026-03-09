@@ -2,10 +2,9 @@ import { Game } from '@/types/Game';
 import { Player } from '@/types/Player';
 import { Round, ExposureLevel } from '@/types/Round';
 import allCategories from '@/data/categories.json';
-import { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import uuid from 'react-native-uuid';
 import * as FileSystem from 'expo-file-system';
-import { useTranslation, Language } from '@/translations';
 import { getRandomWordIndex } from '@/utils/gameTranslations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -82,11 +81,18 @@ export const GameContextProvider = ({
             const cacheDir = new FileSystem.Directory(FileSystem.Paths.cache);
             const files = cacheDir.list();
             files.forEach(entry => {
-              if (entry instanceof FileSystem.File && /^round_.*\.m4a$/.test(entry.name)) {
+              if (
+                entry instanceof FileSystem.File &&
+                /^round_.*\.m4a$/.test(entry.name)
+              ) {
                 try {
                   entry.delete();
                 } catch (e) {
-                  console.warn('Failed to delete leftover audio file:', entry.uri, e);
+                  console.warn(
+                    'Failed to delete leftover audio file:',
+                    entry.uri,
+                    e
+                  );
                 }
               }
             });
@@ -143,7 +149,10 @@ export const GameContextProvider = ({
   //           set 2 →  30% low ·  50% medium · 20% high  (mixed middle)
   //           set 3 →   0% low ·  30% medium · 70% high  (tough finale)
   //
-  const SET_DISTRIBUTIONS: Record<number, { low: number; medium: number; high: number }[]> = {
+  const SET_DISTRIBUTIONS: Record<
+    number,
+    { low: number; medium: number; high: number }[]
+  > = {
     1: [{ low: 0.5, medium: 0.3, high: 0.2 }],
     2: [
       { low: 0.7, medium: 0.3, high: 0.0 },
@@ -172,12 +181,15 @@ export const GameContextProvider = ({
       count: Math.floor(n * ratio),
       remainder: (n * ratio) % 1,
     }));
-    let total = floored.reduce((sum, e) => sum + e.count, 0);
+    const total = floored.reduce((sum, e) => sum + e.count, 0);
     const remaining = n - total;
     // Give the leftover slots to the levels with the largest remainders
     floored.sort((a, b) => b.remainder - a.remainder);
     for (let i = 0; i < remaining; i++) floored[i].count++;
-    return Object.fromEntries(floored.map(e => [e.level, e.count])) as Record<ExposureLevel, number>;
+    return Object.fromEntries(floored.map(e => [e.level, e.count])) as Record<
+      ExposureLevel,
+      number
+    >;
   };
 
   // Pick one random question from a pool, avoiding already-used indices.
@@ -198,7 +210,7 @@ export const GameContextProvider = ({
   const setAllRounds = (
     newPlayers: Player[],
     category: string,
-    setsOfQuestions: number,
+    setsOfQuestions: number
   ): Round[] => {
     // Each set uses a different player-pair rotation so everyone interacts with
     // different partners across sets:
@@ -219,7 +231,8 @@ export const GameContextProvider = ({
       high: new Set(),
     };
 
-    const distributions = SET_DISTRIBUTIONS[setsOfQuestions] ?? SET_DISTRIBUTIONS[2];
+    const distributions =
+      SET_DISTRIBUTIONS[setsOfQuestions] ?? SET_DISTRIBUTIONS[2];
 
     // Build the player-pair list for each set number (1-indexed)
     const getPairs = (setNumber: number): [Player, Player][] => {
@@ -246,17 +259,27 @@ export const GameContextProvider = ({
       const pairs = getPairs(setNumber);
 
       // Build a list of (exposure, questionData) in the right proportions
-      const questionsForSet: { exposure: ExposureLevel; question: string; questionIndex: number }[] = [];
+      const questionsForSet: {
+        exposure: ExposureLevel;
+        question: string;
+        questionIndex: number;
+      }[] = [];
       for (const level of ['low', 'medium', 'high'] as ExposureLevel[]) {
         for (let q = 0; q < counts[level]; q++) {
-          const { question, questionIndex } = pickOneFromPool(questionPool[level], usedIndices[level]);
+          const { question, questionIndex } = pickOneFromPool(
+            questionPool[level],
+            usedIndices[level]
+          );
           questionsForSet.push({ exposure: level, question, questionIndex });
         }
       }
       // Shuffle the question assignments so exposure levels aren't clumped together
       for (let i = questionsForSet.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [questionsForSet[i], questionsForSet[j]] = [questionsForSet[j], questionsForSet[i]];
+        [questionsForSet[i], questionsForSet[j]] = [
+          questionsForSet[j],
+          questionsForSet[i],
+        ];
       }
 
       // Pair each player-pair with a question
@@ -290,18 +313,23 @@ export const GameContextProvider = ({
       ...prev,
       config: {
         ...prev.config,
-        numberOfImpostors: count
-      }
+        numberOfImpostors: count,
+      },
     }));
   };
 
   const checkIfPlayerIsLiar = (playerId: string) => {
-    return game.lyingPlayers.some((lyingPlayer: Player) => lyingPlayer.id === playerId);
+    return game.lyingPlayers.some(
+      (lyingPlayer: Player) => lyingPlayer.id === playerId
+    );
   };
 
   const setSetsOfQuestions = (sets: number) => {
-    setGame(prev => ({ ...prev, config: {...prev.config, setsOfQuestions: sets}}));
-  }
+    setGame(prev => ({
+      ...prev,
+      config: { ...prev.config, setsOfQuestions: sets },
+    }));
+  };
 
   const setGameWord = (category: string) => {
     const { index, word } = getRandomWordIndex(category);
@@ -329,7 +357,16 @@ export const GameContextProvider = ({
         previousRankings,
         currentRound: 1,
         rounds: [],
-        lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0, matchScore: { scoreEvents: [], totalScore: 0 } }],
+        lyingPlayers: [
+          {
+            id: '',
+            name: '',
+            theme: '',
+            character: '',
+            score: 0,
+            matchScore: { scoreEvents: [], totalScore: 0 },
+          },
+        ],
         category: undefined,
         word: undefined,
         wordIndex: undefined,
@@ -337,9 +374,9 @@ export const GameContextProvider = ({
         showingWordToPlayer: 0,
         votes: [],
         currentMatch: prev.currentMatch + 1,
-      }
+      };
     });
-    };
+  };
 
   const createNewGame = () => {
     // Keeps players but resets their scores and all game state
@@ -349,7 +386,16 @@ export const GameContextProvider = ({
       currentRound: 1,
       currentMatch: 1,
       rounds: [],
-      lyingPlayers: [{ id: '', name: '', theme: '', character: '', score: 0, matchScore: { scoreEvents: [], totalScore: 0 } }],
+      lyingPlayers: [
+        {
+          id: '',
+          name: '',
+          theme: '',
+          character: '',
+          score: 0,
+          matchScore: { scoreEvents: [], totalScore: 0 },
+        },
+      ],
       category: undefined,
       word: undefined,
       wordIndex: undefined,
@@ -401,20 +447,28 @@ export const GameContextProvider = ({
   };
 
   const showWordToNextPlayer = () => {
-    setGame(prev => ({ ...prev, showingWordToPlayer: prev.showingWordToPlayer + 1 }));
+    setGame(prev => ({
+      ...prev,
+      showingWordToPlayer: prev.showingWordToPlayer + 1,
+    }));
   };
 
   const updatePlayers = (players: Player[]) => {
     setGame(prev => ({ ...prev, players }));
   };
 
-  const updateScoreOfTheMatchToPlayer = (players: Player[], player: Player, events: { text: string; points: number }[], total: number): Player[] => {
+  const updateScoreOfTheMatchToPlayer = (
+    players: Player[],
+    player: Player,
+    events: { text: string; points: number }[],
+    total: number
+  ): Player[] => {
     return players.map(p =>
       p.id === player.id
         ? { ...p, matchScore: { scoreEvents: events, totalScore: total } }
         : p
     );
-  }
+  };
 
   const addVote = (playerThatVoted: Player, playersVoted: Player[]) => {
     setGame(prev => {
@@ -428,27 +482,34 @@ export const GameContextProvider = ({
     setGame(prev => {
       let updatedPlayers = prev.players.map(p => ({
         ...p,
-        matchScore: { scoreEvents: [] as { text: string; points: number }[], totalScore: 0 },
+        matchScore: {
+          scoreEvents: [] as { text: string; points: number }[],
+          totalScore: 0,
+        },
       }));
-      let globalImpostorsUncovered: string[] = [];
+      const globalImpostorsUncovered: string[] = [];
 
       //scan votes array
       prev.votes.forEach(vote => {
         const playerThatVoted = vote.playerThatVoted;
-        let impostorsUncovered: string[] = [];
-        let eventsForPlayer: { text: string; points: number }[] = [];
+        const impostorsUncovered: string[] = [];
+        const eventsForPlayer: { text: string; points: number }[] = [];
         let totalPointsForPlayer = 0;
 
-        const voterIsImpostor = prev.lyingPlayers.some(lp => lp.id === playerThatVoted.id);
+        const voterIsImpostor = prev.lyingPlayers.some(
+          lp => lp.id === playerThatVoted.id
+        );
 
-        if(voterIsImpostor) {
+        if (voterIsImpostor) {
           //impostors will not obtain +1pt because they cannot uncover themselves
-          impostorsUncovered.push(playerThatVoted.id)
+          impostorsUncovered.push(playerThatVoted.id);
         }
 
         //scan all players voted
         vote.playersVoted.forEach(playerVoted => {
-          const votedIsImpostor = prev.lyingPlayers.find(lp => lp.id === playerVoted.id);
+          const votedIsImpostor = prev.lyingPlayers.find(
+            lp => lp.id === playerVoted.id
+          );
 
           //if civilian
           if (!voterIsImpostor) {
@@ -456,15 +517,25 @@ export const GameContextProvider = ({
             if (votedIsImpostor) {
               //impostor uncovered
               impostorsUncovered.push(playerVoted.id);
-              if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id)) globalImpostorsUncovered.push(playerVoted.id);
+              if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id))
+                globalImpostorsUncovered.push(playerVoted.id);
               if (impostorsUncovered.length === 1) {
-                eventsForPlayer.push({ text: `Detected 1 impostor`, points: 2 });
+                eventsForPlayer.push({
+                  text: `Detected 1 impostor`,
+                  points: 2,
+                });
                 totalPointsForPlayer += 2;
               } else if (impostorsUncovered.length === 2) {
-                eventsForPlayer.push({ text: `Detected 2 impostors!`, points: 3 });
+                eventsForPlayer.push({
+                  text: `Detected 2 impostors!`,
+                  points: 3,
+                });
                 totalPointsForPlayer += 3;
               } else if (impostorsUncovered.length === 3) {
-                eventsForPlayer.push({ text: `Detected 3 impostors!!!`, points: 5 });
+                eventsForPlayer.push({
+                  text: `Detected 3 impostors!!!`,
+                  points: 5,
+                });
                 totalPointsForPlayer += 5;
               }
             }
@@ -472,8 +543,12 @@ export const GameContextProvider = ({
             //if impostor, scores +2 points for each other impostor uncovered
             if (votedIsImpostor) {
               impostorsUncovered.push(playerVoted.id);
-              if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id)) globalImpostorsUncovered.push(playerVoted.id);
-              eventsForPlayer.push({ text: `Detected ${playerVoted.name}`, points: 2 });
+              if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id))
+                globalImpostorsUncovered.push(playerVoted.id);
+              eventsForPlayer.push({
+                text: `Detected ${playerVoted.name}`,
+                points: 2,
+              });
               totalPointsForPlayer += 2;
             }
           }
@@ -483,36 +558,70 @@ export const GameContextProvider = ({
         prev.lyingPlayers.forEach(lyingPlayer => {
           if (!impostorsUncovered.find(p => p === lyingPlayer.id)) {
             const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
-            const playerEvents = [...current.matchScore.scoreEvents, { text: 'Undetected by a player', points: 1 }];
-            updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore + 1);
+            const playerEvents = [
+              ...current.matchScore.scoreEvents,
+              { text: 'Undetected by a player', points: 1 },
+            ];
+            updatedPlayers = updateScoreOfTheMatchToPlayer(
+              updatedPlayers,
+              lyingPlayer,
+              playerEvents,
+              current.matchScore.totalScore + 1
+            );
           }
         });
 
         //add matchScore for playerThatVoted
-        updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, playerThatVoted, eventsForPlayer, totalPointsForPlayer);
+        updatedPlayers = updateScoreOfTheMatchToPlayer(
+          updatedPlayers,
+          playerThatVoted,
+          eventsForPlayer,
+          totalPointsForPlayer
+        );
       });
 
       //all impostors that were not uncovered at all, +3/5/10pts - but it'll remove the +1 per player previously earned
       prev.lyingPlayers.forEach(lyingPlayer => {
         if (!globalImpostorsUncovered.find(p => p === lyingPlayer.id)) {
-          const numberOfImpostors = prev.config.numberOfImpostors
-          const pointsToAdd = numberOfImpostors === 1 ? 3 : numberOfImpostors === 2 ? 5 : 10
+          const numberOfImpostors = prev.config.numberOfImpostors;
+          const pointsToAdd =
+            numberOfImpostors === 1 ? 3 : numberOfImpostors === 2 ? 5 : 10;
           const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
-          const undiscoveredCount = current.matchScore.scoreEvents.filter(e => e.text === 'Undetected by a player').length;
-          const filteredEvents = current.matchScore.scoreEvents.filter(e => e.text !== 'Undetected by a player');
+          const undiscoveredCount = current.matchScore.scoreEvents.filter(
+            e => e.text === 'Undetected by a player'
+          ).length;
+          const filteredEvents = current.matchScore.scoreEvents.filter(
+            e => e.text !== 'Undetected by a player'
+          );
           // Replace accumulated +1 pts with the flat bonus; store points: pointsToAdd so the animation ticks correctly
-          const playerEvents = [...filteredEvents, { text: `Never detected!!!`, points: pointsToAdd }];
-          updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, lyingPlayer, playerEvents, current.matchScore.totalScore - undiscoveredCount + pointsToAdd);
+          const playerEvents = [
+            ...filteredEvents,
+            { text: `Never detected!!!`, points: pointsToAdd },
+          ];
+          updatedPlayers = updateScoreOfTheMatchToPlayer(
+            updatedPlayers,
+            lyingPlayer,
+            playerEvents,
+            current.matchScore.totalScore - undiscoveredCount + pointsToAdd
+          );
         }
       });
 
       //scan impostor votes for secret words
       prev.impostorVotes.forEach(vote => {
         //if impostor guessed right the secret word, +3pts
-        if(vote.word === prev.word) {
+        if (vote.word === prev.word) {
           const current = updatedPlayers.find(p => p.id === vote.player.id)!;
-          const playerEvents = [...current.matchScore.scoreEvents, { text: 'Right word guess', points: 3 }];
-          updatedPlayers = updateScoreOfTheMatchToPlayer(updatedPlayers, vote.player, playerEvents, current.matchScore.totalScore + 3);
+          const playerEvents = [
+            ...current.matchScore.scoreEvents,
+            { text: 'Right word guess', points: 3 },
+          ];
+          updatedPlayers = updateScoreOfTheMatchToPlayer(
+            updatedPlayers,
+            vote.player,
+            playerEvents,
+            current.matchScore.totalScore + 3
+          );
         }
       });
 
@@ -524,7 +633,7 @@ export const GameContextProvider = ({
         })),
       };
     });
-  }
+  };
 
   const getCurrentWord = () => {
     if (!game.category || game.wordIndex === undefined) return '';
@@ -552,8 +661,8 @@ export const GameContextProvider = ({
   };
 
   const getRoundAudio = () => {
-    return game.rounds[game.currentRound - 1]?.audio
-  }
+    return game.rounds[game.currentRound - 1]?.audio;
+  };
 
   const setCurrentScreen = (screen: string) => {
     setGame(prev => ({ ...prev, currentScreen: screen }));

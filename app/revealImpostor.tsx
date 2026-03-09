@@ -25,17 +25,20 @@ export default function RevealImpostor() {
 
   const isPlural = game.lyingPlayers.length > 1;
 
-  const phrasesToReveal = isPlural ? [
-    t('Impostors, you can cough 3 times to reveal yourselves'),
-    t('Impostors, you can raise your right hands to reveal yourselves'),
-    t('Impostors, you can stand up to reveal yourselves'),
-  ] : [
-    t('Impostor, you can cough 3 times to reveal yourself'),
-    t('Impostor, you can raise your right hand to reveal yourself'),
-    t('Impostor, you can stand up to reveal yourself'),
-  ];
+  const phrasesToReveal = isPlural
+    ? [
+        t('Impostors, you can cough 3 times to reveal yourselves'),
+        t('Impostors, you can raise your right hands to reveal yourselves'),
+        t('Impostors, you can stand up to reveal yourselves'),
+      ]
+    : [
+        t('Impostor, you can cough 3 times to reveal yourself'),
+        t('Impostor, you can raise your right hand to reveal yourself'),
+        t('Impostor, you can stand up to reveal yourself'),
+      ];
 
-  const randomPhrase = phrasesToReveal[Math.floor(Math.random() * phrasesToReveal.length)];
+  const randomPhrase =
+    phrasesToReveal[Math.floor(Math.random() * phrasesToReveal.length)];
 
   return (
     <ScreenLayout
@@ -46,7 +49,10 @@ export default function RevealImpostor() {
       }
       footer={
         nextReveal ? (
-          <Button text={t('Continue')} onPress={() => router.replace('/words')} />
+          <Button
+            text={t('Continue')}
+            onPress={() => router.replace('/words')}
+          />
         ) : (
           <Button text={t('Done it')} onPress={() => setNextReveal(true)} />
         )
@@ -54,18 +60,17 @@ export default function RevealImpostor() {
     >
       {/* justifyContent switches on reveal — LinearTransition animates the title between the two positions */}
       <View style={[styles.content, nextReveal && styles.contentRevealed]}>
-
         <Animated.Text
           layout={LinearTransition.duration(400)}
           style={styles.title}
         >
-          {isPlural ? t('The real impostors were:') : t('The real impostor was:')}
+          {isPlural
+            ? t('The real impostors were:')
+            : t('The real impostor was:')}
         </Animated.Text>
 
         {/* Phrase disappears immediately on tap (no exit animation) */}
-        {!nextReveal && (
-          <Text style={styles.randomPhrase}>{randomPhrase}</Text>
-        )}
+        {!nextReveal && <Text style={styles.randomPhrase}>{randomPhrase}</Text>}
 
         {/* Cards wait for the title to reach its position before fading in */}
         {nextReveal && (
@@ -79,16 +84,22 @@ export default function RevealImpostor() {
             >
               {game.lyingPlayers.map(impostor => (
                 <View key={impostor.id} style={styles.playerCard}>
-                  <Text style={styles.playerName} numberOfLines={1} adjustsFontSizeToFit>
+                  <Text
+                    style={styles.playerName}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
                     {impostor.name}
                   </Text>
-                  <Character mood={impostor.character} size={moderateScale(120)} />
+                  <Character
+                    mood={impostor.character}
+                    size={moderateScale(120)}
+                  />
                 </View>
               ))}
             </ScrollView>
           </Animated.View>
         )}
-
       </View>
     </ScreenLayout>
   );

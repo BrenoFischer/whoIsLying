@@ -67,7 +67,9 @@ export default function VotesResults() {
         <Character mood={vote.player.character} size={listCharacterSize} />
         <View style={styles.allPlayerInfo}>
           <Text style={styles.allPlayersName}>{vote.player.name}</Text>
-          <Text style={styles.allPlayersInfo}>{t('Votes')}: {vote.votes}</Text>
+          <Text style={styles.allPlayersInfo}>
+            {t('Votes')}: {vote.votes}
+          </Text>
         </View>
       </View>
     );
@@ -85,32 +87,53 @@ export default function VotesResults() {
         </View>
       }
       footer={
-        <Button text={t('Reveal impostor')} onPress={() => router.replace('/revealImpostor')} />
+        <Button
+          text={t('Reveal impostor')}
+          onPress={() => router.replace('/revealImpostor')}
+        />
       }
     >
       <View style={styles.mostVotedContainer}>
         <Text style={styles.mostVotedText}>
-          {isTied ? t('It is a tie, the most voted players were:') : t('The most voted player was:')}
+          {isTied
+            ? t('It is a tie, the most voted players were:')
+            : t('The most voted player was:')}
         </Text>
         {highestVoted.map(vote => {
-          const votesLabel = vote.votes === 1
-            ? `${t('With')} ${vote.votes} ${t('vote')}`
-            : `${t('With')} ${vote.votes} ${t('Votes').toLowerCase()}`;
+          const votesLabel =
+            vote.votes === 1
+              ? `${t('With')} ${vote.votes} ${t('vote')}`
+              : `${t('With')} ${vote.votes} ${t('Votes').toLowerCase()}`;
           return (
             <View key={vote.player.id} style={styles.playerCard}>
               <View style={styles.playerCardInner}>
                 <View style={{ alignItems: 'center' }}>
                   <Text style={styles.playerName}>{vote.player.name}</Text>
-                  <Character mood={vote.player.character} size={featuredCharacterSize} />
+                  <Character
+                    mood={vote.player.character}
+                    size={featuredCharacterSize}
+                  />
                 </View>
                 <View style={styles.votesInfoContainer}>
                   <Text style={styles.votesInfo}>{votesLabel}</Text>
                   <Text style={styles.votesInfo}>
                     (
                     {vote.playersThatVoted.map((player, idx) =>
-                      idx >= vote.playersThatVoted.length - 1
-                        ? <Text key={player.id + idx} style={{ color: colors.white[100] }}>{player.name}</Text>
-                        : <Text key={player.id + idx} style={{ color: colors.white[100] }}>{player.name}, </Text>
+                      idx >= vote.playersThatVoted.length - 1 ? (
+                        <Text
+                          key={player.id + idx}
+                          style={{ color: colors.white[100] }}
+                        >
+                          {player.name}
+                        </Text>
+                      ) : (
+                        <Text
+                          key={player.id + idx}
+                          style={{ color: colors.white[100] }}
+                        >
+                          {player.name},{' '}
+                        </Text>
+                      )
                     )}
                     )
                   </Text>
@@ -123,7 +146,9 @@ export default function VotesResults() {
 
       <Text style={styles.allPlayersText}>{t('All players')}:</Text>
       <View style={styles.allPlayersContainer}>
-        {votesByPlayer.map((vote, idx) => <PlayerCard {...vote} key={vote.player.id + idx} />)}
+        {votesByPlayer.map((vote, idx) => (
+          <PlayerCard {...vote} key={vote.player.id + idx} />
+        ))}
       </View>
     </ScreenLayout>
   );

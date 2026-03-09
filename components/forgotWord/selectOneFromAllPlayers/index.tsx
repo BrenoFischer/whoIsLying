@@ -16,29 +16,31 @@ import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 
 interface SelectOneFromAllPlayersType {
-  setPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>
+  setPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>;
 }
 
-export default function SelectOneFromAllPlayers({setPlayer}: SelectOneFromAllPlayersType) {
-    const { game } = useContext(GameContext);
-    const { t } = useTranslation();
+export default function SelectOneFromAllPlayers({
+  setPlayer,
+}: SelectOneFromAllPlayersType) {
+  const { game } = useContext(GameContext);
+  const { t } = useTranslation();
 
-    const allPlayers = game.players
+  const allPlayers = game.players;
 
-    return(
-      <View style={styles.container}>
-        <Text style={styles.title}>{t('Forgot your word?')}</Text>
-        <Text style={styles.subtitle}>{t('Select your name')}:</Text>
-        <ScrollView contentContainerStyle={styles.allPlayersContainer}>
-          {allPlayers.map(p => (
-            <TouchableOpacity key={p.id} onPress={() => setPlayer(p)}>
-              <PlayerInput player={p} notEditable />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    )
-  }
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('Forgot your word?')}</Text>
+      <Text style={styles.subtitle}>{t('Select your name')}:</Text>
+      <ScrollView contentContainerStyle={styles.allPlayersContainer}>
+        {allPlayers.map(p => (
+          <TouchableOpacity key={p.id} onPress={() => setPlayer(p)}>
+            <PlayerInput player={p} notEditable />
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {

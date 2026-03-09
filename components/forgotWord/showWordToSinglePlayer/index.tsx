@@ -1,24 +1,25 @@
-import Button from "@/components/button";
-import Character from "@/components/character";
-import { GameContext } from "@/context/GameContext";
-import { colors } from "@/styles/colors";
-import { spacing } from "@/styles/spacing";
-import { fontSize } from "@/styles/fontSize";
-import { radius } from "@/styles/radius";
-import { Player } from "@/types/Player";
-import categories from "@/data/categories.json";
-import { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import Button from '@/components/button';
+import Character from '@/components/character';
+import { GameContext } from '@/context/GameContext';
+import { colors } from '@/styles/colors';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
+import { Player } from '@/types/Player';
+import categories from '@/data/categories.json';
+import { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import { moderateScale, scale, verticalScale } from "react-native-size-matters";
-import { useTranslation } from "@/translations";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
+} from 'react-native-reanimated';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { useTranslation } from '@/translations';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 interface ShowWordToSinglePlayerProps {
   player: Player;
@@ -26,7 +27,11 @@ interface ShowWordToSinglePlayerProps {
   setShowForgotWord: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ShowWordToSinglePlayer({ player, setPlayer, setShowForgotWord }: ShowWordToSinglePlayerProps) {
+export default function ShowWordToSinglePlayer({
+  player,
+  setPlayer,
+  setShowForgotWord,
+}: ShowWordToSinglePlayerProps) {
   const { game, getCurrentWord } = useContext(GameContext);
   const { t } = useTranslation();
   const [wordRevealed, setWordRevealed] = useState(false);
@@ -45,13 +50,19 @@ export default function ShowWordToSinglePlayer({ player, setPlayer, setShowForgo
   const displayWord = wordRevealed
     ? isLyingPlayer
       ? t('You will be the impostor this round!')
-      : rawWord ? t(rawWord, { ns: 'categories' }) : ''
+      : rawWord
+        ? t(rawWord, { ns: 'categories' })
+        : ''
     : '';
 
   const displaySubtitle = wordRevealed
     ? isLyingPlayer
-      ? t("Pretend you know the word and try to discover it based on people's answers.")
-      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.')
+      ? t(
+          "Pretend you know the word and try to discover it based on people's answers."
+        )
+      : t(
+          'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.'
+        )
     : '';
 
   const categoryData = game.category
@@ -61,7 +72,9 @@ export default function ShowWordToSinglePlayer({ player, setPlayer, setShowForgo
     wordRevealed && !isLyingPlayer && rawWord && categoryData?.wordDescriptions
       ? (categoryData.wordDescriptions as Record<string, string>)[rawWord]
       : null;
-  const displayDescription = wordDescKey ? t(wordDescKey, { ns: 'categories' }) : '';
+  const displayDescription = wordDescKey
+    ? t(wordDescKey, { ns: 'categories' })
+    : '';
 
   function handleRevealWord() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -89,27 +102,54 @@ export default function ShowWordToSinglePlayer({ player, setPlayer, setShowForgo
       <View style={styles.secretWordContainer}>
         <View style={styles.flexSpacer} />
 
-        <View style={[styles.wordCard, isLyingPlayer && styles.wordCardImpostor]}>
-          <View style={[styles.wordCardInner, isLyingPlayer && styles.wordCardInnerImpostor]}>
+        <View
+          style={[styles.wordCard, isLyingPlayer && styles.wordCardImpostor]}
+        >
+          <View
+            style={[
+              styles.wordCardInner,
+              isLyingPlayer && styles.wordCardInnerImpostor,
+            ]}
+          >
             {!wordRevealed ? (
               <View style={styles.placeholderContent}>
-                <Ionicons name="lock-closed" size={moderateScale(32)} color={colors.gray[300]} />
+                <Ionicons
+                  name="lock-closed"
+                  size={moderateScale(32)}
+                  color={colors.gray[300]}
+                />
               </View>
             ) : (
               <Animated.View style={[styles.revealedContent, revealAnimStyle]}>
                 <View style={styles.cardLabelRow}>
-                  <Text style={[styles.cardLabel, isLyingPlayer && styles.cardLabelImpostor]}>
+                  <Text
+                    style={[
+                      styles.cardLabel,
+                      isLyingPlayer && styles.cardLabelImpostor,
+                    ]}
+                  >
                     {isLyingPlayer ? t('Your role') : t('Secret word')}
                   </Text>
                   {isLyingPlayer && (
-                    <Ionicons name="glasses-outline" size={moderateScale(16)} color={colors.purple[100]} />
+                    <Ionicons
+                      name="glasses-outline"
+                      size={moderateScale(16)}
+                      color={colors.purple[100]}
+                    />
                   )}
                 </View>
-                <Text style={[styles.secretWord, isLyingPlayer && styles.secretWordImpostor]}>
+                <Text
+                  style={[
+                    styles.secretWord,
+                    isLyingPlayer && styles.secretWordImpostor,
+                  ]}
+                >
                   {displayWord}
                 </Text>
                 {displayDescription ? (
-                  <Text style={styles.wordDescription}>{displayDescription}</Text>
+                  <Text style={styles.wordDescription}>
+                    {displayDescription}
+                  </Text>
                 ) : null}
               </Animated.View>
             )}
@@ -123,7 +163,11 @@ export default function ShowWordToSinglePlayer({ player, setPlayer, setShowForgo
 
       <View style={styles.buttonContainer}>
         {!wordRevealed ? (
-          <Button text={t('Tap to reveal')} onPress={handleRevealWord} variants="primary" />
+          <Button
+            text={t('Tap to reveal')}
+            onPress={handleRevealWord}
+            variants="primary"
+          />
         ) : (
           <Button text={t('Got it!')} onPress={handleCloseWindow} />
         )}

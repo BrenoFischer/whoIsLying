@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import {
+  FlatList,
+  TouchableOpacity,
+  View,
+  Text,
+  StyleSheet,
+} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -24,14 +30,17 @@ export default function CharacterPicker({
   themeFilter: controlledFilter,
   onThemeFilterChange,
 }: CharacterPickerProps) {
-  const [internalFilter, setInternalFilter] = useState<CharacterTheme | 'all'>('all');
+  const [internalFilter, setInternalFilter] = useState<CharacterTheme | 'all'>(
+    'all'
+  );
   const themeFilter = controlledFilter ?? internalFilter;
   const setThemeFilter = onThemeFilterChange ?? setInternalFilter;
   const { t } = useTranslation();
 
-  const filtered = themeFilter === 'all'
-    ? availableCharacters
-    : availableCharacters.filter(c => c.theme === themeFilter);
+  const filtered =
+    themeFilter === 'all'
+      ? availableCharacters
+      : availableCharacters.filter(c => c.theme === themeFilter);
 
   function hasAvailableForTheme(theme: CharacterTheme) {
     return availableCharacters.some(c => c.theme === theme);
@@ -47,9 +56,17 @@ export default function CharacterPicker({
       <View style={styles.themeFilterRow}>
         <TouchableOpacity
           onPress={() => setThemeFilter('all')}
-          style={[styles.themeButton, themeFilter === 'all' && styles.themeButtonSelected]}
+          style={[
+            styles.themeButton,
+            themeFilter === 'all' && styles.themeButtonSelected,
+          ]}
         >
-          <Text style={[styles.themeAllText, themeFilter === 'all' && styles.themeAllTextSelected]}>
+          <Text
+            style={[
+              styles.themeAllText,
+              themeFilter === 'all' && styles.themeAllTextSelected,
+            ]}
+          >
             {t('All')}
           </Text>
         </TouchableOpacity>
@@ -67,16 +84,32 @@ export default function CharacterPicker({
             ]}
           >
             {theme === 'male' && (
-              <MaterialIcons name="man" size={moderateScale(20)} color={themeIconColor(theme)} />
+              <MaterialIcons
+                name="man"
+                size={moderateScale(20)}
+                color={themeIconColor(theme)}
+              />
             )}
             {theme === 'female' && (
-              <MaterialIcons name="woman" size={moderateScale(20)} color={themeIconColor(theme)} />
+              <MaterialIcons
+                name="woman"
+                size={moderateScale(20)}
+                color={themeIconColor(theme)}
+              />
             )}
             {theme === 'halloween' && (
-              <MaterialCommunityIcons name="ghost-outline" size={moderateScale(20)} color={themeIconColor(theme)} />
+              <MaterialCommunityIcons
+                name="ghost-outline"
+                size={moderateScale(20)}
+                color={themeIconColor(theme)}
+              />
             )}
             {theme === 'music' && (
-              <MaterialCommunityIcons name="music-note" size={moderateScale(20)} color={themeIconColor(theme)} />
+              <MaterialCommunityIcons
+                name="music-note"
+                size={moderateScale(20)}
+                color={themeIconColor(theme)}
+              />
             )}
           </TouchableOpacity>
         ))}
@@ -90,7 +123,9 @@ export default function CharacterPicker({
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>{t('No more available images for this theme')}</Text>
+            <Text style={styles.emptyText}>
+              {t('No more available images for this theme')}
+            </Text>
           </View>
         }
         renderItem={({ item }) => (

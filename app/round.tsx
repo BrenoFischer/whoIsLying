@@ -1,5 +1,5 @@
 import { GameContext } from '@/context/GameContext';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,7 +11,6 @@ import Animated, {
 import {
   StyleSheet,
   Text,
-  SafeAreaView,
   View,
   TouchableOpacity,
   AppState,
@@ -21,8 +20,6 @@ import Button from '@/components/button';
 import { colors } from '@/styles/colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Character from '@/components/character';
-import Discussion from './discussion';
-import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -39,22 +36,30 @@ import { router } from 'expo-router';
 import ScreenLayout from '@/components/screenLayout';
 import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
-import Elipse from '@/components/elipse';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 
 export default function RoundScreen() {
-  const { game, nextRound, previousRound, getCurrentQuestion, saveRecordingToRound, getRoundAudio, setCurrentScreen } =
-    useContext(GameContext);
+  const {
+    game,
+    nextRound,
+    previousRound,
+    getCurrentQuestion,
+    saveRecordingToRound,
+    getRoundAudio,
+    setCurrentScreen,
+  } = useContext(GameContext);
   const { t } = useTranslation();
 
   useEffect(() => {
     setCurrentScreen('/round');
   }, []);
 
-  const [ isRecording, setIsRecording ] = useState(false);
-  const [audioUri, setAudioUri] = useState<string | null >(null);
-  const [micPermissionGranted, setMicPermissionGranted] = useState<boolean | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioUri, setAudioUri] = useState<string | null>(null);
+  const [micPermissionGranted, setMicPermissionGranted] = useState<
+    boolean | null
+  >(null);
 
   const audioRecorder = useAudioRecorder(RecordingPresets.LOW_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder, 900);
@@ -79,18 +84,21 @@ export default function RoundScreen() {
 
   // Re-check permission when the user returns from Settings
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', async (nextState) => {
-      if (nextState === 'active' && micPermissionGranted === false) {
-        const status = await AudioModule.getRecordingPermissionsAsync();
-        if (status.granted) {
-          setMicPermissionGranted(true);
-          setAudioModeAsync({
-            playsInSilentMode: true,
-            allowsRecording: true,
-          });
+    const subscription = AppState.addEventListener(
+      'change',
+      async nextState => {
+        if (nextState === 'active' && micPermissionGranted === false) {
+          const status = await AudioModule.getRecordingPermissionsAsync();
+          if (status.granted) {
+            setMicPermissionGranted(true);
+            setAudioModeAsync({
+              playsInSilentMode: true,
+              allowsRecording: true,
+            });
+          }
         }
       }
-    });
+    );
     return () => subscription.remove();
   }, [micPermissionGranted]);
 
@@ -123,24 +131,39 @@ export default function RoundScreen() {
     word1Opacity.value = withTiming(1, { duration: OPACITY_DURATION });
     word1Scale.value = withSequence(
       withTiming(1.3, { duration: SCALE_DURATION }),
-      withTiming(1.0, { duration: SCALE_BACK_DURATION }),
+      withTiming(1.0, { duration: SCALE_BACK_DURATION })
     );
 
-    word2Opacity.value = withDelay(WORD_DELAY, withTiming(1, { duration: OPACITY_DURATION }));
-    word2Scale.value = withDelay(WORD_DELAY, withSequence(
-      withTiming(1.3, { duration: SCALE_DURATION }),
-      withTiming(1.0, { duration: SCALE_BACK_DURATION }),
-    ));
+    word2Opacity.value = withDelay(
+      WORD_DELAY,
+      withTiming(1, { duration: OPACITY_DURATION })
+    );
+    word2Scale.value = withDelay(
+      WORD_DELAY,
+      withSequence(
+        withTiming(1.3, { duration: SCALE_DURATION }),
+        withTiming(1.0, { duration: SCALE_BACK_DURATION })
+      )
+    );
 
-    word3Opacity.value = withDelay(WORD_DELAY * 2, withTiming(1, { duration: OPACITY_DURATION }));
-    word3Scale.value = withDelay(WORD_DELAY * 2, withSequence(
-      withTiming(1.3, { duration: SCALE_DURATION }),
-      withTiming(1.0, { duration: SCALE_BACK_DURATION }),
-    ));
+    word3Opacity.value = withDelay(
+      WORD_DELAY * 2,
+      withTiming(1, { duration: OPACITY_DURATION })
+    );
+    word3Scale.value = withDelay(
+      WORD_DELAY * 2,
+      withSequence(
+        withTiming(1.3, { duration: SCALE_DURATION }),
+        withTiming(1.0, { duration: SCALE_BACK_DURATION })
+      )
+    );
 
-    overlayOpacity.value = withDelay(WORD_DELAY * 3 + 600, withTiming(0, { duration: 400 }, (finished) => {
-      if (finished) runOnJS(setShowIntro)(false);
-    }));
+    overlayOpacity.value = withDelay(
+      WORD_DELAY * 3 + 600,
+      withTiming(0, { duration: 400 }, finished => {
+        if (finished) runOnJS(setShowIntro)(false);
+      })
+    );
   }, [game.currentRound]);
 
   const animatedWord1Style = useAnimatedStyle(() => ({
@@ -194,13 +217,16 @@ export default function RoundScreen() {
           }
         }
         // Copy to a unique file so subsequent recordings don't overwrite this one
-        const dest = new FileSystem.File(FileSystem.Paths.cache, `round_${round.id}_${Date.now()}.m4a`);
+        const dest = new FileSystem.File(
+          FileSystem.Paths.cache,
+          `round_${round.id}_${Date.now()}.m4a`
+        );
         new FileSystem.File(uri).copy(dest);
         saveRecordingToRound(dest.uri);
         setAudioUri(dest.uri);
       }
     } catch (e) {
-      console.warn("Stop recording error:", e);
+      console.warn('Stop recording error:', e);
     }
   };
 
@@ -240,116 +266,166 @@ export default function RoundScreen() {
 
   return (
     <>
-    <ScreenLayout
-      header={
-        <View style={styles.headerContainer}>
+      <ScreenLayout
+        header={
+          <View style={styles.headerContainer}>
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+                gap: scale(5),
+                flex: 1,
+              }}
+            >
+              <Text style={styles.headerCategoryTitle}>
+                {t('Round')} {game.currentRound} {t('of')} {totalRounds}
+              </Text>
+              <Dot color={colors.orange[200]} />
+              <Text style={styles.headerCategoryTitle}>
+                {t(game.category || '')}
+              </Text>
+            </View>
+            <SidebarMenu />
+          </View>
+        }
+        footer={
           <View
             style={{
-              alignItems: 'center',
               flexDirection: 'row',
-              gap: scale(5),
-              flex: 1,
+              alignItems: 'center',
+              paddingHorizontal: scale(spacing.sm),
             }}
           >
-            <Text style={styles.headerCategoryTitle}>
-              {t('Round')} {game.currentRound} {t('of')} {totalRounds}
-            </Text>
-            <Dot color={colors.orange[200]} />
-            <Text style={styles.headerCategoryTitle}>
-              {t(game.category || '')}
-            </Text>
-          </View>
-          <SidebarMenu />
-        </View>
-      }
-
-      footer={
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: scale(spacing.sm) }}>
-          <View style={styles.leftFooterArea}>
-            <TouchableOpacity
-              onPress={handlePreviousRound}
-              style={styles.arrowTouchable}
-              disabled={game.currentRound === 1 || isRecording}
-            >
-              <AntDesign
-                name="left"
-                size={moderateScale(24)}
-                color={(game.currentRound === 1 || isRecording) ? colors.gray[300] : colors.orange[200]}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <Button 
-              text={isRecording ? t('Recording...') : t('Continue')}
-              onPress={handleNextRound}
-              variants={isRecording ? 'disabled' : 'primary'} />
-          </View>
-
-          <View style={styles.rightFooterArea} />
-        </View>
-      }
-    >
-      <View>
-        <Text style={styles.playerName}>
-          {playerThatAsks.name}{' '}
-          <Text style={styles.playerThatAnswers}>{t('asks')}</Text>{' '}
-          {playerThatAnswers.name}
-        </Text>
-        <View style={styles.charactersRow}>
-          <Character mood={playerThatAsks.character} />
-          <Character mood={playerThatAnswers.character} flip />
-        </View>
-        <View style={styles.recordingContainer}>
-          {isRecording ? (
-            <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
-              <TouchableOpacity onPress={handleStopRecording}>
-                <FontAwesome6 name="circle-stop" size={24} color={colors.orange[200]} />
+            <View style={styles.leftFooterArea}>
+              <TouchableOpacity
+                onPress={handlePreviousRound}
+                style={styles.arrowTouchable}
+                disabled={game.currentRound === 1 || isRecording}
+              >
+                <AntDesign
+                  name="left"
+                  size={moderateScale(24)}
+                  color={
+                    game.currentRound === 1 || isRecording
+                      ? colors.gray[300]
+                      : colors.orange[200]
+                  }
+                />
               </TouchableOpacity>
-              <Text style={styles.recordingText}>
-                {formatTime(recorderState.durationMillis)}
-              </Text>
-              <View />
             </View>
-          ) : micPermissionGranted === false ? (
-            <TouchableOpacity onPress={() => Linking.openSettings()}>
-              <View style={{ justifyContent: "space-between", flexDirection: 'row', gap: scale(5) }}>
-                <FontAwesome6 name="microphone-slash" size={24} color={colors.gray[100]} />
-                <Text style={[styles.recordingText, styles.recordingTextDenied]}>
-                  {t('No mic permission. Tap to open settings')}
+
+            <View>
+              <Button
+                text={isRecording ? t('Recording...') : t('Continue')}
+                onPress={handleNextRound}
+                variants={isRecording ? 'disabled' : 'primary'}
+              />
+            </View>
+
+            <View style={styles.rightFooterArea} />
+          </View>
+        }
+      >
+        <View>
+          <Text style={styles.playerName}>
+            {playerThatAsks.name}{' '}
+            <Text style={styles.playerThatAnswers}>{t('asks')}</Text>{' '}
+            {playerThatAnswers.name}
+          </Text>
+          <View style={styles.charactersRow}>
+            <Character mood={playerThatAsks.character} />
+            <Character mood={playerThatAnswers.character} flip />
+          </View>
+          <View style={styles.recordingContainer}>
+            {isRecording ? (
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                }}
+              >
+                <TouchableOpacity onPress={handleStopRecording}>
+                  <FontAwesome6
+                    name="circle-stop"
+                    size={24}
+                    color={colors.orange[200]}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.recordingText}>
+                  {formatTime(recorderState.durationMillis)}
                 </Text>
                 <View />
               </View>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={startRecording}>
-              <View style={{ justifyContent: "space-between", flexDirection: 'row' }}>
-                <FontAwesome6 name="microphone" size={24} color={colors.orange[200]} />
-                <Text style={styles.recordingText}>{audioUri ? t('Record a new answer') : t('Record answer')}</Text>
-                <View />
-              </View>
-            </TouchableOpacity>
-          )}
+            ) : micPermissionGranted === false ? (
+              <TouchableOpacity onPress={() => Linking.openSettings()}>
+                <View
+                  style={{
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                    gap: scale(5),
+                  }}
+                >
+                  <FontAwesome6
+                    name="microphone-slash"
+                    size={24}
+                    color={colors.gray[100]}
+                  />
+                  <Text
+                    style={[styles.recordingText, styles.recordingTextDenied]}
+                  >
+                    {t('No mic permission. Tap to open settings')}
+                  </Text>
+                  <View />
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={startRecording}>
+                <View
+                  style={{
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                  }}
+                >
+                  <FontAwesome6
+                    name="microphone"
+                    size={24}
+                    color={colors.orange[200]}
+                  />
+                  <Text style={styles.recordingText}>
+                    {audioUri ? t('Record a new answer') : t('Record answer')}
+                  </Text>
+                  <View />
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <Text style={styles.question}>{question}</Text>
         </View>
-    </ScreenLayout>
+      </ScreenLayout>
 
-    {showIntro && (
-      <Animated.View style={[StyleSheet.absoluteFillObject, styles.introOverlay, introOverlayAnimatedStyle]}>
-        <Animated.Text style={[styles.introWord, animatedWord1Style]}>
-          {playerThatAsks.name}
-        </Animated.Text>
-        <Animated.Text style={[styles.introWord, styles.introWordAsks, animatedWord2Style]}>
-          {t('asks')}
-        </Animated.Text>
-        <Animated.Text style={[styles.introWord, animatedWord3Style]}>
-          {playerThatAnswers.name}
-        </Animated.Text>
-      </Animated.View>
-    )}
+      {showIntro && (
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFillObject,
+            styles.introOverlay,
+            introOverlayAnimatedStyle,
+          ]}
+        >
+          <Animated.Text style={[styles.introWord, animatedWord1Style]}>
+            {playerThatAsks.name}
+          </Animated.Text>
+          <Animated.Text
+            style={[styles.introWord, styles.introWordAsks, animatedWord2Style]}
+          >
+            {t('asks')}
+          </Animated.Text>
+          <Animated.Text style={[styles.introWord, animatedWord3Style]}>
+            {playerThatAnswers.name}
+          </Animated.Text>
+        </Animated.View>
+      )}
     </>
   );
 }
@@ -357,9 +433,9 @@ export default function RoundScreen() {
 const styles = StyleSheet.create({
   headerContainer: {
     paddingVertical: verticalScale(spacing.xs),
-    flexDirection: "row", 
-    alignItems: "center" ,
-    paddingHorizontal: scale(spacing.md)
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: scale(spacing.md),
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',

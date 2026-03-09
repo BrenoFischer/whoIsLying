@@ -50,10 +50,10 @@ export const colors = {
     400: '#FF6B2B',
   },
   green: {
-    100: "#1DB954",
-    200: "#4DFFB4",
+    100: '#1DB954',
+    200: '#4DFFB4',
   },
   yellow: {
-    100: "#FFE566",
-  }
+    100: '#FFE566',
+  },
 };

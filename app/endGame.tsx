@@ -13,8 +13,21 @@ import {
   useState,
 } from 'react';
 import * as Haptics from 'expo-haptics';
-import { Dimensions, LayoutChangeEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import {
+  Dimensions,
+  LayoutChangeEvent,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -134,11 +147,13 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
             eventTimersRef.current.push(
               setTimeout(() => {
                 clearEventTimers();
-                eventOpacity.value = withTiming(0, { duration: EVENT_FADE_OUT_MS });
+                eventOpacity.value = withTiming(0, {
+                  duration: EVENT_FADE_OUT_MS,
+                });
                 const pending = eventResolveRef.current;
                 eventResolveRef.current = null;
                 pending?.();
-              }, EVENT_FADE_IN_MS + EVENT_HOLD_MS),
+              }, EVENT_FADE_IN_MS + EVENT_HOLD_MS)
             );
           }),
         tickScore: (target: number) =>
@@ -167,10 +182,13 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
           eventOpacity.value = withTiming(0, { duration: 200 });
         },
         showMatchScore: () => {
-          matchScoreOpacity.value = withDelay(300, withTiming(1, { duration: 300 }));
+          matchScoreOpacity.value = withDelay(
+            300,
+            withTiming(1, { duration: 300 })
+          );
         },
       }),
-      [],
+      []
     );
 
     const animatedSlideStyle = useAnimatedStyle(() => ({
@@ -195,7 +213,11 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
       >
         {/* Header */}
         <View style={styles.playerCardHeader}>
-          <Text style={[styles.index, player.isImpostor && styles.indexImpostor]}>{idx + 1}</Text>
+          <Text
+            style={[styles.index, player.isImpostor && styles.indexImpostor]}
+          >
+            {idx + 1}
+          </Text>
           <Text style={styles.playerName}>{player.name}</Text>
           {player.isImpostor && (
             <Ionicons
@@ -206,20 +228,28 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
             />
           )}
           <View style={styles.rankChangeContainer}>
-            {player.positionDiff === null && <Text style={styles.newPlayer}>New</Text>}
+            {player.positionDiff === null && (
+              <Text style={styles.newPlayer}>New</Text>
+            )}
             {player.positionDiff !== null && player.positionDiff > 0 && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
+              >
                 <Text style={styles.rankUp}>+{player.positionDiff}</Text>
                 <Ionicons name="arrow-up" size={20} color={colors.green[100]} />
               </View>
             )}
             {player.positionDiff !== null && player.positionDiff < 0 && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
+              >
                 <Text style={styles.rankDown}>{player.positionDiff}</Text>
                 <Ionicons name="arrow-down" size={20} color={colors.red[100]} />
               </View>
             )}
-            {player.positionDiff === 0 && <Text style={styles.rankSame}>-</Text>}
+            {player.positionDiff === 0 && (
+              <Text style={styles.rankSame}>-</Text>
+            )}
           </View>
         </View>
 
@@ -235,7 +265,9 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
             </Text>
 
             {/* Match score — fades in after all events */}
-            <Animated.View style={[styles.matchScoreContainer, matchScoreAnimStyle]}>
+            <Animated.View
+              style={[styles.matchScoreContainer, matchScoreAnimStyle]}
+            >
               <Text style={styles.matchScoreValue}>
                 +{player.matchScore}{' '}
                 <Text style={styles.matchScorepts}>{t('pts')}</Text>
@@ -249,21 +281,23 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
                 style={[
                   styles.eventPoints,
                   currentEventPoints >= 5 && styles.eventTextBig,
-                  currentEventPoints >= 3 && currentEventPoints < 5 && styles.eventTextMedium,
+                  currentEventPoints >= 3 &&
+                    currentEventPoints < 5 &&
+                    styles.eventTextMedium,
                 ]}
               >
                 +{currentEventPoints} {t('pts')}
               </Text>
-              <Text style={styles.eventText}>
-                {currentEventText}
-              </Text>
+              <Text style={styles.eventText}>{currentEventText}</Text>
             </Animated.View>
           </View>
         </View>
       </Animated.View>
     );
-  },
+  }
 );
+
+PlayerCard.displayName = 'PlayerCard';
 
 export default function EndGame() {
   const { game, setCurrentScreen, getSortedPlayers } = useContext(GameContext);
@@ -280,17 +314,29 @@ export default function EndGame() {
     () =>
       sortedPlayers.map((player, index) => {
         const currentPosition = index + 1;
-        const prevRanking = game.previousRankings?.find(r => r.playerId === player.id);
+        const prevRanking = game.previousRankings?.find(
+          r => r.playerId === player.id
+        );
         const previousPosition = prevRanking?.position;
         const previousScore = prevRanking?.previousScore ?? 0;
         const positionDiff =
-          previousPosition !== undefined ? previousPosition - currentPosition : null;
+          previousPosition !== undefined
+            ? previousPosition - currentPosition
+            : null;
         const matchScore = Math.max(0, player.score - previousScore);
         const events = player.matchScore?.scoreEvents ?? [];
         const isImpostor = game.lyingPlayers.some(lp => lp.id === player.id);
-        return { ...player, currentPosition, positionDiff, previousScore, matchScore, events, isImpostor };
+        return {
+          ...player,
+          currentPosition,
+          positionDiff,
+          previousScore,
+          matchScore,
+          events,
+          isImpostor,
+        };
       }),
-    [sortedPlayers, game.previousRankings, game.lyingPlayers],
+    [sortedPlayers, game.previousRankings, game.lyingPlayers]
   );
 
   const n = rankingWithDiff.length;
@@ -310,7 +356,9 @@ export default function EndGame() {
 
       // Slide card in from right
       cardRefs.current[idx]?.startSlide();
-      await new Promise<void>(resolve => setTimeout(resolve, SLIDE_DURATION_MS));
+      await new Promise<void>(resolve =>
+        setTimeout(resolve, SLIDE_DURATION_MS)
+      );
       if (!animationActiveRef.current) return;
 
       // Animate each event, then tick score after each one
@@ -336,7 +384,10 @@ export default function EndGame() {
 
       // Scroll up to reveal the next card (higher ranking)
       if (idx > 0) {
-        scrollRef.current?.scrollTo({ y: cardYPositions.current[idx - 1], animated: true });
+        scrollRef.current?.scrollTo({
+          y: cardYPositions.current[idx - 1],
+          animated: true,
+        });
         await new Promise<void>(resolve => setTimeout(resolve, 700));
         if (!animationActiveRef.current) return;
       }
@@ -412,8 +463,15 @@ export default function EndGame() {
         {animationComplete ? (
           <View style={styles.footerActions}>
             <View style={styles.footerSide}>
-              <TouchableOpacity style={styles.replayButton} onPress={handleReplay}>
-                <Ionicons name="refresh" size={moderateScale(22)} color={colors.orange[200]} />
+              <TouchableOpacity
+                style={styles.replayButton}
+                onPress={handleReplay}
+              >
+                <Ionicons
+                  name="refresh"
+                  size={moderateScale(22)}
+                  color={colors.orange[200]}
+                />
               </TouchableOpacity>
             </View>
             <Button text={t('Continue')} onPress={handleContinue} />

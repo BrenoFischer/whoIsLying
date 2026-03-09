@@ -1,7 +1,14 @@
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { useContext, useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView, useWindowDimensions } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  useWindowDimensions,
+} from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import Elipse from '@/components/elipse';
@@ -31,7 +38,9 @@ export default function Votes() {
   const [player, setPlayer] = useState(players[0]);
   const [playerIndex, setPlayerIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
-  const [selectedPlayers, setSelectedPlayers] = useState<Player[] | undefined>(undefined);
+  const [selectedPlayers, setSelectedPlayers] = useState<Player[] | undefined>(
+    undefined
+  );
 
   const numberOfImpostors = game.config.numberOfImpostors;
   const scrollRef = useRef<ScrollView>(null);
@@ -65,12 +74,12 @@ export default function Votes() {
       setSelectedPlayers([selected]);
       return;
     }
-    if(selectedPlayers.some(p => p.id === selected.id)) {
+    if (selectedPlayers.some(p => p.id === selected.id)) {
       //player already selected, remove from the list
       setSelectedPlayers(selectedPlayers.filter(p => p.id !== selected.id));
       return;
     }
-    if(selectedPlayers.length === numberOfImpostors) {
+    if (selectedPlayers.length === numberOfImpostors) {
       //already selected the max number of players, replace the first one with the new one
       const newSelectedPlayers = [...selectedPlayers];
       newSelectedPlayers.shift();
@@ -78,19 +87,23 @@ export default function Votes() {
       return;
     }
     setSelectedPlayers([...selectedPlayers, selected]);
-  }
+  };
 
-  const restOfPlayers = useMemo(() =>
-    players.filter(p => p.id !== player.id).sort(() => Math.random() - 0.5),
-  [player]);
+  const restOfPlayers = useMemo(
+    () =>
+      players.filter(p => p.id !== player.id).sort(() => Math.random() - 0.5),
+    [player]
+  );
 
-  const isContinueAvailable = selectedPlayers !== undefined && selectedPlayers.length === numberOfImpostors;
-  const continueButtonText = selectedPlayers === undefined
-    ? t('Vote!')
-    : selectedPlayers.length === numberOfImpostors
-      ? t('Continue')
-      :
-    `${selectedPlayers.length} of ${numberOfImpostors} ${t('selected')}`;
+  const isContinueAvailable =
+    selectedPlayers !== undefined &&
+    selectedPlayers.length === numberOfImpostors;
+  const continueButtonText =
+    selectedPlayers === undefined
+      ? t('Vote!')
+      : selectedPlayers.length === numberOfImpostors
+        ? t('Continue')
+        : `${selectedPlayers.length} of ${numberOfImpostors} ${t('selected')}`;
 
   return (
     <ScreenLayout
@@ -116,27 +129,47 @@ export default function Votes() {
         />
       }
     >
-      <PlayerModal player={player} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <PlayerModal
+        player={player}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
 
       <View style={styles.topContainer}>
         <View style={styles.topTextContainer}>
           <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
           <Text style={styles.playerName}>{player.name}</Text>
-          {numberOfImpostors > 1 ?
+          {numberOfImpostors > 1 ? (
             <Text style={styles.voteInstruction}>
-              {t('Vote on ')}<Text style={{ fontWeight: 'bold', fontSize: fontSize.lg }}>{numberOfImpostors}</Text>{t(' people you think are the impostors:')}
+              {t('Vote on ')}
+              <Text style={{ fontWeight: 'bold', fontSize: fontSize.lg }}>
+                {numberOfImpostors}
+              </Text>
+              {t(' people you think are the impostors:')}
             </Text>
-           :
+          ) : (
             <Text style={styles.voteInstruction}>
               {t('Vote on the person you think is the impostor:')}
             </Text>
-          }
+          )}
           <View style={styles.selectedSlotsRow}>
             {Array.from({ length: numberOfImpostors }).map((_, i) => {
               const sel = selectedPlayers?.[i];
               return (
-                <View key={i} style={[styles.selectedSlot, sel ? styles.selectedSlotFilled : styles.selectedSlotEmpty]}>
-                  <Text style={[styles.selectedSlotText, !sel && styles.selectedSlotTextEmpty]} numberOfLines={1}>
+                <View
+                  key={i}
+                  style={[
+                    styles.selectedSlot,
+                    sel ? styles.selectedSlotFilled : styles.selectedSlotEmpty,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.selectedSlotText,
+                      !sel && styles.selectedSlotTextEmpty,
+                    ]}
+                    numberOfLines={1}
+                  >
                     {sel ? sel.name : '—'}
                   </Text>
                 </View>
@@ -147,7 +180,12 @@ export default function Votes() {
         <Character mood={player.character} size={characterSize} />
       </View>
 
-      <View style={[styles.tableContainer, listHeight ? { height: listHeight } : undefined]}>
+      <View
+        style={[
+          styles.tableContainer,
+          listHeight ? { height: listHeight } : undefined,
+        ]}
+      >
         <ScrollView
           ref={scrollRef}
           showsVerticalScrollIndicator={false}
@@ -155,12 +193,17 @@ export default function Votes() {
           onContentSizeChange={(_, contentHeight) => {
             // Cap to maxListHeight so the card doesn't overflow the screen on large player counts.
             // Add tableContainer's top + bottom padding so the card wraps the content exactly.
-            setListHeight(Math.min(contentHeight, maxListHeight) + scale(spacing.md) * 2);
+            setListHeight(
+              Math.min(contentHeight, maxListHeight) + scale(spacing.md) * 2
+            );
           }}
         >
           <View style={styles.voteOptionsContainer}>
             {restOfPlayers.map(p => (
-              <TouchableOpacity key={p.id} onPress={() => handleSelectPlayer(p)}>
+              <TouchableOpacity
+                key={p.id}
+                onPress={() => handleSelectPlayer(p)}
+              >
                 <PlayerInput
                   player={p}
                   notEditable
@@ -264,10 +307,6 @@ const styles = StyleSheet.create({
   },
   selectedSlotTextEmpty: {
     color: colors.gray[300],
-  },
-  voteInstructionName: {
-    fontWeight: 'bold',
-    color: colors.orange[200],
   },
   voteOptionsContainer: {
     gap: verticalScale(spacing.xs),

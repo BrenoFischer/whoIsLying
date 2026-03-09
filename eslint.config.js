@@ -7,6 +7,18 @@ import reactNative from 'eslint-plugin-react-native';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
+const jestGlobals = {
+  jest: 'readonly',
+  describe: 'readonly',
+  it: 'readonly',
+  test: 'readonly',
+  expect: 'readonly',
+  beforeEach: 'readonly',
+  afterEach: 'readonly',
+  beforeAll: 'readonly',
+  afterAll: 'readonly',
+};
+
 export default [
   {
     ignores: [
@@ -16,6 +28,7 @@ export default [
       'build/**',
       'coverage/**',
       '*.config.js',
+      '.prettierrc.js',
       'babel.config.js',
       'metro.config.js',
       'android/**',
@@ -35,8 +48,22 @@ export default [
         sourceType: 'module',
       },
       globals: {
+        // React Native / Metro bundler globals
         __DEV__: 'readonly',
+        require: 'readonly',
+        // Browser / Node globals available in React Native's JS engine
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
         JSX: 'readonly',
+        RequestAnimationFrame: 'readonly',
+        fetch: 'readonly',
+        performance: 'readonly',
       },
     },
     plugins: {
@@ -70,6 +97,9 @@ export default [
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
 
+      // React Native uses require() for image assets — allow it
+      '@typescript-eslint/no-require-imports': 'off',
+
       // General rules
       'no-console': 'warn',
       'prefer-const': 'error',
@@ -82,6 +112,12 @@ export default [
       react: {
         version: 'detect',
       },
+    },
+  },
+  {
+    files: ['**/__tests__/**/*.{js,jsx,ts,tsx}', '**/*.test.{js,jsx,ts,tsx}', '**/*.spec.{js,jsx,ts,tsx}', '**/jest-setup.js', '**/jest.setup.js'],
+    languageOptions: {
+      globals: jestGlobals,
     },
   },
 ];

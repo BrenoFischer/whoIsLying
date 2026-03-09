@@ -20,7 +20,8 @@ import * as Haptics from 'expo-haptics';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
-  const { game, resolveScoreOfTheMatch, getCurrentWord, setCurrentScreen } = useContext(GameContext);
+  const { game, resolveScoreOfTheMatch, getCurrentWord, setCurrentScreen } =
+    useContext(GameContext);
   const { t } = useTranslation();
   const { height } = useWindowDimensions();
 
@@ -73,7 +74,11 @@ export default function RevealWord() {
       {/* Characters side by side, sitting right above the orange container */}
       <View style={styles.charactersRow}>
         {impostorVotes.map(vote => (
-          <Character key={vote.player.id} mood={vote.player.character} size={characterSize} />
+          <Character
+            key={vote.player.id}
+            mood={vote.player.character}
+            size={characterSize}
+          />
         ))}
       </View>
 
@@ -85,7 +90,11 @@ export default function RevealWord() {
             <Text style={styles.voteLabel}>
               {vote.player.name} {t('voted for:')}
             </Text>
-            <Text style={styles.voteWord} numberOfLines={2} adjustsFontSizeToFit>
+            <Text
+              style={styles.voteWord}
+              numberOfLines={2}
+              adjustsFontSizeToFit
+            >
               {t(vote.word, { ns: 'categories' })}
             </Text>
           </View>

@@ -42,7 +42,9 @@ async function syncTranslations() {
   // Write updated Portuguese file
   fs.writeFileSync(PT_FILE, JSON.stringify(ptData, null, 2), 'utf-8');
 
-  console.log(`\n✅ Translation sync complete! Updated ${missingKeys.length} translations.`);
+  console.log(
+    `\n✅ Translation sync complete! Updated ${missingKeys.length} translations.`
+  );
 }
 
 syncTranslations().catch(error => {

@@ -1,13 +1,7 @@
 import { GameContext } from '@/context/GameContext';
 import React, { useContext, useState, useEffect } from 'react';
 import categories from '@/data/categories.json';
-import {
-  StyleSheet,
-  Text,
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -32,8 +26,13 @@ import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 
 export default function ShowWordToAll() {
-  const { game, showWordToNextPlayer, getCurrentWord, setCurrentScreen, checkIfPlayerIsLiar } =
-    useContext(GameContext);
+  const {
+    game,
+    showWordToNextPlayer,
+    getCurrentWord,
+    setCurrentScreen,
+    checkIfPlayerIsLiar,
+  } = useContext(GameContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -64,13 +63,19 @@ export default function ShowWordToAll() {
   const displayWord = wordRevealed
     ? isLyingPlayer
       ? t('You will be the impostor this round!')
-      : rawWord ? t(rawWord, { ns: 'categories' }) : ''
+      : rawWord
+        ? t(rawWord, { ns: 'categories' })
+        : ''
     : '';
 
   const displaySubtitle = wordRevealed
     ? isLyingPlayer
-      ? t("Pretend you know the word and try to discover it based on people's answers.")
-      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.')
+      ? t(
+          "Pretend you know the word and try to discover it based on people's answers."
+        )
+      : t(
+          'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.'
+        )
     : '';
 
   const categoryData = game.category
@@ -80,7 +85,9 @@ export default function ShowWordToAll() {
     wordRevealed && !isLyingPlayer && rawWord && categoryData?.wordDescriptions
       ? (categoryData.wordDescriptions as Record<string, string>)[rawWord]
       : null;
-  const displayDescription = wordDescKey ? t(wordDescKey, { ns: 'categories' }) : '';
+  const displayDescription = wordDescKey
+    ? t(wordDescKey, { ns: 'categories' })
+    : '';
 
   function handleRevealWord() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -118,10 +125,12 @@ export default function ShowWordToAll() {
               flexDirection: 'row',
               gap: scale(5),
               flex: 1,
-              paddingHorizontal: scale(spacing.sm)
+              paddingHorizontal: scale(spacing.sm),
             }}
           >
-            <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
+            <Text style={styles.headerCategoryTitle}>
+              {t(game.category || '')}
+            </Text>
             <Dot color={colors.white[100]} />
             <Text style={styles.headerCategoryTitle}>
               {t('Player')} {game.showingWordToPlayer + 1} {t('of')}{' '}
@@ -131,7 +140,6 @@ export default function ShowWordToAll() {
           <SidebarMenu />
         </View>
       }
-
       footer={
         <View>
           {wordRevealed === false ? (
@@ -147,7 +155,7 @@ export default function ShowWordToAll() {
       }
     >
       <View style={styles.topContainer}>
-        <View style={ styles.topTextContainer }>
+        <View style={styles.topTextContainer}>
           <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
           <Text style={styles.playerName}>{currentPlayer.name}</Text>
         </View>
@@ -162,9 +170,15 @@ export default function ShowWordToAll() {
         <View style={styles.flexSpacer} />
 
         {/* Card — always visible; outer border changes color for impostor */}
-        <View style={[styles.wordCard, isLyingPlayer && styles.wordCardImpostor]}>
-          <View style={[styles.wordCardInner, isLyingPlayer && styles.wordCardInnerImpostor]}>
-
+        <View
+          style={[styles.wordCard, isLyingPlayer && styles.wordCardImpostor]}
+        >
+          <View
+            style={[
+              styles.wordCardInner,
+              isLyingPlayer && styles.wordCardInnerImpostor,
+            ]}
+          >
             {!wordRevealed ? (
               /* Placeholder: locked state before reveal */
               <View style={styles.placeholderContent}>
@@ -179,7 +193,12 @@ export default function ShowWordToAll() {
               <Animated.View style={[styles.revealedContent, revealAnimStyle]}>
                 {/* Label row */}
                 <View style={styles.cardLabelRow}>
-                  <Text style={[styles.cardLabel, isLyingPlayer && styles.cardLabelImpostor]}>
+                  <Text
+                    style={[
+                      styles.cardLabel,
+                      isLyingPlayer && styles.cardLabelImpostor,
+                    ]}
+                  >
                     {isLyingPlayer ? t('Your role') : t('Secret word')}
                   </Text>
                   {isLyingPlayer && (
@@ -192,17 +211,23 @@ export default function ShowWordToAll() {
                 </View>
 
                 {/* Main word / role */}
-                <Text style={[styles.secretWord, isLyingPlayer && styles.secretWordImpostor]}>
+                <Text
+                  style={[
+                    styles.secretWord,
+                    isLyingPlayer && styles.secretWordImpostor,
+                  ]}
+                >
                   {displayWord}
                 </Text>
 
                 {/* Word description (non-impostor only) */}
                 {displayDescription ? (
-                  <Text style={styles.wordDescription}>{displayDescription}</Text>
+                  <Text style={styles.wordDescription}>
+                    {displayDescription}
+                  </Text>
                 ) : null}
               </Animated.View>
             )}
-
           </View>
         </View>
 
@@ -212,16 +237,15 @@ export default function ShowWordToAll() {
         </View>
       </View>
     </ScreenLayout>
-
   );
 }
 
 const styles = StyleSheet.create({
   headerContainer: {
     paddingVertical: verticalScale(spacing.xs),
-    flexDirection: "row",
-    alignItems: "center" ,
-    paddingHorizontal: scale(spacing.md)
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: scale(spacing.md),
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',
@@ -236,7 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   topTextContainer: {
-    flex: 1
+    flex: 1,
   },
   titleInformation: {
     fontSize: fontSize.lg,
@@ -249,12 +273,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xl,
     fontWeight: 'bold',
     color: colors.white[100],
-  },
-  modalPlayerName: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(25),
-    fontWeight: 'bold',
-    color: colors.orange[200],
   },
   secretWordContainer: {
     flex: 1,

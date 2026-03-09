@@ -1,10 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -43,27 +38,41 @@ export default function CreateGame() {
 
   const [players, setPlayers] = useState<Player[]>(game.players);
   const [modalOpen, setModalOpen] = useState(false);
-  const [characterPickerFilter, setCharacterPickerFilter] = useState<CharacterTheme | 'all'>('all');
+  const [characterPickerFilter, setCharacterPickerFilter] = useState<
+    CharacterTheme | 'all'
+  >('all');
 
   const usedCharacters = players.map(p => p.character);
-  const availableCharacters = characters.filter(c => !usedCharacters.includes(c.name));
+  const availableCharacters = characters.filter(
+    c => !usedCharacters.includes(c.name)
+  );
 
   const [currentImageName, setCurrentImageName] = useState<string>(() => {
     const used = game.players.map(p => p.character);
-    return characters.find(c => !used.includes(c.name))?.name ?? characters[0].name;
+    return (
+      characters.find(c => !used.includes(c.name))?.name ?? characters[0].name
+    );
   });
 
   // If the current preview image was taken by a just-added player, pick the next free one from the same theme, or if not possible, the next free one available
   useEffect(() => {
-    const filteredAvailable = availableCharacters.filter(c => characterPickerFilter === 'all' || c.theme === characterPickerFilter);
+    const filteredAvailable = availableCharacters.filter(
+      c => characterPickerFilter === 'all' || c.theme === characterPickerFilter
+    );
 
     if (!filteredAvailable.some(c => c.name === currentImageName)) {
-      setCurrentImageName(filteredAvailable[0]?.name ?? availableCharacters[0]?.name ?? characters[0].name);
+      setCurrentImageName(
+        filteredAvailable[0]?.name ??
+          availableCharacters[0]?.name ??
+          characters[0].name
+      );
     }
   }, [players, characterPickerFilter]);
 
-  const currentImageTheme = characters.find(c => c.name === currentImageName)?.theme ?? 'male';
-  const notAvailableToContinue = players.length < 3 || players.length > MAX_PLAYERS;
+  const currentImageTheme =
+    characters.find(c => c.name === currentImageName)?.theme ?? 'male';
+  const notAvailableToContinue =
+    players.length < 3 || players.length > MAX_PLAYERS;
 
   function setNewPlayer({ id, name, theme }: Player) {
     if (players.length >= MAX_PLAYERS) return;
@@ -74,15 +83,17 @@ export default function CreateGame() {
   }
 
   function editPlayer(player: Player, newName: string) {
-    setPlayers(prev => prev.map(p =>
-      p.id === player.id ? { ...p, name: newName } : p
-    ));
+    setPlayers(prev =>
+      prev.map(p => (p.id === player.id ? { ...p, name: newName } : p))
+    );
   }
 
   function editCharacter(player: Player, newCharacter: string) {
-    setPlayers(prev => prev.map(p =>
-      p.id === player.id ? { ...p, character: newCharacter } : p
-    ));
+    setPlayers(prev =>
+      prev.map(p =>
+        p.id === player.id ? { ...p, character: newCharacter } : p
+      )
+    );
   }
 
   function deletePlayer(id: string) {
@@ -104,7 +115,11 @@ export default function CreateGame() {
       scrollable
       footer={
         notAvailableToContinue ? (
-          <Button text={t('Create game')} onPress={handleCreateGame} variants="disabled" />
+          <Button
+            text={t('Create game')}
+            onPress={handleCreateGame}
+            variants="disabled"
+          />
         ) : (
           <Button text={t('Create game')} onPress={handleCreateGame} />
         )
@@ -112,7 +127,14 @@ export default function CreateGame() {
       header={
         <View style={styles.headerContainer}>
           <Elipse top={-80} />
-          <View style={{ alignItems: 'center', flexDirection: 'row', gap: scale(5), flex: 1 }}>
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: scale(5),
+              flex: 1,
+            }}
+          >
             <TouchableOpacity onPress={() => router.replace('/selectCategory')}>
               <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
@@ -123,7 +145,9 @@ export default function CreateGame() {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
                 <Dot color={colors.white[100]} />
-                <Text style={styles.headerCategoryTitle}>{t(game.category || '')}</Text>
+                <Text style={styles.headerCategoryTitle}>
+                  {t(game.category || '')}
+                </Text>
               </View>
             </View>
           </View>
@@ -133,8 +157,15 @@ export default function CreateGame() {
       }
     >
       <CustomModal modalVisible={modalOpen} setModalVisible={setModalOpen}>
-        <TouchableOpacity style={{ position: 'absolute', top: scale(15), right: scale(15) }} onPress={() => setModalOpen(false)}>
-          <MaterialIcons name="close" size={moderateScale(24)} color={colors.orange[200]} />
+        <TouchableOpacity
+          style={{ position: 'absolute', top: scale(15), right: scale(15) }}
+          onPress={() => setModalOpen(false)}
+        >
+          <MaterialIcons
+            name="close"
+            size={moderateScale(24)}
+            color={colors.orange[200]}
+          />
         </TouchableOpacity>
         <Text style={styles.modalTitle}>{t('Choose your character')}</Text>
 
@@ -148,7 +179,9 @@ export default function CreateGame() {
       <View>
         <View style={styles.topContainer}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.title}>{t(`Add players (3 to ${MAX_PLAYERS})`)}</Text>
+            <Text style={styles.title}>
+              {t(`Add players (3 to ${MAX_PLAYERS})`)}
+            </Text>
           </View>
           <View style={styles.changeCharacterButtonContainer}>
             <TouchableOpacity
@@ -174,12 +207,18 @@ export default function CreateGame() {
             currentPlayerTheme={currentImageTheme}
           />
           <View style={{ paddingTop: verticalScale(spacing.md) }}>
-            <CustomText>{t('Players added')} - {players.length}</CustomText>
+            <CustomText>
+              {t('Players added')} - {players.length}
+            </CustomText>
           </View>
           <View style={{ gap: verticalScale(spacing.xs) }}>
             {players.map(player => {
               const availableForPlayer = characters
-                .filter(c => !usedCharacters.includes(c.name) || c.name === player.character)
+                .filter(
+                  c =>
+                    !usedCharacters.includes(c.name) ||
+                    c.name === player.character
+                )
                 .map(c => c.name);
               return (
                 <PlayerInput

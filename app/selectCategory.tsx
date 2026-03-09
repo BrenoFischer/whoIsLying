@@ -2,12 +2,9 @@ import { GameContext } from '@/context/GameContext';
 import { useContext, useState, useEffect, useRef } from 'react';
 import {
   Text,
-  SafeAreaView,
   StyleSheet,
   View,
   Image,
-  ImageBackground,
-  TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
@@ -19,7 +16,6 @@ import { router } from 'expo-router';
 import Elipse from '@/components/elipse';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Character from '@/components/character';
-import WithSidebar from '@/components/withSideBar';
 import { useTranslation } from '@/translations';
 import Carousel from '@/components/carousel';
 import ScreenLayout from '@/components/screenLayout';
@@ -36,12 +32,6 @@ const images = {
   halloween: require('@/assets/images/halloweenCategory.png'),
 };
 
-const backgroundImages = {
-  foods: require('@/assets/images/foodCategoryBg.png'),
-  animals: require('@/assets/images/animalCategoryBg.png'),
-  halloween: require('@/assets/images/halloweenCategoryBg.png'),
-};
-
 export default function SelectCategory() {
   const { setGameWord, setCurrentScreen } = useContext(GameContext);
   const { t } = useTranslation();
@@ -52,7 +42,9 @@ export default function SelectCategory() {
   const { height } = useWindowDimensions();
 
   const categoriesArray = Object.keys(categories);
-  const [selectedCategory, setSelectedCategory] = useState(categoriesArray[0] || '');
+  const [selectedCategory, setSelectedCategory] = useState(
+    categoriesArray[0] || ''
+  );
   const cardRefs = useRef<(FlipCardRef | null)[]>([]);
 
   const characterSize = height * 0.22;
@@ -63,7 +55,7 @@ export default function SelectCategory() {
   };
 
   const handleCarouselIndexChange = (index: number) => {
-    cardRefs.current.forEach((ref) => ref?.flipToFront());
+    cardRefs.current.forEach(ref => ref?.flipToFront());
 
     const categoryName = categoriesArray[index];
     const categoryData = categories[categoryName as keyof typeof categories];
@@ -74,7 +66,11 @@ export default function SelectCategory() {
     }
   };
 
-  const renderCategoryCard = (categoryName: string, index: number, isActive: boolean) => {
+  const renderCategoryCard = (
+    categoryName: string,
+    index: number,
+    _isActive: boolean
+  ) => {
     const categoryData = categories[categoryName as keyof typeof categories];
     const isAvailable = categoryData?.available ?? true;
 
@@ -89,25 +85,31 @@ export default function SelectCategory() {
         />
         {!isAvailable && (
           <View style={styles.lockIconContainer}>
-            <Ionicons name="lock-closed" size={moderateScale(40)} color={colors.background[100]} />
+            <Ionicons
+              name="lock-closed"
+              size={moderateScale(40)}
+              color={colors.background[100]}
+            />
           </View>
         )}
-        <Text style={styles.categoryTitle}>
-          {t(categoryName)}
-        </Text>
+        <Text style={styles.categoryTitle}>{t(categoryName)}</Text>
       </View>
     );
 
     const back = (
       <View style={styles.categoryCardBack}>
         <Text style={styles.backCategoryTitle}>{t(categoryName)}</Text>
-        <Text style={styles.backDescription}>{t(categoryData?.description ?? '')}</Text>
+        <Text style={styles.backDescription}>
+          {t(categoryData?.description ?? '')}
+        </Text>
       </View>
     );
 
     return (
       <FlipCard
-        ref={(el) => { cardRefs.current[index] = el; }}
+        ref={el => {
+          cardRefs.current[index] = el;
+        }}
         style={styles.categoryCardContainer}
         front={front}
         back={back}
@@ -152,7 +154,7 @@ export default function SelectCategory() {
           />
         </View>
       </View>
-  </ScreenLayout>
+    </ScreenLayout>
   );
 }
 
@@ -170,9 +172,9 @@ const styles = StyleSheet.create({
     gap: scale(spacing.xs),
   },
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: scale(spacing.md)
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: scale(spacing.md),
   },
   headerTextContainer: {
     flex: 1,
@@ -222,10 +224,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white[100],
     borderRadius: moderateScale(radius.lg),
     gap: verticalScale(spacing.sm),
-  },
-  categoryCardBackgroundImage: {
-    borderRadius: moderateScale(13),
-    backgroundColor: colors.white[100]
   },
   cardOverlay: {
     ...StyleSheet.absoluteFillObject,
