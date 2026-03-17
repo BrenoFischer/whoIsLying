@@ -37,7 +37,12 @@ export const characters: CharacterData[] = [
   { name: 'puca', theme: 'halloween' },
 ];
 
-export const themes: CharacterTheme[] = ['male', 'female', 'halloween', 'music'];
+export const themes: CharacterTheme[] = [
+  'male',
+  'female',
+  'halloween',
+  'music',
+];
 
 export const charactersByTheme = (theme: CharacterTheme): CharacterData[] =>
   characters.filter(c => c.theme === theme);

@@ -1,5 +1,4 @@
-import { Image, StyleSheet } from 'react-native';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { Image } from 'react-native';
 
 interface CharacterProps {
   mood: string;
@@ -53,16 +52,16 @@ export default function Character({
   };
 
   return (
-      <Image
-        source={characterImages[mood as keyof typeof characterImages]}
-        style={[
-          {
-            width: size ?? '100%',
-            height: size ?? '100%',
-          },
-          flip && { transform: [{ scaleX: -1 }] },
-        ]}
-        resizeMode="contain"
-      />
-    );
-  }
+    <Image
+      source={characterImages[mood as keyof typeof characterImages]}
+      style={[
+        {
+          width: size ?? '100%',
+          height: size ?? '100%',
+        },
+        flip && { transform: [{ scaleX: -1 }] },
+      ]}
+      resizeMode="contain"
+    />
+  );
+}

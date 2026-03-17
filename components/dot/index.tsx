@@ -1,20 +1,20 @@
-import { ColorValue, View } from "react-native";
-import { scale, verticalScale } from "react-native-size-matters";
+import { ColorValue, View } from 'react-native';
+import { scale, verticalScale } from 'react-native-size-matters';
 
 interface DotProps {
-    color: ColorValue
+  color: ColorValue;
 }
 
-export default function Dot({color}: DotProps) {
-    return(
-        <View
-            style={{
-            backgroundColor: color,
-            width: scale(8),
-            height: verticalScale(8),
-            borderRadius: '50%',
-            marginHorizontal: scale(8),
-            }}
-        />
-    )
+export default function Dot({ color }: DotProps) {
+  return (
+    <View
+      style={{
+        backgroundColor: color,
+        width: scale(4),
+        height: verticalScale(4),
+        borderRadius: '50%',
+        marginHorizontal: scale(2),
+      }}
+    />
+  );
 }

@@ -6,6 +6,10 @@ import { useEffect } from 'react';
 import { GameContextProvider } from '@/context/GameContext';
 import { AppResetProvider } from '@/context/AppResetContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
 import '@/translations/i18n';
 
 SplashScreen.preventAutoHideAsync();
@@ -28,17 +32,19 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppResetProvider>
-        <GameContextProvider>
-          <StatusBar style="light" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              gestureEnabled: false,
-            }}
-          />
-        </GameContextProvider>
-      </AppResetProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <AppResetProvider>
+          <GameContextProvider>
+            <StatusBar style="light" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+          </GameContextProvider>
+        </AppResetProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

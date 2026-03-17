@@ -1,6 +1,6 @@
 import { colors } from '@/styles/colors';
 import { StyleSheet, View } from 'react-native';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
 
 export default function Elipse({
   top = 0,

@@ -4,4 +4,8 @@ export interface Player {
   theme: string;
   character: string;
   score: number;
+  matchScore: {
+    scoreEvents: { text: string; points: number }[];
+    totalScore: number;
+  };
 }

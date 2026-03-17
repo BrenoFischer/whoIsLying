@@ -13,8 +13,21 @@ import {
   useState,
 } from 'react';
 import * as Haptics from 'expo-haptics';
-import { Dimensions, LayoutChangeEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import {
+  Dimensions,
+  LayoutChangeEvent,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
 import { useTranslation } from '@/translations';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,7 +39,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDE_DURATION_MS = 400;
-const COUNT_INTERVAL_MS = 120;
+const EVENT_FADE_IN_MS = 350;
+const EVENT_HOLD_MS = 2000;
+const EVENT_FADE_OUT_MS = 800;
+const TICK_INTERVAL_MS = 120;
 
 type RankedPlayer = {
   id: string;
@@ -38,21 +54,45 @@ type RankedPlayer = {
   positionDiff: number | null;
   previousScore: number;
   matchScore: number;
+  events: { text: string; points: number }[];
+  isImpostor: boolean;
 };
 
-type PlayerCardHandle = { startSlide: () => void; skipToEnd: () => void };
+type PlayerCardHandle = {
+  startSlide: () => void;
+  skipToEnd: () => void;
+  reset: () => void;
+  animateEvent: (text: string, points: number) => Promise<void>;
+  tickScore: (target: number) => Promise<void>;
+  hideEvent: () => void;
+  showMatchScore: () => void;
+};
 
 type PlayerCardProps = {
   player: RankedPlayer;
-  idx: number;
-  isMerged: boolean;
-  displayedMatchScore: number;
   t: (key: string) => string;
+  idx: number;
 };
 
 const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
-  ({ player, idx, isMerged, displayedMatchScore, t }, ref) => {
+  ({ player, idx, t }, ref) => {
     const slideX = useSharedValue(SCREEN_WIDTH);
+    const eventOpacity = useSharedValue(0);
+
+    const [currentEventText, setCurrentEventText] = useState('');
+    const [currentEventPoints, setCurrentEventPoints] = useState(0);
+    const [runningScore, setRunningScore] = useState(player.previousScore);
+    const runningScoreRef = useRef(player.previousScore);
+    const matchScoreOpacity = useSharedValue(0);
+
+    const eventResolveRef = useRef<(() => void) | null>(null);
+    const eventTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+    const tickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearEventTimers = () => {
+      eventTimersRef.current.forEach(clearTimeout);
+      eventTimersRef.current = [];
+    };
 
     useImperativeHandle(
       ref,
@@ -62,60 +102,202 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
         },
         skipToEnd: () => {
           slideX.value = 0;
+          eventOpacity.value = 0;
+          clearEventTimers();
+          const pending = eventResolveRef.current;
+          eventResolveRef.current = null;
+          pending?.();
+          if (tickTimerRef.current !== null) {
+            clearTimeout(tickTimerRef.current);
+            tickTimerRef.current = null;
+          }
+          runningScoreRef.current = player.score;
+          setRunningScore(player.score);
+          matchScoreOpacity.value = 1;
+        },
+        reset: () => {
+          clearEventTimers();
+          const pending = eventResolveRef.current;
+          eventResolveRef.current = null;
+          pending?.();
+          if (tickTimerRef.current !== null) {
+            clearTimeout(tickTimerRef.current);
+            tickTimerRef.current = null;
+          }
+          slideX.value = SCREEN_WIDTH;
+          eventOpacity.value = 0;
+          matchScoreOpacity.value = 0;
+          setCurrentEventText('');
+          setCurrentEventPoints(0);
+          runningScoreRef.current = player.previousScore;
+          setRunningScore(player.previousScore);
+        },
+        animateEvent: (text: string, points: number) =>
+          new Promise<void>(resolve => {
+            eventResolveRef.current = resolve;
+            setCurrentEventText(text);
+            setCurrentEventPoints(points);
+            eventOpacity.value = 0;
+
+            // Fade in
+            eventOpacity.value = withTiming(1, { duration: EVENT_FADE_IN_MS });
+
+            // After fade-in + hold: start fade-out and resolve simultaneously
+            // so ticking begins right as the event starts fading out
+            eventTimersRef.current.push(
+              setTimeout(() => {
+                clearEventTimers();
+                eventOpacity.value = withTiming(0, {
+                  duration: EVENT_FADE_OUT_MS,
+                });
+                const pending = eventResolveRef.current;
+                eventResolveRef.current = null;
+                pending?.();
+              }, EVENT_FADE_IN_MS + EVENT_HOLD_MS)
+            );
+          }),
+        tickScore: (target: number) =>
+          new Promise<void>(resolve => {
+            const diff = target - runningScoreRef.current;
+            if (diff <= 0) {
+              resolve();
+              return;
+            }
+            let ticked = 0;
+            const tick = () => {
+              ticked++;
+              runningScoreRef.current += 1;
+              setRunningScore(s => s + 1);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              if (ticked < diff) {
+                tickTimerRef.current = setTimeout(tick, TICK_INTERVAL_MS);
+              } else {
+                tickTimerRef.current = null;
+                resolve();
+              }
+            };
+            tickTimerRef.current = setTimeout(tick, TICK_INTERVAL_MS);
+          }),
+        hideEvent: () => {
+          eventOpacity.value = withTiming(0, { duration: 200 });
+        },
+        showMatchScore: () => {
+          matchScoreOpacity.value = withDelay(
+            300,
+            withTiming(1, { duration: 300 })
+          );
         },
       }),
-      [],
+      []
     );
 
-    const animatedStyle = useAnimatedStyle(() => ({
+    const animatedSlideStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: slideX.value }],
     }));
 
+    const eventAnimStyle = useAnimatedStyle(() => ({
+      opacity: eventOpacity.value,
+    }));
+
+    const matchScoreAnimStyle = useAnimatedStyle(() => ({
+      opacity: matchScoreOpacity.value,
+    }));
+
     return (
-      <Animated.View style={[styles.playerCard, animatedStyle]}>
+      <Animated.View
+        style={[
+          styles.playerCard,
+          player.isImpostor && styles.playerCardImpostor,
+          animatedSlideStyle,
+        ]}
+      >
+        {/* Header */}
         <View style={styles.playerCardHeader}>
-          <Text style={styles.index}>{idx + 1}</Text>
+          <Text
+            style={[styles.index, player.isImpostor && styles.indexImpostor]}
+          >
+            {idx + 1}
+          </Text>
           <Text style={styles.playerName}>{player.name}</Text>
+          {player.isImpostor && (
+            <Ionicons
+              name="glasses-outline"
+              size={moderateScale(20)}
+              color={colors.white[100]}
+              style={styles.impostorIcon}
+            />
+          )}
           <View style={styles.rankChangeContainer}>
-            {player.positionDiff === null && <Text style={styles.newPlayer}>New</Text>}
+            {player.positionDiff === null && (
+              <Text style={styles.newPlayer}>New</Text>
+            )}
             {player.positionDiff !== null && player.positionDiff > 0 && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
+              >
                 <Text style={styles.rankUp}>+{player.positionDiff}</Text>
                 <Ionicons name="arrow-up" size={20} color={colors.green[100]} />
               </View>
             )}
             {player.positionDiff !== null && player.positionDiff < 0 && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
+              >
                 <Text style={styles.rankDown}>{player.positionDiff}</Text>
                 <Ionicons name="arrow-down" size={20} color={colors.red[100]} />
               </View>
             )}
-            {player.positionDiff === 0 && <Text style={styles.rankSame}>-</Text>}
+            {player.positionDiff === 0 && (
+              <Text style={styles.rankSame}>-</Text>
+            )}
           </View>
         </View>
+
+        {/* Body: character left | score + event right */}
         <View style={styles.playerCardBody}>
           <Character mood={player.character} />
-          <View style={styles.scoreContainer}>
-            {isMerged ? (
-              <Text style={styles.playerScore}>
-                {player.score}{' '}
-                <Text style={styles.playerPointsText}>{t('points')}</Text>
+          <View style={styles.scoreColumn}>
+            {/* Total label + score pinned to top */}
+            <Text style={styles.scoreLabel}>{t('total')}</Text>
+            <Text style={styles.playerScore}>
+              {runningScore}{' '}
+              <Text style={styles.playerPointsText}>{t('pts')}</Text>
+            </Text>
+
+            {/* Match score — fades in after all events */}
+            <Animated.View
+              style={[styles.matchScoreContainer, matchScoreAnimStyle]}
+            >
+              <Text style={styles.matchScoreValue}>
+                +{player.matchScore}{' '}
+                <Text style={styles.matchScorepts}>{t('pts')}</Text>
               </Text>
-            ) : (
-              <View style={styles.scoreAnimContainer}>
-                <Text style={styles.playerScore}>
-                  {player.previousScore}{' '}
-                  <Text style={styles.playerPointsText}>{t('points')}</Text>
-                </Text>
-                <Text style={styles.matchScoreText}>+{displayedMatchScore}</Text>
-              </View>
-            )}
+              <Text style={styles.scoreLabel}>{t('this match')}</Text>
+            </Animated.View>
+
+            {/* Event text — centered in remaining space below score */}
+            <Animated.View style={[styles.eventTextArea, eventAnimStyle]}>
+              <Text
+                style={[
+                  styles.eventPoints,
+                  currentEventPoints >= 5 && styles.eventTextBig,
+                  currentEventPoints >= 3 &&
+                    currentEventPoints < 5 &&
+                    styles.eventTextMedium,
+                ]}
+              >
+                +{currentEventPoints} {t('pts')}
+              </Text>
+              <Text style={styles.eventText}>{currentEventText}</Text>
+            </Animated.View>
           </View>
         </View>
       </Animated.View>
     );
-  },
+  }
 );
+
+PlayerCard.displayName = 'PlayerCard';
 
 export default function EndGame() {
   const { game, setCurrentScreen, getSortedPlayers } = useContext(GameContext);
@@ -132,15 +314,29 @@ export default function EndGame() {
     () =>
       sortedPlayers.map((player, index) => {
         const currentPosition = index + 1;
-        const prevRanking = game.previousRankings?.find(r => r.playerId === player.id);
+        const prevRanking = game.previousRankings?.find(
+          r => r.playerId === player.id
+        );
         const previousPosition = prevRanking?.position;
         const previousScore = prevRanking?.previousScore ?? 0;
         const positionDiff =
-          previousPosition !== undefined ? previousPosition - currentPosition : null;
+          previousPosition !== undefined
+            ? previousPosition - currentPosition
+            : null;
         const matchScore = Math.max(0, player.score - previousScore);
-        return { ...player, currentPosition, positionDiff, previousScore, matchScore };
+        const events = player.matchScore?.scoreEvents ?? [];
+        const isImpostor = game.lyingPlayers.some(lp => lp.id === player.id);
+        return {
+          ...player,
+          currentPosition,
+          positionDiff,
+          previousScore,
+          matchScore,
+          events,
+          isImpostor,
+        };
       }),
-    [sortedPlayers, game.previousRankings],
+    [sortedPlayers, game.previousRankings, game.lyingPlayers]
   );
 
   const n = rankingWithDiff.length;
@@ -149,11 +345,8 @@ export default function EndGame() {
   const cardYPositions = useRef<number[]>(Array(n).fill(0));
   const animationActiveRef = useRef(true);
 
+  const [replayKey, setReplayKey] = useState(0);
   const [animationComplete, setAnimationComplete] = useState(false);
-  const [mergedCards, setMergedCards] = useState<boolean[]>(() => Array(n).fill(false));
-  const [displayedMatchScores, setDisplayedMatchScores] = useState<number[]>(() =>
-    Array(n).fill(0),
-  );
 
   useEffect(() => {
     animationActiveRef.current = true;
@@ -163,39 +356,38 @@ export default function EndGame() {
 
       // Slide card in from right
       cardRefs.current[idx]?.startSlide();
-      await new Promise<void>(resolve => setTimeout(resolve, SLIDE_DURATION_MS));
-
+      await new Promise<void>(resolve =>
+        setTimeout(resolve, SLIDE_DURATION_MS)
+      );
       if (!animationActiveRef.current) return;
 
-      // Count up match score (+0 → +matchScore)
-      const matchScore = rankingWithDiff[idx].matchScore;
-      for (let i = 1; i <= matchScore; i++) {
+      // Animate each event, then tick score after each one
+      const events = rankingWithDiff[idx].events;
+      let runningTotal = rankingWithDiff[idx].previousScore;
+
+      for (const event of events) {
         if (!animationActiveRef.current) return;
-        await new Promise<void>(resolve => setTimeout(resolve, COUNT_INTERVAL_MS));
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        setDisplayedMatchScores(prev => {
-          const next = [...prev];
-          next[idx] = i;
-          return next;
-        });
+        await cardRefs.current[idx]?.animateEvent(event.text, event.points);
+        if (!animationActiveRef.current) return;
+
+        runningTotal += event.points;
+        await cardRefs.current[idx]?.tickScore(runningTotal);
+        if (!animationActiveRef.current) return;
       }
 
-      await new Promise<void>(resolve => setTimeout(resolve, 400));
-      if (!animationActiveRef.current) return;
+      cardRefs.current[idx]?.hideEvent();
+      cardRefs.current[idx]?.showMatchScore();
 
-      // Merge: replace "prevScore + +N" with the final total
-      setMergedCards(prev => {
-        const next = [...prev];
-        next[idx] = true;
-        return next;
-      });
-
-      await new Promise<void>(resolve => setTimeout(resolve, 400));
+      // Pause before scrolling to next card
+      await new Promise<void>(resolve => setTimeout(resolve, 600));
       if (!animationActiveRef.current) return;
 
       // Scroll up to reveal the next card (higher ranking)
       if (idx > 0) {
-        scrollRef.current?.scrollTo({ y: cardYPositions.current[idx - 1], animated: true });
+        scrollRef.current?.scrollTo({
+          y: cardYPositions.current[idx - 1],
+          animated: true,
+        });
         await new Promise<void>(resolve => setTimeout(resolve, 700));
         if (!animationActiveRef.current) return;
       }
@@ -218,17 +410,21 @@ export default function EndGame() {
       animationActiveRef.current = false;
       clearTimeout(timer);
     };
-  }, []);
+  }, [replayKey]);
 
   const handleContinue = () => {
     router.replace('/endOfMatches');
   };
 
+  const handleReplay = () => {
+    cardRefs.current.forEach(ref => ref?.reset());
+    setAnimationComplete(false);
+    setReplayKey(k => k + 1);
+  };
+
   const handleSkip = () => {
     animationActiveRef.current = false;
     cardRefs.current.forEach(ref => ref?.skipToEnd());
-    setDisplayedMatchScores(rankingWithDiff.map(p => p.matchScore));
-    setMergedCards(Array(n).fill(true));
     setAnimationComplete(true);
     scrollRef.current?.scrollTo({ y: 0, animated: true });
   };
@@ -258,8 +454,6 @@ export default function EndGame() {
               }}
               player={p}
               idx={idx}
-              isMerged={mergedCards[idx]}
-              displayedMatchScore={displayedMatchScores[idx]}
               t={t}
             />
           </View>
@@ -267,7 +461,22 @@ export default function EndGame() {
       </ScrollView>
       <View style={styles.footer}>
         {animationComplete ? (
-          <Button text={t('Continue')} onPress={handleContinue} />
+          <View style={styles.footerActions}>
+            <View style={styles.footerSide}>
+              <TouchableOpacity
+                style={styles.replayButton}
+                onPress={handleReplay}
+              >
+                <Ionicons
+                  name="refresh"
+                  size={moderateScale(22)}
+                  color={colors.orange[200]}
+                />
+              </TouchableOpacity>
+            </View>
+            <Button text={t('Continue')} onPress={handleContinue} />
+            <View style={styles.footerSide} />
+          </View>
         ) : (
           <Button text={t('Skip')} variants="secondary" onPress={handleSkip} />
         )}
@@ -313,10 +522,14 @@ const styles = StyleSheet.create({
     paddingTop: verticalScale(spacing.md),
     paddingHorizontal: scale(spacing.sm),
   },
+  playerCardImpostor: {
+    backgroundColor: colors.purple[100],
+  },
   playerCardHeader: {
     flexDirection: 'row',
     gap: scale(spacing.sm),
     marginBottom: verticalScale(spacing.xs),
+    alignItems: 'center',
   },
   rankChangeContainer: {
     marginLeft: 'auto',
@@ -341,16 +554,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: fontSize.xl,
   },
-  playerCardBody: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
   index: {
     fontFamily: 'Raleway',
     fontSize: moderateScale(40),
     fontWeight: 'bold',
     color: colors.black[100],
+  },
+  indexImpostor: {
+    color: colors.white[100],
+  },
+  impostorIcon: {
+    marginLeft: scale(-spacing.xs),
   },
   playerName: {
     fontFamily: 'Raleway',
@@ -358,14 +572,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.white[100],
   },
-  scoreContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
+  scoreLabel: {
+    fontFamily: 'Raleway',
+    fontSize: fontSize.sm,
+    fontWeight: 'bold',
+    color: colors.white[100],
+    opacity: 0.6,
+    textTransform: 'uppercase',
+    letterSpacing: moderateScale(1),
   },
   playerScore: {
     fontFamily: 'Raleway',
-    fontSize: moderateScale(30),
+    fontSize: moderateScale(28),
     fontWeight: 'bold',
     color: colors.white[100],
   },
@@ -373,18 +591,87 @@ const styles = StyleSheet.create({
     fontSize: fontSize.lg,
     fontWeight: 'normal',
   },
-  scoreAnimContainer: {
+  matchScoreContainer: {
+    position: 'absolute',
+    bottom: verticalScale(spacing.sm),
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    gap: scale(spacing.xs),
+    flex: 1,
   },
-  matchScoreText: {
+  matchScoreValue: {
     fontFamily: 'Raleway',
-    fontSize: moderateScale(24),
+    fontSize: moderateScale(20),
     fontWeight: 'bold',
-    color: colors.green[100],
+    color: colors.white[100],
+    flex: 1,
+  },
+  matchScorepts: {
+    fontSize: fontSize.md,
+    fontWeight: 'normal',
+  },
+  playerCardBody: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  scoreColumn: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    paddingTop: verticalScale(spacing.xs),
+  },
+  eventTextArea: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: verticalScale(2),
+  },
+  eventPoints: {
+    textAlign: 'center',
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(17),
+    fontWeight: 'bold',
+    color: colors.white[100],
+  },
+  eventText: {
+    textAlign: 'center',
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(13),
+    fontWeight: 'bold',
+    color: colors.white[100],
+    opacity: 0.8,
+  },
+  eventTextMedium: {
+    color: colors.red[200],
+    fontSize: moderateScale(16),
+  },
+  eventTextBig: {
+    color: colors.red[300],
+    fontSize: moderateScale(17),
   },
   footer: {
     alignItems: 'center',
     paddingVertical: scale(spacing.md),
+  },
+  footerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: scale(spacing.sm),
+  },
+  footerSide: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  replayButton: {
+    width: moderateScale(44),
+    height: moderateScale(44),
+    borderRadius: moderateScale(22),
+    borderWidth: 2,
+    borderColor: colors.orange[200],
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

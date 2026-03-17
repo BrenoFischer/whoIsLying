@@ -6,27 +6,46 @@ import { Player } from '@/types/Player';
 // Mock the categories data
 jest.mock('@/data/categories.json', () => ({
   testCategory: {
-    en: {
-      content: ['word1', 'word2', 'word3', 'word4', 'word5'],
-      firstSetOfQuestions: [
-        'Question 1?',
-        'Question 2?',
-        'Question 3?',
-        'Question 4?',
+    content: ['word1', 'word2', 'word3', 'word4', 'word5'],
+    questions: {
+      low: [
+        'Low Q1?',
+        'Low Q2?',
+        'Low Q3?',
+        'Low Q4?',
+        'Low Q5?',
+        'Low Q6?',
+        'Low Q7?',
+        'Low Q8?',
       ],
-      secondSetOfQuestions: [
-        'Question 5?',
-        'Question 6?',
-        'Question 7?',
-        'Question 8?',
+      medium: [
+        'Med Q1?',
+        'Med Q2?',
+        'Med Q3?',
+        'Med Q4?',
+        'Med Q5?',
+        'Med Q6?',
+        'Med Q7?',
+        'Med Q8?',
+      ],
+      high: [
+        'High Q1?',
+        'High Q2?',
+        'High Q3?',
+        'High Q4?',
+        'High Q5?',
+        'High Q6?',
+        'High Q7?',
+        'High Q8?',
       ],
     },
   },
   anotherCategory: {
-    en: {
-      content: ['apple', 'banana', 'orange'],
-      firstSetOfQuestions: ['What fruit?', 'Which one?'],
-      secondSetOfQuestions: ['How many?', 'What color?'],
+    content: ['apple', 'banana', 'orange'],
+    questions: {
+      low: ['Low QA?', 'Low QB?', 'Low QC?', 'Low QD?'],
+      medium: ['Med QA?', 'Med QB?', 'Med QC?', 'Med QD?'],
+      high: ['High QA?', 'High QB?', 'High QC?', 'High QD?'],
     },
   },
 }));

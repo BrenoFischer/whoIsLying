@@ -5,7 +5,7 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { Player } from '@/types/Player';
 import { router } from 'expo-router';
-import { useContext, useState, useEffect, use } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -16,7 +16,7 @@ import Animated, {
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from '@/translations';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import ScreenLayout from '@/components/screenLayout';
@@ -28,7 +28,12 @@ export default function EndOfMatches() {
   const navigation = useNavigation();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { game, setCurrentScreen, resetGameWithExistingPlayers, createNewGame } = useContext(GameContext);
+  const {
+    game,
+    setCurrentScreen,
+    resetGameWithExistingPlayers,
+    createNewGame,
+  } = useContext(GameContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -124,25 +129,43 @@ export default function EndOfMatches() {
     <ScreenLayout
       scrollable
       style={modalOpen ? { opacity: 0.1 } : undefined}
-      footer={<Button text={t('Continue')} onPress={() => setModalOpen(true)} />}
+      footer={
+        <Button text={t('Continue')} onPress={() => setModalOpen(true)} />
+      }
     >
       <CustomModal setModalVisible={setModalOpen} modalVisible={modalOpen}>
         <View style={styles.modalContent}>
-          <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalOpen(false)}>
-            <Ionicons name="close" size={scale(24)} color={colors.orange[200]} />
+          <TouchableOpacity
+            style={styles.modalCloseButton}
+            onPress={() => setModalOpen(false)}
+          >
+            <Ionicons
+              name="close"
+              size={scale(24)}
+              color={colors.orange[200]}
+            />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>{t('Do you want to:')}</Text>
           <Character mood="bothCharacter" />
           <View style={styles.modalButtons}>
-            <Button text={t('Play one more round (keep scores)')} onPress={handlePlayerOneMoreRound} />
-            <Button text={t('New game (resets all scores)')} onPress={handleStartNewGame} variants='secondary' />
+            <Button
+              text={t('Play one more round (keep scores)')}
+              onPress={handlePlayerOneMoreRound}
+            />
+            <Button
+              text={t('New game (resets all scores)')}
+              onPress={handleStartNewGame}
+              variants="secondary"
+            />
           </View>
         </View>
       </CustomModal>
 
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <Animated.Text style={[styles.title, animatedTitleStyle]}>
-          {allWinners.length > 1 ? t('The grand winners are!') : t('The grand winner is!')}
+          {allWinners.length > 1
+            ? t('The grand winners are!')
+            : t('The grand winner is!')}
         </Animated.Text>
 
         <Animated.View style={animatedCardsStyle}>

@@ -1,11 +1,11 @@
 import { colors } from '@/styles/colors';
-import { View, Image, StyleSheet, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import { Language, useTranslation } from '@/translations';
 import { useContext, useEffect } from 'react';
 import { GameContext } from '@/context/GameContext';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
@@ -23,8 +23,8 @@ export default function SkillUpScreen() {
   }, [isHydrated]);
 
   const handleChangeLanguage = (lan: Language) => {
-      if(lan === language) return;
-      setLanguage(lan);
+    if (lan === language) return;
+    setLanguage(lan);
   };
 
   return (
@@ -87,8 +87,8 @@ export default function SkillUpScreen() {
 const styles = StyleSheet.create({
   logoContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing.md,
   },
 
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     paddingTop: verticalScale(spacing.xl),
     paddingHorizontal: scale(spacing.xl),
     flexDirection: 'row',
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     gap: spacing.md,
   },
 

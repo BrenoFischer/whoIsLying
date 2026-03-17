@@ -1,7 +1,14 @@
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
-import { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView, useWindowDimensions } from 'react-native';
+import { useContext, useState, useEffect, useRef, useMemo } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  useWindowDimensions,
+} from 'react-native';
 import Button from '@/components/button';
 import { router } from 'expo-router';
 import Elipse from '@/components/elipse';
@@ -31,7 +38,12 @@ export default function Votes() {
   const [player, setPlayer] = useState(players[0]);
   const [playerIndex, setPlayerIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>(undefined);
+  const [selectedPlayers, setSelectedPlayers] = useState<Player[] | undefined>(
+    undefined
+  );
+
+  const numberOfImpostors = game.lyingPlayers.length;
+  const scrollRef = useRef<ScrollView>(null);
 
   const characterSize = height * 0.15;
   const maxListHeight = height * 0.45;
@@ -39,23 +51,59 @@ export default function Votes() {
 
   const handleNextPlayer = () => {
     const newIndex = playerIndex + 1;
-    addVote(player, selectedPlayer!);
+    addVote(player, selectedPlayers ?? []);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
 
     if (newIndex >= players.length) {
       setPlayerIndex(0);
       setPlayer(players[0]);
       setModalVisible(true);
-      setSelectedPlayer(undefined);
+      setSelectedPlayers(undefined);
       router.replace('/votesResults');
     } else {
       setPlayerIndex(newIndex);
       setPlayer(players[newIndex]);
       setModalVisible(true);
-      setSelectedPlayer(undefined);
+      setSelectedPlayers(undefined);
     }
   };
 
-  const restOfPlayers = players.filter(p => p.id !== player.id);
+  const handleSelectPlayer = (selected: Player) => {
+    if (selectedPlayers === undefined) {
+      //no selected player yet, set the first one
+      setSelectedPlayers([selected]);
+      return;
+    }
+    if (selectedPlayers.some(p => p.id === selected.id)) {
+      //player already selected, remove from the list
+      setSelectedPlayers(selectedPlayers.filter(p => p.id !== selected.id));
+      return;
+    }
+    if (selectedPlayers.length === numberOfImpostors) {
+      //already selected the max number of players, replace the first one with the new one
+      const newSelectedPlayers = [...selectedPlayers];
+      newSelectedPlayers.shift();
+      setSelectedPlayers([...newSelectedPlayers, selected]);
+      return;
+    }
+    setSelectedPlayers([...selectedPlayers, selected]);
+  };
+
+  const restOfPlayers = useMemo(
+    () =>
+      players.filter(p => p.id !== player.id).sort(() => Math.random() - 0.5),
+    [player]
+  );
+
+  const isContinueAvailable =
+    selectedPlayers !== undefined &&
+    selectedPlayers.length === numberOfImpostors;
+  const continueButtonText =
+    selectedPlayers === undefined
+      ? t('Vote!')
+      : selectedPlayers.length === numberOfImpostors
+        ? t('Continue')
+        : `${selectedPlayers.length} of ${numberOfImpostors} ${t('selected')}`;
 
   return (
     <ScreenLayout
@@ -75,43 +123,92 @@ export default function Votes() {
       }
       footer={
         <Button
-          text={t('Vote!')}
+          text={continueButtonText}
           onPress={handleNextPlayer}
-          variants={selectedPlayer ? 'primary' : 'disabled'}
+          variants={isContinueAvailable ? 'primary' : 'disabled'}
         />
       }
     >
-      <PlayerModal player={player} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <PlayerModal
+        player={player}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
 
       <View style={styles.topContainer}>
         <View style={styles.topTextContainer}>
           <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
           <Text style={styles.playerName}>{player.name}</Text>
-          <Text style={styles.voteInstruction}>
-            {t('Vote on the person you think is the impostor:')}
-          </Text>
+          {numberOfImpostors > 1 ? (
+            <Text style={styles.voteInstruction}>
+              {t('Vote on ')}
+              <Text style={{ fontWeight: 'bold', fontSize: fontSize.lg }}>
+                {numberOfImpostors}
+              </Text>
+              {t(' people you think are the impostors:')}
+            </Text>
+          ) : (
+            <Text style={styles.voteInstruction}>
+              {t('Vote on the person you think is the impostor:')}
+            </Text>
+          )}
+          <View style={styles.selectedSlotsRow}>
+            {Array.from({ length: numberOfImpostors }).map((_, i) => {
+              const sel = selectedPlayers?.[i];
+              return (
+                <View
+                  key={i}
+                  style={[
+                    styles.selectedSlot,
+                    sel ? styles.selectedSlotFilled : styles.selectedSlotEmpty,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.selectedSlotText,
+                      !sel && styles.selectedSlotTextEmpty,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {sel ? sel.name : '—'}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
         <Character mood={player.character} size={characterSize} />
       </View>
 
-      <View style={[styles.tableContainer, listHeight ? { height: listHeight } : undefined]}>
+      <View
+        style={[
+          styles.tableContainer,
+          listHeight ? { height: listHeight } : undefined,
+        ]}
+      >
         <ScrollView
+          ref={scrollRef}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           onContentSizeChange={(_, contentHeight) => {
             // Cap to maxListHeight so the card doesn't overflow the screen on large player counts.
             // Add tableContainer's top + bottom padding so the card wraps the content exactly.
-            setListHeight(Math.min(contentHeight, maxListHeight) + scale(spacing.md) * 2);
+            setListHeight(
+              Math.min(contentHeight, maxListHeight) + scale(spacing.md) * 2
+            );
           }}
         >
           <View style={styles.voteOptionsContainer}>
             {restOfPlayers.map(p => (
-              <TouchableOpacity key={p.id} onPress={() => setSelectedPlayer(p)}>
+              <TouchableOpacity
+                key={p.id}
+                onPress={() => handleSelectPlayer(p)}
+              >
                 <PlayerInput
                   player={p}
                   notEditable
                   showScore={false}
-                  selected={selectedPlayer?.id === p.id}
+                  selected={selectedPlayers?.some(player => player.id === p.id)}
                   variant="secondary"
                 />
               </TouchableOpacity>
@@ -145,11 +242,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(spacing.md),
     paddingTop: verticalScale(spacing.md),
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'flex-end',
   },
   topTextContainer: {
     flex: 1,
+    paddingBottom: verticalScale(spacing.sm),
   },
   titleInformation: {
     fontSize: fontSize.lg,
@@ -179,9 +276,37 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     marginTop: verticalScale(spacing.xs),
   },
-  voteInstructionName: {
+  selectedSlotsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: scale(spacing.xs),
+    marginTop: verticalScale(spacing.xs),
+    height: verticalScale(28),
+    alignItems: 'center',
+  },
+  selectedSlot: {
+    borderRadius: radius.pill,
+    paddingHorizontal: scale(spacing.sm),
+    height: '100%',
+    justifyContent: 'center',
+    maxWidth: scale(100),
+  },
+  selectedSlotFilled: {
+    backgroundColor: colors.orange[200],
+  },
+  selectedSlotEmpty: {
+    borderWidth: 1,
+    borderColor: colors.gray[300],
+    borderStyle: 'dashed',
+  },
+  selectedSlotText: {
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway-Medium',
     fontWeight: 'bold',
-    color: colors.orange[200],
+    color: colors.background[100],
+  },
+  selectedSlotTextEmpty: {
+    color: colors.gray[300],
   },
   voteOptionsContainer: {
     gap: verticalScale(spacing.xs),

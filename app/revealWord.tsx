@@ -4,7 +4,7 @@ import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
 import { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -20,8 +20,10 @@ import * as Haptics from 'expo-haptics';
 
 export default function RevealWord() {
   const [secretWordRevealed, setSecretWordRevealed] = useState(false);
-  const { game, checkVoteForSecretWord, getCurrentWord, setCurrentScreen } = useContext(GameContext);
+  const { game, resolveScoreOfTheMatch, getCurrentWord, setCurrentScreen } =
+    useContext(GameContext);
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
 
   useEffect(() => {
     setCurrentScreen('/revealWord');
@@ -39,17 +41,23 @@ export default function RevealWord() {
   }));
 
   const handleContinue = () => {
-    checkVoteForSecretWord();
+    resolveScoreOfTheMatch();
     router.replace('/endGame');
   };
 
   const revealWord = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSecretWordRevealed(true);
-  }
+  };
+
+  const impostorVotes = game.impostorVotes ?? [];
+  const count = impostorVotes.length || 1;
+  const characterSize =
+    count === 1 ? height * 0.22 : count === 2 ? height * 0.16 : height * 0.12;
 
   return (
     <ScreenLayout
+      scrollable
       header={
         <View style={styles.headerContainer}>
           <SidebarMenu />
@@ -63,29 +71,45 @@ export default function RevealWord() {
         )
       }
     >
-      <View style={{ flex: 1 }}>
-        <View style={styles.characterContainer}>
-          <Character mood={game.lyingPlayer.character} />
-        </View>
-
-        <View style={styles.wordVotedContainer}>
-          <Text style={styles.label}>
-            {game.lyingPlayer.name} {t('voted for:')}
-          </Text>
-          <Text style={styles.word}>
-            {t(game.selectedWord || '', { ns: 'categories' })}
-          </Text>
-        </View>
-
-        {secretWordRevealed && (
-          <Animated.View style={[styles.secretWordContainer, revealAnimStyle]}>
-            <Text style={styles.label}>{t('The secret word was:')}</Text>
-            <Text style={[styles.word, { color: colors.orange[200] }]}>
-              {t(getCurrentWord(), { ns: 'categories' })}
-            </Text>
-          </Animated.View>
-        )}
+      {/* Characters side by side, sitting right above the orange container */}
+      <View style={styles.charactersRow}>
+        {impostorVotes.map(vote => (
+          <Character
+            key={vote.player.id}
+            mood={vote.player.character}
+            size={characterSize}
+          />
+        ))}
       </View>
+
+      {/* Single merged vote container */}
+      <View style={styles.wordVotedContainer}>
+        {impostorVotes.map((vote, idx) => (
+          <View key={vote.player.id}>
+            {idx > 0 && <View style={styles.voteDivider} />}
+            <Text style={styles.voteLabel}>
+              {vote.player.name} {t('voted for:')}
+            </Text>
+            <Text
+              style={styles.voteWord}
+              numberOfLines={2}
+              adjustsFontSizeToFit
+            >
+              {t(vote.word, { ns: 'categories' })}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Secret word — fades in below the vote container, pushes footer out of the way */}
+      {secretWordRevealed && (
+        <Animated.View style={[styles.secretWordContainer, revealAnimStyle]}>
+          <Text style={styles.secretLabel}>{t('The secret word was:')}</Text>
+          <Text style={styles.secretWord}>
+            {t(getCurrentWord(), { ns: 'categories' })}
+          </Text>
+        </Animated.View>
+      )}
     </ScreenLayout>
   );
 }
@@ -96,33 +120,58 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(spacing.md),
     alignItems: 'flex-end',
   },
-  characterContainer: {
-    alignItems: 'center',
+  charactersRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingTop: verticalScale(spacing.lg),
+    gap: scale(spacing.md),
+    paddingHorizontal: scale(spacing.md),
   },
   wordVotedContainer: {
-    paddingVertical: verticalScale(spacing.xl),
-    paddingHorizontal: scale(spacing.md),
     backgroundColor: colors.orange[200],
-  },
-  secretWordContainer: {
     paddingHorizontal: scale(spacing.md),
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: verticalScale(spacing.sm),
+    paddingBottom: verticalScale(spacing.lg),
   },
-  label: {
+  voteDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+    marginVertical: verticalScale(spacing.sm),
+  },
+  voteLabel: {
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     fontSize: fontSize.lg,
     color: colors.white[100],
   },
-  word: {
+  voteWord: {
+    marginTop: verticalScale(spacing.xs),
+    textAlign: 'center',
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(32),
+    color: colors.black[100],
+  },
+  secretWordContainer: {
+    paddingHorizontal: scale(spacing.md),
+    paddingVertical: verticalScale(spacing.xl),
+    alignItems: 'center',
+  },
+  secretLabel: {
+    textAlign: 'center',
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: fontSize.lg,
+    color: colors.white[100],
+  },
+  secretWord: {
     marginTop: verticalScale(spacing.sm),
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: moderateScale(35),
-    color: colors.black[100],
+    fontSize: moderateScale(42),
+    color: colors.orange[200],
   },
 });

@@ -1,168 +1,299 @@
-import Button from "@/components/button";
-import Character from "@/components/character";
-import PlayerModal from "@/components/playerModal";
-import { GameContext } from "@/context/GameContext";
-import { colors } from "@/styles/colors";
-import { spacing } from "@/styles/spacing";
-import { Player } from "@/types/Player";
-import { t } from "i18next";
-import { useContext, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { moderateScale, scale, verticalScale } from "react-native-size-matters";
+import React from 'react';
+import Button from '@/components/button';
+import Character from '@/components/character';
+import { GameContext } from '@/context/GameContext';
+import { colors } from '@/styles/colors';
+import { spacing } from '@/styles/spacing';
+import { fontSize } from '@/styles/fontSize';
+import { radius } from '@/styles/radius';
+import { Player } from '@/types/Player';
+import categories from '@/data/categories.json';
+import { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { useTranslation } from '@/translations';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 interface ShowWordToSinglePlayerProps {
-    player: Player
-    setPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>
-    setShowForgotWord: React.Dispatch<React.SetStateAction<boolean>>
+  player: Player;
+  setPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>;
+  setShowForgotWord: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ShowWordToSinglePlayer({ player, setPlayer, setShowForgotWord }: ShowWordToSinglePlayerProps) {
-const { game, getCurrentWord } = useContext(GameContext);
+export default function ShowWordToSinglePlayer({
+  player,
+  setPlayer,
+  setShowForgotWord,
+}: ShowWordToSinglePlayerProps) {
+  const { game, getCurrentWord } = useContext(GameContext);
+  const { t } = useTranslation();
   const [wordRevealed, setWordRevealed] = useState(false);
   const [isLyingPlayer, setIsLyingPlayer] = useState(false);
   const [rawWord, setRawWord] = useState('');
 
-    const displayWord = wordRevealed
+  const revealAnim = useSharedValue(0);
+  useEffect(() => {
+    revealAnim.value = wordRevealed ? withTiming(1, { duration: 500 }) : 0;
+  }, [wordRevealed]);
+  const revealAnimStyle = useAnimatedStyle(() => ({
+    opacity: revealAnim.value,
+    transform: [{ scale: interpolate(revealAnim.value, [0, 1], [0.85, 1]) }],
+  }));
+
+  const displayWord = wordRevealed
     ? isLyingPlayer
-      ? t('You are be the impostor this round!')
-      : rawWord ? t(rawWord, { ns: 'categories' }) : ''
+      ? t('You will be the impostor this round!')
+      : rawWord
+        ? t(rawWord, { ns: 'categories' })
+        : ''
     : '';
 
   const displaySubtitle = wordRevealed
     ? isLyingPlayer
-      ? t("Pretend you know the word and try to discover it based on people's answers.")
-      : t('Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.')
+      ? t(
+          "Pretend you know the word and try to discover it based on people's answers."
+        )
+      : t(
+          'Answer the questions based on this word, but make sure to not make it easy for the impostor to discover it.'
+        )
+    : '';
+
+  const categoryData = game.category
+    ? categories[game.category as keyof typeof categories]
+    : null;
+  const wordDescKey =
+    wordRevealed && !isLyingPlayer && rawWord && categoryData?.wordDescriptions
+      ? (categoryData.wordDescriptions as Record<string, string>)[rawWord]
+      : null;
+  const displayDescription = wordDescKey
+    ? t(wordDescKey, { ns: 'categories' })
     : '';
 
   function handleRevealWord() {
-    if(player) {
-      const playerIsLying = game.lyingPlayer.id === player.id;
-      setIsLyingPlayer(playerIsLying);
-      setRawWord(getCurrentWord());
-      setWordRevealed(true);
-    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const playerIsLying = game.lyingPlayers.some(lp => lp.id === player.id);
+    setIsLyingPlayer(playerIsLying);
+    setRawWord(getCurrentWord());
+    setWordRevealed(true);
   }
 
   function handleCloseWindow() {
-    setPlayer(undefined)
-    setShowForgotWord(false)
+    setPlayer(undefined);
+    setShowForgotWord(false);
   }
 
-    return(
-        <SafeAreaView
-              edges={['bottom', 'left', 'right']}
-              style={[
-                {
-                  backgroundColor: colors.background[100],
-                  overflow: 'hidden',
-                  flex: 1,
-                },
-              ]}
-            >
-              <View style={styles.headerContainer}>
-                <View>
-                  <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
-                  <Text style={styles.playerName}>{player.name}</Text>
+  return (
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <View style={styles.topTextContainer}>
+          <Text style={styles.titleInformation}>{t('Pass device to:')}</Text>
+          <Text style={styles.playerName}>{player.name}</Text>
+        </View>
+        <Character mood={player.character} />
+      </View>
+
+      <View style={styles.secretWordContainer}>
+        <View style={styles.flexSpacer} />
+
+        <View
+          style={[styles.wordCard, isLyingPlayer && styles.wordCardImpostor]}
+        >
+          <View
+            style={[
+              styles.wordCardInner,
+              isLyingPlayer && styles.wordCardInnerImpostor,
+            ]}
+          >
+            {!wordRevealed ? (
+              <View style={styles.placeholderContent}>
+                <Ionicons
+                  name="lock-closed"
+                  size={moderateScale(32)}
+                  color={colors.gray[300]}
+                />
+              </View>
+            ) : (
+              <Animated.View style={[styles.revealedContent, revealAnimStyle]}>
+                <View style={styles.cardLabelRow}>
+                  <Text
+                    style={[
+                      styles.cardLabel,
+                      isLyingPlayer && styles.cardLabelImpostor,
+                    ]}
+                  >
+                    {isLyingPlayer ? t('Your role') : t('Secret word')}
+                  </Text>
+                  {isLyingPlayer && (
+                    <Ionicons
+                      name="glasses-outline"
+                      size={moderateScale(16)}
+                      color={colors.purple[100]}
+                    />
+                  )}
                 </View>
-                <Character mood={player.character} />
-              </View>
-              <View style={styles.secretWordContainer}>
-                <Text style={styles.secretWord}>{displayWord}</Text>
-                <Text style={styles.subtitle}>{displaySubtitle}</Text>
-              </View>
-              <View style={styles.buttonContainer}>
-                {wordRevealed === false ? (
-                  <Button
-                    text={t('Tap to reveal')}
-                    onPress={handleRevealWord}
-                    variants='primary'
-                  />
-                ) : (
-                  <Button text={t('Got it!')} onPress={handleCloseWindow} />
-                )}
-              </View>
-            </SafeAreaView>
-    )
+                <Text
+                  style={[
+                    styles.secretWord,
+                    isLyingPlayer && styles.secretWordImpostor,
+                  ]}
+                >
+                  {displayWord}
+                </Text>
+                {displayDescription ? (
+                  <Text style={styles.wordDescription}>
+                    {displayDescription}
+                  </Text>
+                ) : null}
+              </Animated.View>
+            )}
+          </View>
+        </View>
+
+        <View style={styles.subtitleContainer}>
+          <Text style={styles.subtitle}>{displaySubtitle}</Text>
+        </View>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        {!wordRevealed ? (
+          <Button
+            text={t('Tap to reveal')}
+            onPress={handleRevealWord}
+            variants="primary"
+          />
+        ) : (
+          <Button text={t('Got it!')} onPress={handleCloseWindow} />
+        )}
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    marginLeft: scale(30),
-    marginTop: verticalScale(20),
+  container: {
+    flex: 1,
+  },
+  topContainer: {
+    paddingLeft: scale(30),
+    paddingTop: verticalScale(20),
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-  modalPlayerName: {
-    fontFamily: 'Ralway',
-    fontSize: moderateScale(25),
-    fontWeight: 'bold',
-    color: colors.orange[200],
-  },
-  headerCategoryTitle: {
-    textTransform: 'capitalize',
-    fontSize: moderateScale(14),
-    fontFamily: 'Raleway-Medium',
-    textAlign: 'center',
+  topTextContainer: {
+    flex: 1,
   },
   titleInformation: {
-    fontSize: moderateScale(18),
+    fontSize: fontSize.lg,
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.orange[200],
   },
   playerName: {
     fontFamily: 'Ralway',
-    fontSize: moderateScale(32),
+    fontSize: fontSize.xl,
     fontWeight: 'bold',
     color: colors.white[100],
   },
   secretWordContainer: {
-    marginTop: verticalScale(100),
-    justifyContent: 'center',
+    flex: 1,
     alignItems: 'center',
-    paddingHorizontal: scale(20),
+    paddingHorizontal: scale(spacing.md),
+  },
+  flexSpacer: {
+    flex: 1,
+  },
+  wordCard: {
+    width: '100%',
+    backgroundColor: colors.orange[200],
+    borderRadius: moderateScale(20),
+    borderBottomWidth: scale(7),
+    borderEndWidth: scale(7),
+    borderTopWidth: scale(0),
+    borderLeftWidth: scale(0),
+    borderColor: colors.orange[200],
+    overflow: 'hidden',
+  },
+  wordCardImpostor: {
+    backgroundColor: colors.purple[100],
+    borderColor: colors.purple[100],
+  },
+  wordCardInner: {
+    backgroundColor: colors.white[100],
+    borderRadius: moderateScale(radius.lg),
+    paddingVertical: verticalScale(spacing.lg),
+    paddingHorizontal: scale(spacing.md),
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: verticalScale(130),
+  },
+  wordCardInnerImpostor: {
+    backgroundColor: colors.purple[300],
+  },
+  placeholderContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  revealedContent: {
+    width: '100%',
+    alignItems: 'center',
+    gap: verticalScale(spacing.sm),
+  },
+  cardLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(spacing.xs),
+  },
+  cardLabel: {
+    fontFamily: 'Raleway-Medium',
+    fontSize: fontSize.sm,
+    color: colors.gray[300],
+    textTransform: 'uppercase',
+    letterSpacing: moderateScale(1),
+  },
+  cardLabelImpostor: {
+    color: colors.purple[100],
   },
   secretWord: {
-    color: colors.white[100],
-    fontSize: moderateScale(26),
+    fontFamily: 'Ralway',
+    fontWeight: 'bold',
+    color: colors.background[100],
+    fontSize: fontSize.xxl,
     textAlign: 'center',
-    paddingHorizontal: scale(15),
+  },
+  secretWordImpostor: {
+    color: colors.white[100],
+    fontSize: fontSize.lg,
+  },
+  wordDescription: {
+    fontFamily: 'Raleway-Medium',
+    fontSize: fontSize.sm,
+    color: colors.background[100],
+    textAlign: 'center',
+  },
+  subtitleContainer: {
+    flex: 1,
+    paddingTop: verticalScale(spacing.md),
+    alignItems: 'center',
+    width: '100%',
   },
   subtitle: {
     fontFamily: 'Ralway',
-    fontSize: moderateScale(14),
+    fontSize: fontSize.sm,
     fontWeight: 'bold',
     color: colors.orange[200],
-    paddingHorizontal: scale(15),
-    marginTop: verticalScale(10),
     textAlign: 'center',
   },
   buttonContainer: {
-    position: 'absolute',
-    bottom: verticalScale(10),
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: scale(20),
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(30),
+    paddingVertical: verticalScale(spacing.md),
+    paddingHorizontal: scale(spacing.md),
     backgroundColor: colors.background[100],
-  },
-  modalView: {
-    margin: scale(20),
-    backgroundColor: 'white',
-    borderRadius: moderateScale(20),
-    padding: scale(35),
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: verticalScale(2),
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: moderateScale(4),
-    elevation: 5,
   },
 });

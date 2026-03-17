@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { scale } from 'react-native-size-matters';
 
 interface ColorPickerProps {
   color: string;
