@@ -102,7 +102,7 @@ export default function RoundScreen() {
     return () => subscription.remove();
   }, [micPermissionGranted]);
 
-  const totalRounds = game.players.length * 2;
+  const totalRounds = game.players.length * game.config.setsOfQuestions;
 
   useEffect(() => {
     if (game.currentRound === totalRounds + 1) {

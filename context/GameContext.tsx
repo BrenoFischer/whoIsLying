@@ -212,19 +212,11 @@ export const GameContextProvider = ({
     category: string,
     setsOfQuestions: number
   ): Round[] => {
-    // Each set uses a different player-pair rotation so everyone interacts with
-    // different partners across sets:
-    //   set 1 — forward chain:   player[i] → player[i+1]
-    //   set 2 — backward chain:  player[i] → player[i-1]
-    //   set 3 — skip-one chain:  player[i] → player[i+2]
-    // Every set is independently shuffled before being appended.
-    const n = newPlayers.length;
+    const perSet = newPlayers.length;
     const categories: any = allCategories;
     const questionPool: { low: string[]; medium: string[]; high: string[] } =
       categories[category].questions;
 
-    // Separate used-index trackers per exposure level (shared across all sets
-    // so the same question is never repeated across different sets either).
     const usedIndices: Record<ExposureLevel, Set<number>> = {
       low: new Set(),
       medium: new Set(),
@@ -234,31 +226,20 @@ export const GameContextProvider = ({
     const distributions =
       SET_DISTRIBUTIONS[setsOfQuestions] ?? SET_DISTRIBUTIONS[2];
 
-    // Build the player-pair list for each set number (1-indexed)
-    const getPairs = (setNumber: number): [Player, Player][] => {
-      const pairs: [Player, Player][] = [];
-      if (setNumber === 1) {
-        for (let i = 0; i < n; i++)
-          pairs.push([newPlayers[i], newPlayers[(i + 1) % n]]);
-      } else if (setNumber === 2) {
-        for (let i = 0; i < n; i++)
-          pairs.push([newPlayers[i], newPlayers[(i - 1 + n) % n]]);
-      } else {
-        for (let i = 0; i < n; i++)
-          pairs.push([newPlayers[i], newPlayers[(i + 2) % n]]);
-      }
-      return pairs;
-    };
-
     let allRounds: Round[] = [];
 
     for (let s = 0; s < setsOfQuestions; s++) {
       const setNumber = (s + 1) as 1 | 2 | 3;
-      const distribution = distributions[s];
-      const counts = distributeByExposure(n, distribution);
-      const pairs = getPairs(setNumber);
+      const counts = distributeByExposure(perSet, distributions[s]);
 
-      // Build a list of (exposure, questionData) in the right proportions
+      // Build player pairs: each player asks a different neighbour per set
+      const pairs: [Player, Player][] = newPlayers.map((player, i) => {
+        const offset = setNumber === 2 ? -1 : setNumber === 3 ? 2 : 1;
+        const partnerIdx = (i + offset + perSet) % perSet;
+        return [player, newPlayers[partnerIdx]];
+      });
+
+      // Pick questions per exposure level then shuffle so they aren't clumped
       const questionsForSet: {
         exposure: ExposureLevel;
         question: string;
@@ -273,7 +254,6 @@ export const GameContextProvider = ({
           questionsForSet.push({ exposure: level, question, questionIndex });
         }
       }
-      // Shuffle the question assignments so exposure levels aren't clumped together
       for (let i = questionsForSet.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [questionsForSet[i], questionsForSet[j]] = [
@@ -282,19 +262,19 @@ export const GameContextProvider = ({
         ];
       }
 
-      // Pair each player-pair with a question
-      let setRounds: Round[] = pairs.map((pair, idx) => ({
-        id: uuid.v4().toString(),
-        playerThatAsks: pair[0],
-        playerThatAnswers: pair[1],
-        question: questionsForSet[idx].question,
-        questionIndex: questionsForSet[idx].questionIndex,
-        questionSet: setNumber,
-        exposure: questionsForSet[idx].exposure,
-        audio: undefined,
-      }));
+      const setRounds: Round[] = shuffleRounds(
+        pairs.map((pair, idx) => ({
+          id: uuid.v4().toString(),
+          playerThatAsks: pair[0],
+          playerThatAnswers: pair[1],
+          question: questionsForSet[idx].question,
+          questionIndex: questionsForSet[idx].questionIndex,
+          questionSet: setNumber,
+          exposure: questionsForSet[idx].exposure,
+          audio: undefined,
+        }))
+      );
 
-      setRounds = shuffleRounds(setRounds);
       allRounds = allRounds.concat(setRounds);
     }
 
