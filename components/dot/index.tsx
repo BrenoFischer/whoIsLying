@@ -10,10 +10,10 @@ export default function Dot({ color }: DotProps) {
     <View
       style={{
         backgroundColor: color,
-        width: scale(8),
-        height: verticalScale(8),
+        width: scale(4),
+        height: verticalScale(4),
         borderRadius: '50%',
-        marginHorizontal: scale(8),
+        marginHorizontal: scale(2),
       }}
     />
   );

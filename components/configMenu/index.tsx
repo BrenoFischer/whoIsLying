@@ -63,6 +63,36 @@ export default function ConfigMenu() {
     <>
       <View>
         <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
+          <View style={styles.configSummary}>
+            <View style={styles.configRow}>
+              <FontAwesome
+                name="user-secret"
+                size={moderateScale(12)}
+                color={colors.orange[200]}
+              />
+              {randomImpostors ? (
+                <Ionicons
+                  name="shuffle"
+                  size={moderateScale(12)}
+                  color={colors.orange[200]}
+                />
+              ) : (
+                <Text style={styles.configValue}>
+                  {game.config.numberOfImpostors}
+                </Text>
+              )}
+            </View>
+            <View style={styles.configRow}>
+              <FontAwesome
+                name="question"
+                size={moderateScale(12)}
+                color={colors.orange[200]}
+              />
+              <Text style={styles.configValue}>
+                {game.config.setsOfQuestions}
+              </Text>
+            </View>
+          </View>
           <Entypo name="cog" size={scale(28)} color={colors.orange[200]} />
         </TouchableOpacity>
       </View>
@@ -236,6 +266,26 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(radius.pill),
     padding: scale(5),
     alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(6),
+  },
+  configSummary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(13),
+    paddingLeft: scale(4),
+  },
+  configRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(3),
+  },
+  configValue: {
+    fontFamily: 'Ralway',
+    fontSize: moderateScale(11),
+    fontWeight: '700',
+    color: colors.orange[200],
   },
   closeButton: {
     zIndex: 100,
