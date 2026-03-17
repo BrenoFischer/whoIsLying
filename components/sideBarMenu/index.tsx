@@ -10,6 +10,7 @@ import {
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomModal from '@/components/modal';
 import { Ionicons } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { colors } from '@/styles/colors';
 import Button from '../button';
 import Character from '../character';
@@ -23,6 +24,7 @@ import { spacing } from '@/styles/spacing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PlayerInput from '../playerInput';
 import { fontSize } from '@/styles/fontSize';
+import Dot from '@/components/dot';
 
 interface HowToPlayProps {
   showHowToPlay: boolean;
@@ -270,6 +272,8 @@ export default function SidebarMenu() {
     setLanguage(lan);
   };
 
+  const isMatchRunning = game.rounds.length > 0;
+
   const isForgotWordAvailable =
     game.players.length > 0 &&
     game.currentScreen !== '/createGame' &&
@@ -342,13 +346,116 @@ export default function SidebarMenu() {
                 </View>
               </View>
 
-              <View style={styles.menuButtonContainer}>
-                <Button
-                  text={t('Start a new game')}
-                  onPress={() => {
-                    setNewGameModalOpen(true);
-                  }}
-                />
+              {isMatchRunning && (
+                <View style={styles.configInfoCard}>
+                  <Text style={styles.configInfoLabel}>
+                    {t('Current match')}
+                  </Text>
+                  <View style={styles.configRowsContainer}>
+                    <View style={styles.configInfoRow}>
+                      <FontAwesome
+                        name="user-secret"
+                        size={moderateScale(13)}
+                        color={colors.orange[200]}
+                      />
+                      <Text style={styles.configInfoValue}>
+                        {game.config.numberOfImpostors}
+                      </Text>
+                    </View>
+                    <View style={styles.configInfoRow}>
+                      <FontAwesome
+                        name="question"
+                        size={moderateScale(13)}
+                        color={colors.orange[200]}
+                      />
+                      <Text style={styles.configInfoValue}>
+                        {game.config.setsOfQuestions}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              <View style={styles.menuList}>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => setNewGameModalOpen(true)}
+                >
+                  <Ionicons
+                    name="refresh"
+                    size={moderateScale(20)}
+                    color={colors.orange[200]}
+                  />
+                  <Text style={styles.menuItemText}>
+                    {t('Start a new game')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => setHowToPlayModalOpen(true)}
+                >
+                  <Ionicons
+                    name="help-circle-outline"
+                    size={moderateScale(20)}
+                    color={colors.orange[200]}
+                  />
+                  <Text style={styles.menuItemText}>{t('Como jogar')}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.menuItem,
+                    game.players.length === 0 && styles.menuItemDisabled,
+                  ]}
+                  onPress={() => game.players.length > 0 && setShowRanking(true)}
+                >
+                  <Ionicons
+                    name="trophy-outline"
+                    size={moderateScale(20)}
+                    color={
+                      game.players.length > 0
+                        ? colors.orange[200]
+                        : colors.gray[300]
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.menuItemText,
+                      game.players.length === 0 && styles.menuItemTextDisabled,
+                    ]}
+                  >
+                    {t('Ranking')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.menuItem,
+                    !isForgotWordAvailable && styles.menuItemDisabled,
+                  ]}
+                  onPress={() =>
+                    isForgotWordAvailable && setShowForgotWord(true)
+                  }
+                >
+                  <Ionicons
+                    name="eye-outline"
+                    size={moderateScale(20)}
+                    color={
+                      isForgotWordAvailable
+                        ? colors.orange[200]
+                        : colors.gray[300]
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.menuItemText,
+                      !isForgotWordAvailable && styles.menuItemTextDisabled,
+                    ]}
+                  >
+                    {t('Forgot your word')}?
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <CustomModal
@@ -370,37 +477,16 @@ export default function SidebarMenu() {
                     <Button
                       text={t('Continue with current game')}
                       variants="secondary"
-                      onPress={() => {
-                        setNewGameModalOpen(false);
-                      }}
+                      onPress={() => setNewGameModalOpen(false)}
                     />
                   </View>
                 </>
               </CustomModal>
 
-              <View style={styles.menuButtonContainer}>
-                <Button
-                  text={t('Como jogar')}
-                  onPress={() => {
-                    setHowToPlayModalOpen(true);
-                  }}
-                />
-              </View>
-
               <HowToPlay
                 setShowHowToPlay={setHowToPlayModalOpen}
                 showHowToPlay={howToPlayModalOpen}
               />
-
-              <View style={styles.menuButtonContainer}>
-                <Button
-                  text={t('Ranking')}
-                  variants={game.players.length > 0 ? 'secondary' : 'disabled'}
-                  onPress={() => {
-                    setShowRanking(true);
-                  }}
-                />
-              </View>
 
               <Modal
                 transparent={false}
@@ -439,16 +525,6 @@ export default function SidebarMenu() {
                   </ScrollView>
                 </View>
               </Modal>
-
-              <View style={styles.menuButtonContainer}>
-                <Button
-                  text={t('Forgot your word') + '?'}
-                  variants={isForgotWordAvailable ? 'secondary' : 'disabled'}
-                  onPress={() => {
-                    setShowForgotWord(true);
-                  }}
-                />
-              </View>
 
               <CheckPlayerWord
                 showForgotWord={showForgotWord}
@@ -516,6 +592,62 @@ const styles = StyleSheet.create({
   menuButtonContainer: {
     marginVertical: '4%',
     alignSelf: 'center',
+  },
+  configInfoCard: {
+    borderWidth: 1,
+    borderColor: colors.orange[200] + '40',
+    borderRadius: moderateScale(radius.md),
+    paddingVertical: verticalScale(spacing.sm),
+    paddingHorizontal: scale(spacing.md),
+    marginBottom: verticalScale(spacing.md),
+  },
+  configInfoLabel: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(10),
+    fontWeight: '700',
+    color: colors.gray[300],
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: verticalScale(4),
+  },
+  configRowsContainer: {
+    flexDirection: "row",
+    gap: scale(15)
+  },
+  configInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(4),
+  },
+  configInfoValue: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(13),
+    fontWeight: '700',
+    color: colors.orange[200],
+  },
+  menuList: {
+    gap: verticalScale(2),
+    marginHorizontal: scale(20)
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.sm),
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray[300] + '30',
+  },
+  menuItemDisabled: {
+    opacity: 0.4,
+  },
+  menuItemText: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(15),
+    fontWeight: '600',
+    color: colors.white[100],
+  },
+  menuItemTextDisabled: {
+    color: colors.gray[300],
   },
   newGameModalTitle: {
     marginBottom: verticalScale(30),
