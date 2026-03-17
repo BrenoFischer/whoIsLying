@@ -42,7 +42,7 @@ export default function Votes() {
     undefined
   );
 
-  const numberOfImpostors = game.config.numberOfImpostors;
+  const numberOfImpostors = game.lyingPlayers.length;
   const scrollRef = useRef<ScrollView>(null);
 
   const characterSize = height * 0.15;

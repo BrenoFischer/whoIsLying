@@ -15,7 +15,7 @@ const INITIAL_GAME: Game = {
   currentRound: 1,
   rounds: [],
   lyingPlayers: [],
-  config: { numberOfImpostors: 1, setsOfQuestions: 2 },
+  config: { numberOfImpostors: 1, setsOfQuestions: 2, randomImpostors: false },
   category: undefined,
   word: undefined,
   wordIndex: undefined,
@@ -31,6 +31,7 @@ interface GameContextType {
   createNewGame: () => void;
   getLyingPlayers: () => Player[];
   setNumberOfImpostors: (count: number) => void;
+  setRandomImpostors: (random: boolean) => void;
   checkIfPlayerIsLiar: (playerId: string) => boolean;
   setSetsOfQuestions: (sets: number) => void;
   setGameWord: (category: string) => void;
@@ -311,6 +312,13 @@ export const GameContextProvider = ({
     }));
   };
 
+  const setRandomImpostors = (random: boolean) => {
+    setGame(prev => ({
+      ...prev,
+      config: { ...prev.config, randomImpostors: random },
+    }));
+  };
+
   const setGameWord = (category: string) => {
     const { index, word } = getRandomWordIndex(category);
     setGame(prev => ({ ...prev, word, wordIndex: index, category }));
@@ -387,11 +395,9 @@ export const GameContextProvider = ({
     }));
   };
 
-  const chooseRandomLyingPlayers = (players: Player[]) => {
+  const chooseRandomLyingPlayers = (players: Player[], count: number) => {
     const shuffled: Player[] = [...players].sort(() => 0.5 - Math.random());
-    const lyingPlayers = shuffled.slice(0, game.config.numberOfImpostors);
-
-    return lyingPlayers;
+    return shuffled.slice(0, count);
   };
 
   const getLyingPlayers = () => {
@@ -403,7 +409,11 @@ export const GameContextProvider = ({
       const category = prev.category ?? '';
       const setsOfQuestions = prev.config.setsOfQuestions;
       const rounds = setAllRounds(newPlayers, category, setsOfQuestions);
-      const lyingPlayers = chooseRandomLyingPlayers(newPlayers);
+      const maxImpostors = Math.min(3, newPlayers.length - 2);
+      const impostorCount = prev.config.randomImpostors
+        ? Math.floor(Math.random() * maxImpostors) + 1
+        : Math.min(prev.config.numberOfImpostors, maxImpostors);
+      const lyingPlayers = chooseRandomLyingPlayers(newPlayers, impostorCount);
 
       return {
         ...prev,
@@ -660,6 +670,7 @@ export const GameContextProvider = ({
         setNumberOfImpostors,
         checkIfPlayerIsLiar,
         setSetsOfQuestions,
+        setRandomImpostors,
         setImpostorVotes,
         nextRound,
         previousRound,

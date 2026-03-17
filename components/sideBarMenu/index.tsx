@@ -358,9 +358,17 @@ export default function SidebarMenu() {
                         size={moderateScale(13)}
                         color={colors.orange[200]}
                       />
-                      <Text style={styles.configInfoValue}>
-                        {game.config.numberOfImpostors}
-                      </Text>
+                      {game.config.randomImpostors ? (
+                        <Ionicons
+                          name="shuffle"
+                          size={moderateScale(13)}
+                          color={colors.orange[200]}
+                        />
+                      ) : (
+                        <Text style={styles.configInfoValue}>
+                          {game.config.numberOfImpostors}
+                        </Text>
+                      )}
                     </View>
                     <View style={styles.configInfoRow}>
                       <FontAwesome

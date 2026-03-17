@@ -14,7 +14,7 @@ import { spacing } from '@/styles/spacing';
 import { GameContext } from '@/context/GameContext';
 
 export default function ConfigMenu() {
-  const { setNumberOfImpostors, game, setSetsOfQuestions } =
+  const { setNumberOfImpostors, game, setSetsOfQuestions, setRandomImpostors } =
     useContext(GameContext);
   const [menuOpened, setMenuOpened] = useState(false);
   const [impostorCount, setImpostorCount] = useState(
@@ -23,7 +23,7 @@ export default function ConfigMenu() {
   const [questionsCount, setQuestionsCount] = useState(
     game.config.setsOfQuestions
   );
-  const [randomImpostors, setRandomImpostors] = useState(false);
+  const randomImpostors = game.config.randomImpostors;
 
   const { t } = useTranslation();
 
