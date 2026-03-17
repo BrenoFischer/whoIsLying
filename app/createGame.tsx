@@ -25,11 +25,12 @@ import { fontSize } from '@/styles/fontSize';
 import { characters, CharacterTheme } from '@/data/imagesData';
 import CharacterPicker from '@/components/characterPicker';
 import ConfigMenu from '@/components/configMenu';
+import { ToggleButton } from '@/components/toggleButton';
 
 const MAX_PLAYERS = 10;
 
 export default function CreateGame() {
-  const { createGame, game, setCurrentScreen } = useContext(GameContext);
+  const { createGame, game, setCurrentScreen, setNumberOfImpostors, setRandomImpostors } = useContext(GameContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -38,6 +39,9 @@ export default function CreateGame() {
 
   const [players, setPlayers] = useState<Player[]>(game.players);
   const [modalOpen, setModalOpen] = useState(false);
+  const [impostorConflictOpen, setImpostorConflictOpen] = useState(false);
+  const [conflictImpostorCount, setConflictImpostorCount] = useState(1);
+  const [conflictRandom, setConflictRandom] = useState(false);
   const [characterPickerFilter, setCharacterPickerFilter] = useState<
     CharacterTheme | 'all'
   >('all');
@@ -77,7 +81,7 @@ export default function CreateGame() {
   function setNewPlayer({ id, name, theme }: Player) {
     if (players.length >= MAX_PLAYERS) return;
     setPlayers(prev => [
-      { id, name, theme, character: currentImageName, score: 0 },
+      { id, name, theme, character: currentImageName, score: 0, matchScore: { scoreEvents: [], totalScore: 0 } },
       ...prev,
     ]);
   }
@@ -101,7 +105,24 @@ export default function CreateGame() {
   }
 
   function handleCreateGame() {
+    const maxImpostors = players.length - 2;
+    if (!game.config.randomImpostors && game.config.numberOfImpostors > maxImpostors) {
+      setConflictImpostorCount(maxImpostors);
+      setImpostorConflictOpen(true);
+      return;
+    }
     createGame(players);
+    router.replace('/showWordToAll');
+  }
+
+  function handleConflictCreateGame() {
+    if (conflictRandom) {
+      setRandomImpostors(true);
+    } else {
+      setNumberOfImpostors(conflictImpostorCount);
+    }
+    createGame(players);
+    setImpostorConflictOpen(false);
     router.replace('/showWordToAll');
   }
 
@@ -113,6 +134,7 @@ export default function CreateGame() {
   return (
     <ScreenLayout
       scrollable
+      style={impostorConflictOpen ? { opacity: 0.1 } : undefined}
       footer={
         notAvailableToContinue ? (
           <Button
@@ -176,6 +198,77 @@ export default function CreateGame() {
           onThemeFilterChange={setCharacterPickerFilter}
         />
       </CustomModal>
+
+      <CustomModal
+        modalVisible={impostorConflictOpen}
+        setModalVisible={setImpostorConflictOpen}
+      >
+        <View style={styles.conflictModal}>
+          <TouchableOpacity
+            style={styles.conflictClose}
+            onPress={() => setImpostorConflictOpen(false)}
+          >
+            <Ionicons name="close" size={moderateScale(22)} color={colors.orange[200]} />
+          </TouchableOpacity>
+
+          <Ionicons
+            name="warning-outline"
+            size={moderateScale(32)}
+            color={colors.orange[200]}
+            style={{ alignSelf: 'center' }}
+          />
+          <Text style={styles.conflictTitle}>{t('Too many impostors')}</Text>
+          <Text style={styles.conflictMessage}>
+            {t('With')} {players.length} {t('players, you can have at most')}{' '}
+            <Text style={{ fontWeight: 'bold' }}>{players.length - 2}</Text>{' '}
+            {players.length - 2 === 1 ? t('impostor') : t('impostors')}.
+          </Text>
+
+          <View
+            style={[styles.conflictSettingRow, conflictRandom && styles.conflictSettingRowFaded]}
+            pointerEvents={conflictRandom ? 'none' : 'auto'}
+          >
+            <View style={styles.conflictSettingLabel}>
+              <Ionicons name="people" size={moderateScale(18)} color={colors.orange[200]} />
+              <Text style={styles.conflictSettingLabelText}>{t('# of impostors')}</Text>
+            </View>
+            <View style={styles.conflictCounter}>
+              <TouchableOpacity
+                onPress={() => setConflictImpostorCount(c => Math.max(1, c - 1))}
+                style={[styles.counterButton, conflictImpostorCount === 1 && styles.counterButtonDisabled]}
+              >
+                <Text style={styles.counterButtonText}>−</Text>
+              </TouchableOpacity>
+              <View style={styles.counterValueContainer}>
+                {conflictRandom ? (
+                  <Ionicons name="shuffle" size={moderateScale(20)} color={colors.orange[200]} />
+                ) : (
+                  <Text style={styles.counterValue}>{conflictImpostorCount}</Text>
+                )}
+              </View>
+              <TouchableOpacity
+                onPress={() => setConflictImpostorCount(c => Math.min(players.length - 2, c + 1))}
+                style={[styles.counterButton, conflictImpostorCount === players.length - 2 && styles.counterButtonDisabled]}
+              >
+                <Text style={styles.counterButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.conflictSettingRow}>
+            <View style={styles.conflictSettingLabel}>
+              <Ionicons name="shuffle" size={moderateScale(18)} color={colors.orange[200]} />
+              <Text style={styles.conflictSettingLabelText}>{t('Random & hidden')}</Text>
+            </View>
+            <ToggleButton value={conflictRandom} onValueChange={setConflictRandom} variant="secondary" />
+          </View>
+
+          <View style={{ paddingTop: verticalScale(spacing.xxl) }}>
+            <Button text={t('Create game')} onPress={handleConflictCreateGame} />
+          </View>
+        </View>
+      </CustomModal>
+
       <View>
         <View style={styles.topContainer}>
           <View style={{ flex: 1 }}>
@@ -239,6 +332,83 @@ export default function CreateGame() {
 }
 
 const styles = StyleSheet.create({
+  conflictModal: {
+    gap: verticalScale(spacing.xs),
+  },
+  conflictClose: {
+    alignSelf: 'flex-end',
+  },
+  conflictTitle: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(18),
+    color: colors.orange[200],
+    textAlign: 'center',
+  },
+  conflictMessage: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(13),
+    color: colors.black[100],
+    textAlign: 'center',
+    marginBottom: verticalScale(spacing.xs),
+  },
+  conflictSettingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: verticalScale(spacing.sm),
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray[300] + '40',
+  },
+  conflictSettingRowFaded: {
+    opacity: 0.35,
+  },
+  conflictSettingLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(spacing.xs),
+    flexShrink: 1,
+    marginRight: scale(spacing.md),
+  },
+  conflictSettingLabelText: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(13),
+    fontWeight: '600',
+    color: colors.black[100],
+    flexShrink: 1,
+  },
+  conflictCounter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(spacing.xs),
+  },
+  counterButton: {
+    width: scale(28),
+    height: scale(28),
+    borderRadius: moderateScale(radius.pill),
+    backgroundColor: colors.orange[200],
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  counterButtonDisabled: {
+    backgroundColor: colors.gray[200],
+  },
+  counterButtonText: {
+    fontSize: moderateScale(16),
+    fontWeight: 'bold',
+    color: colors.white[100],
+    lineHeight: moderateScale(18),
+  },
+  counterValueContainer: {
+    width: scale(26),
+    alignItems: 'center',
+  },
+  counterValue: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(18),
+    fontWeight: 'bold',
+    color: colors.orange[200],
+  },
   headerContainer: {
     paddingTop: verticalScale(spacing.xs),
     paddingBottom: verticalScale(spacing.xs),

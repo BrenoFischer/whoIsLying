@@ -155,7 +155,15 @@ export default function ConfigMenu() {
                     </Text>
                   </TouchableOpacity>
                   <View style={styles.counterValueContainer}>
-                    <Text style={styles.counterValue}>{impostorCount}</Text>
+                    {randomImpostors ? (
+                      <Ionicons
+                        name="shuffle"
+                        size={moderateScale(20)}
+                        color={colors.orange[200]}
+                      />
+                    ) : (
+                      <Text style={styles.counterValue}>{impostorCount}</Text>
+                    )}
                   </View>
                   <TouchableOpacity
                     onPress={increaseImpostors}
