@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     color: colors.black[100],
   },
   playerName: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: fontSize.xl,
     fontWeight: 'bold',
     color: colors.white[100],
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     color: colors.purple[100],
   },
   secretWord: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontWeight: 'bold',
     color: colors.background[100],
     fontSize: fontSize.xxl,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   subtitle: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: fontSize.sm,
     fontWeight: 'bold',
     color: colors.orange[200],

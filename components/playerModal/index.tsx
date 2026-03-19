@@ -65,7 +65,7 @@ export default function PlayerModal({
 
 const styles = StyleSheet.create({
   modalPlayerName: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(25),
     fontWeight: 'bold',
     color: colors.orange[200],

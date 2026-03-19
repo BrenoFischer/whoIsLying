@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     gap: scale(3),
   },
   configValue: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(11),
     fontWeight: '700',
     color: colors.orange[200],
@@ -311,14 +311,14 @@ const styles = StyleSheet.create({
     paddingBottom: verticalScale(spacing.lg),
   },
   modalTitle: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(26),
     fontWeight: 'bold',
     color: colors.orange[200],
     textAlign: 'center',
   },
   sectionSubtitle: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(12),
     fontWeight: 'bold',
     color: colors.gray[300],
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     marginRight: scale(spacing.sm),
   },
   settingLabel: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(16),
     fontWeight: '600',
     color: colors.white[100],
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   counterValue: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(22),
     fontWeight: 'bold',
     color: colors.orange[200],

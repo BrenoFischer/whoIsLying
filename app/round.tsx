@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
   playerName: {
     paddingVertical: verticalScale(10),
     paddingHorizontal: scale(5),
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: fontSize.xl,
     fontWeight: 'bold',
     color: colors.white[100],
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   recordingText: {
     fontSize: fontSize.md,
     color: colors.orange[200],
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontWeight: 'bold',
   },
   recordingTextDenied: {

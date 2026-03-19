@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   pageTitle: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: fontSize.xl,
     fontWeight: 'bold',
   },
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   categoryTitle: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     textTransform: 'capitalize',
     fontSize: fontSize.md,
     textAlign: 'center',
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   backCategoryTitle: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     textTransform: 'capitalize',
     fontSize: fontSize.md,
     textAlign: 'center',

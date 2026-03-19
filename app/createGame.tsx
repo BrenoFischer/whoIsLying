@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontFamily: 'Ralway',
+    fontFamily: 'Raleway',
     fontSize: moderateScale(26),
     fontWeight: 'bold',
   },
