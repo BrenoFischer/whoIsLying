@@ -5,6 +5,7 @@ import {
   View,
   Text,
   StyleSheet,
+  useWindowDimensions,
 } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -36,6 +37,9 @@ export default function CharacterPicker({
   const themeFilter = controlledFilter ?? internalFilter;
   const setThemeFilter = onThemeFilterChange ?? setInternalFilter;
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
+
+  const characterImageSize = height * 0.13;
 
   const filtered =
     themeFilter === 'all'
@@ -131,7 +135,7 @@ export default function CharacterPicker({
         renderItem={({ item }) => (
           <View style={styles.imageItem}>
             <TouchableOpacity onPress={() => onSelect(item.name)}>
-              <Character mood={item.name} size={80} />
+              <Character mood={item.name} size={characterImageSize} />
             </TouchableOpacity>
           </View>
         )}

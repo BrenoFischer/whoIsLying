@@ -103,7 +103,7 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
           */}
             <View pointerEvents="none" style={styles.flipButtonBack}>
               <Ionicons
-                name="chevron-back-circle-outline"
+                name="sync-outline"
                 size={moderateScale(20)}
                 color={colors.orange[200]}
               />
@@ -131,12 +131,12 @@ const styles = StyleSheet.create({
   },
   flipButtonFront: {
     position: 'absolute',
-    bottom: scale(8),
+    top: scale(8),
     right: scale(8),
   },
   flipButtonBack: {
     position: 'absolute',
-    bottom: scale(8),
-    left: scale(8), // appears at visual right because parent has scaleX:-1
+    top: scale(8),
+    right: scale(8), // appears at visual right because parent has scaleX:-1
   },
 });

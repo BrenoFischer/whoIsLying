@@ -1,12 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { Player } from '@/types/Player';
 import NewPlayerInput from '@/components/newPlayerInput';
-import CustomText from '@/components/text';
 import Button from '@/components/button';
 import { GameContext } from '@/context/GameContext';
 import { colors } from '@/styles/colors';
@@ -45,6 +43,9 @@ export default function CreateGame() {
   const [characterPickerFilter, setCharacterPickerFilter] = useState<
     CharacterTheme | 'all'
   >('all');
+
+  const { height } = useWindowDimensions();
+  const characterImageSize = height * 0.15;
 
   const usedCharacters = players.map(p => p.character);
   const availableCharacters = characters.filter(
@@ -164,7 +165,7 @@ export default function CreateGame() {
               <Text style={styles.headerCategoryTitle}>
                 {t('Game')} {game.currentMatch}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', gap: scale(5), alignItems: "center"}}>
                 <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
                 <Dot color={colors.white[100]} />
                 <Text style={styles.headerCategoryTitle}>
@@ -271,27 +272,16 @@ export default function CreateGame() {
 
       <View>
         <View style={styles.topContainer}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.title}>
-              {t(`Add players (3 to ${MAX_PLAYERS})`)}
-            </Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>{t('Add') + ' ' + t('players')}</Text>
+            <Text style={styles.playerCountText}>({players.length}/{MAX_PLAYERS})</Text>
           </View>
-          <View style={styles.changeCharacterButtonContainer}>
-            <TouchableOpacity
-              onPress={() => setModalOpen(true)}
-              style={styles.changeCharacterButton}
-            >
-              <MaterialCommunityIcons
-                name="shuffle-variant"
-                size={moderateScale(24)}
-                color={colors.background[100]}
-              />
-              <Text style={styles.changeCharacterText}>{t('Change')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalOpen(true)}>
-              <Character mood={currentImageName} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => setModalOpen(true)}>
+            <Character mood={currentImageName} size={characterImageSize} />
+            <View style={styles.editBadge}>
+              <Ionicons name="pencil" size={moderateScale(15)} color={colors.orange[200]} />
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={{ alignItems: 'center' }}>
           <NewPlayerInput
@@ -299,12 +289,7 @@ export default function CreateGame() {
             setPlayer={players.length >= MAX_PLAYERS ? () => {} : setNewPlayer}
             currentPlayerTheme={currentImageTheme}
           />
-          <View style={{ paddingTop: verticalScale(spacing.md) }}>
-            <CustomText>
-              {t('Players added')} - {players.length}
-            </CustomText>
-          </View>
-          <View style={{ gap: verticalScale(spacing.xs) }}>
+          <View style={{ paddingTop: verticalScale(spacing.md), gap: verticalScale(spacing.xs) }}>
             {players.map(player => {
               const availableForPlayer = characters
                 .filter(
@@ -417,7 +402,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   topContainer: {
-    paddingHorizontal: scale(spacing.md),
+    paddingHorizontal: scale(spacing.xl),
     paddingTop: verticalScale(spacing.lg),
     flexDirection: 'row',
     alignItems: 'center',
@@ -427,26 +412,28 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(26),
     fontWeight: 'bold',
   },
-  changeCharacterButtonContainer: {
-    alignItems: 'center',
+  titleRow: {
+    flex: 1,
     gap: scale(8),
   },
-  changeCharacterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scale(5),
-    paddingHorizontal: scale(6),
-    paddingVertical: verticalScale(2),
-    backgroundColor: colors.orange[200],
-    borderRadius: radius.pill,
-    borderWidth: 2,
-    borderColor: colors.background[100],
-  },
-  changeCharacterText: {
-    fontSize: fontSize.sm,
+  playerCountText: {
     fontFamily: 'Raleway',
+    fontSize: fontSize.md,
     fontWeight: 'bold',
     color: colors.background[100],
+  },
+  editBadge: {
+    position: 'absolute',
+    top: verticalScale(4),
+    right: scale(4),
+    width: moderateScale(26),
+    height: moderateScale(26),
+    borderRadius: moderateScale(13),
+    backgroundColor: colors.background[100],
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.orange[200],
   },
   modalTitle: {
     textAlign: 'center',

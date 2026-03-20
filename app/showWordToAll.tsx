@@ -109,7 +109,6 @@ export default function ShowWordToAll() {
       setRawWord('');
       setIsLyingPlayer(false);
       setModalVisible(true);
-      router.replace('/showWordToAll');
     }
   }
 

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   TouchableOpacity,
   View,
   TextInput,
   Text,
   StyleSheet,
+  Keyboard,
 } from 'react-native';
 import uuid from 'react-native-uuid';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -28,9 +29,10 @@ export default function NewPlayerInput({
   const [newName, setNewName] = useState('');
   const [inputError, setInputError] = useState(false);
   const { t } = useTranslation();
+  const inputRef = useRef<TextInput>(null);
 
   const handleSubmit = () => {
-    if (newName.length < 1) {
+    if (newName.trim().length < 1) {
       setInputError(true);
       return;
     }
@@ -38,16 +40,18 @@ export default function NewPlayerInput({
     const id = uuid.v4();
     setPlayer({
       id,
-      name: newName,
+      name: newName.trim(),
       theme: currentPlayerTheme,
       character: '',
       score: 0,
     });
     setNewName('');
+    inputRef.current?.focus();
   };
 
-  const handleOnFocus = () => {
-    setInputError(false);
+  const handleChangeText = (text: string) => {
+    setNewName(text);
+    if (inputError) setInputError(false);
   };
 
   const borderColor = disabled
@@ -60,6 +64,7 @@ export default function NewPlayerInput({
     <>
       <View style={[styles.container, { borderColor }]}>
         <TextInput
+          ref={inputRef}
           placeholder={t('Add a new name')}
           placeholderTextColor={colors.orange[200]}
           keyboardType="ascii-capable"
@@ -67,10 +72,12 @@ export default function NewPlayerInput({
           maxLength={10}
           style={styles.textInput}
           value={newName}
-          onChangeText={text => setNewName(text)}
-          onSubmitEditing={handleSubmit}
-          onFocus={handleOnFocus}
+          onChangeText={handleChangeText}
+          onSubmitEditing={Keyboard.dismiss}
           returnKeyType="done"
+          autoCorrect={false}
+          spellCheck={false}
+          autoCapitalize="words"
           editable={!disabled}
         />
         <TouchableOpacity style={styles.iconContainer} onPress={handleSubmit}>
