@@ -123,7 +123,6 @@ export default function CreateGame() {
       setNumberOfImpostors(conflictImpostorCount);
     }
     createGame(players);
-    setImpostorConflictOpen(false);
     router.replace('/showWordToAll');
   }
 

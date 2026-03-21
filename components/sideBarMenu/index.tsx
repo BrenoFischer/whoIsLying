@@ -257,7 +257,6 @@ export default function SidebarMenu() {
   const toggleMenu = () => setVisible(!visible);
 
   const handleStartNewGame = () => {
-    setNewGameModalOpen(!newGameModalOpen);
     createNewGame();
     navigation.dispatch(
       CommonActions.reset({

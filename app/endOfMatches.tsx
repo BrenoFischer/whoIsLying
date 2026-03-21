@@ -107,14 +107,12 @@ export default function EndOfMatches() {
   };
 
   const handlePlayerOneMoreRound = () => {
-    setModalOpen(false);
     cleanupAudioFiles();
     resetGameWithExistingPlayers();
     router.replace('/selectCategory');
   };
 
   const handleStartNewGame = () => {
-    setModalOpen(false);
     cleanupAudioFiles();
     createNewGame();
     navigation.dispatch(

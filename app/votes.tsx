@@ -55,10 +55,6 @@ export default function Votes() {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
 
     if (newIndex >= players.length) {
-      setPlayerIndex(0);
-      setPlayer(players[0]);
-      setModalVisible(true);
-      setSelectedPlayers(undefined);
       router.replace('/votesResults');
     } else {
       setPlayerIndex(newIndex);
