@@ -10,9 +10,12 @@ import {
   ScrollView,
   Platform,
   StatusBar,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { scale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
+
+const SMALL_SCREEN_HEIGHT_THRESHOLD = 700;
 
 type ScreenLayoutProps = {
   children: ReactNode;
@@ -32,6 +35,8 @@ export default function ScreenLayout({
   withKeyboardAvoiding = true,
 }: ScreenLayoutProps) {
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  const isSmallScreen = height < SMALL_SCREEN_HEIGHT_THRESHOLD;
   // On Android, StatusBar.currentHeight is a synchronous native constant — no async
   // measurement needed, so the layout never jumps. On iOS, rely on safe area insets
   // which are synchronous when SafeAreaProvider is initialised with initialWindowMetrics.
@@ -68,7 +73,11 @@ export default function ScreenLayout({
           <View
             style={[
               styles.footer,
-              { paddingBottom: scale(spacing.md) + insets.bottom },
+              {
+                paddingBottom: isSmallScreen
+                  ? verticalScale(spacing.xl) + insets.bottom
+                  : scale(spacing.md) + insets.bottom,
+              },
             ]}
           >
             {footer}
