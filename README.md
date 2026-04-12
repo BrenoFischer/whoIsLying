@@ -36,6 +36,10 @@ Available on Android. iOS version in preparation.
 - Turn-based voting with multi-select when there are multiple impostors
 - Detailed score breakdown per match with animated end-game screen
 - Persistent game state via AsyncStorage — the app resumes where it left off after backgrounding
+- **Saved players** — profiles are created automatically on game start and reused across sessions (up to 30 players)
+- **Player stats** — per-player lifetime stats: matches played, wins, impostor detection rate, vote accuracy, lifetime score
+- **Match history** — rolling log of the last 20 matches with per-player results and scores
+- **Quick-add from saved players** — tap any saved profile on the create-game screen to add them instantly
 - Bilingual: English and Brazilian Portuguese
 - Unique character selection with theme filters
 - Game configuration conflict resolution (too many impostors for player count)
@@ -79,19 +83,28 @@ whoIsLying/
 │   ├── endGame.tsx         # Animated per-match score rankings
 │   └── endOfMatches.tsx    # Final tournament standings
 ├── context/
-│   ├── GameContext.tsx     # Central game state and all game logic
-│   ├── LanguageContext.tsx # Language selection (EN / PT)
-│   └── AppResetContext.tsx # Full app state reset
-├── components/             # Reusable UI components
-├── types/                  # TypeScript interfaces (Game, Player, Round, Vote, GameConfig)
+│   ├── GameContext.tsx      # Central game state and all game logic
+│   ├── HistoryContext.tsx   # Saved players, player stats, and match history
+│   ├── LanguageContext.tsx  # Language selection (EN / PT)
+│   └── AppResetContext.tsx  # Full app state reset
+├── components/
+│   ├── savedPlayersList/    # Quick-add modal — lists saved profiles on create-game screen
+│   ├── playerStats/         # Player stats screen (accessible from sidebar)
+│   ├── matchHistory/        # Match history screen (accessible from sidebar)
+│   └── ...                  # Other reusable UI components
+├── types/
+│   ├── SavedPlayer.ts       # SavedPlayer and SavedPlayerStats interfaces
+│   ├── MatchRecord.ts       # MatchRecord and MatchRecordPlayer interfaces
+│   └── ...                  # Game, Player, Round, Vote, GameConfig
 ├── data/
-│   └── categories.json     # Word lists and question pools per category
-├── translations/           # i18n JSON files (en.json, pt.json, categories.en.json, categories.pt.json)
-├── styles/                 # Design tokens (colors, fontSize, spacing, radius)
+│   └── categories.json      # Word lists and question pools per category
+├── translations/            # i18n JSON files (en.json, pt.json, categories.en.json, categories.pt.json)
+├── styles/                  # Design tokens (colors, fontSize, spacing, radius)
 ├── utils/
-│   └── gameTranslations.ts # Word index resolution utilities
+│   └── gameTranslations.ts  # Word index resolution utilities
 └── __tests__/
-    └── GameContext.test.tsx # 56 automated unit tests for core game logic
+    ├── GameContext.test.tsx  # 56 automated unit tests for core game logic
+    └── HistoryContext.test.tsx # 24 automated unit tests for history and saved players
 ```
 
 ---
@@ -100,9 +113,11 @@ whoIsLying/
 
 ### State Management
 
-All game state lives in `GameContext`. It is the single source of truth for players, rounds, voting, configuration, scores, and navigation history. The context persists its state to `AsyncStorage` after every change so the app can resume from the exact screen if it is backgrounded or closed.
+Game state is split across two contexts:
 
-On mount, the context reads from storage and merges the saved state with the current `INITIAL_GAME` defaults, ensuring newly added config fields always have valid values even when upgrading from an older saved state.
+**`GameContext`** is the single source of truth for the active match — players, rounds, voting, configuration, scores, and navigation history. It persists to `AsyncStorage` after every change so the app can resume from the exact screen if backgrounded or closed. On mount it merges saved state with `INITIAL_GAME` defaults, ensuring new config fields always have valid values when upgrading from an older saved state.
+
+**`HistoryContext`** manages everything that persists across multiple sessions: saved player profiles (up to 30), per-player lifetime stats, and the rolling 20-match history. It hydrates from `AsyncStorage` on mount and writes back whenever its state changes. The two contexts are independent — `HistoryContext` writes to `endGame.tsx` after scoring is complete, and `createGame.tsx` reads from it to offer the quick-add and auto-save features.
 
 ### Game Configuration
 
@@ -199,21 +214,26 @@ npm run format
 
 ---
 
-## Testing
+## Quality Assurance
 
-The project follows a multi-layer quality assurance strategy.
+The project follows a structured, multi-layer QA strategy. Each layer targets a different class of defect and runs at a different point in the development cycle.
 
-### Automated Tests — Jest
+---
 
-Core game logic is covered by a suite of 56 unit tests in `__tests__/GameContext.test.tsx`.
+### 1. Unit Tests
+
+**Tool:** Jest 29 + React Native Testing Library
+**When:** On every change, before every commit
+
+The entire business logic layer is covered by 80 unit tests across two context files. Tests run in-memory with all external dependencies mocked (AsyncStorage, file system, UUID), so the full suite completes in under 5 seconds. The philosophy is to test **behaviour, not implementation** — tests assert on the public contract each context exposes, not on internal data structures.
 
 ```
-Test Suites: 1 passed
-Tests:       56 passed, 56 total
+Test Suites: 2 passed
+Tests:       80 passed, 80 total
 Pass rate:   100%
 ```
 
-Test suites:
+**GameContext** — `__tests__/GameContext.test.tsx` (56 tests)
 
 | Suite | Tests | What is covered |
 |---|---|---|
@@ -232,15 +252,76 @@ Test suites:
 | Game Reset Functions | 5 | `createNewGame`, `resetGameWithExistingPlayers`, `previousRankings` |
 | Context Provider Contract | 2 | Public API surface, state and hydration flag |
 
-See [jest_tests.md](./jest_tests.md) for detailed test documentation.
+**HistoryContext** — `__tests__/HistoryContext.test.tsx` (24 tests)
 
-### Manual Testing
+| Suite | Tests | What is covered |
+|---|---|---|
+| Hydration | 3 | `isHydrated` lifecycle, loading from AsyncStorage, empty storage |
+| Persistence | 3 | Writes on state change, no write before hydration |
+| getSavedPlayerByName | 2 | Found / not found |
+| deleteSavedPlayer | 2 | Removes correct player, no-op for missing id |
+| getAutoDeleteCandidates | 4 | Room check, exact count needed, fewest-matches ordering, createdAt tie-breaking |
+| commitAutoSave | 4 | Creates with INITIAL_STATS, deletes before adding, keeps non-deleted, empty no-op |
+| updateSavedPlayerStats | 3 | Merges correctly, isolation from other players, no-op for missing id |
+| recordMatch | 3 | Prepend order, 20-entry cap (oldest dropped), sequential records |
 
-Manual test plans covering player management, game setup, and end-to-end game flow are documented in [test_plans.md](./test_plans.md).
+A minimum coverage threshold of 70% across branches, functions, lines, and statements is enforced via Jest configuration.
 
-### Quality Gate
+See [jest_tests.md](./jest_tests.md) for the full suite documentation with rationale per test group.
 
-Jest is configured with a minimum coverage threshold of 70% across branches, functions, lines, and statements for all non-trivial source files.
+---
+
+### 2. Regression Tests
+
+**Tool:** Same Jest suite (`npm test`)
+**When:** Before every production build
+
+The unit test suite doubles as the regression baseline. Before any release build, `npm test` is run in full. All 80 tests must pass — a single failure blocks the build. This ensures that new features or bug fixes have not silently broken existing behaviour in game logic, scoring, persistence, or history tracking.
+
+Because the tests run in under 5 seconds, this gate adds no meaningful friction to the release process.
+
+---
+
+### 3. Manual Functional Tests
+
+**When:** Before every production build, after the automated suite passes
+
+99 structured test cases across 12 test plans cover the full user journey that automated tests cannot reach: real UI interactions, screen navigation, animations, audio playback, and device-specific behaviour.
+
+| Test Plan | Cases | Focus |
+|---|---|---|
+| 1 — Player Management | 9 | Adding, editing, deleting players; character and name constraints |
+| 2 — Game Configuration | 12 | Impostor count, question sets, random mode, conflict resolution |
+| 3 — Word & Category | 5 | Category selection, locked categories, state passing |
+| 4 — Word Reveal | 5 | Civilian vs impostor reveal, device-pass flow |
+| 5 — Question Rounds | 7 | Round count, question display, audio recording |
+| 6 — Discussion Phase | 5 | Audio playback, switching recordings |
+| 7 — Voting | 8 | Single and multi-impostor voting, self-vote prevention |
+| 8 — Vote Results & Reveal | 7 | Tally accuracy, impostor reveal, word guess |
+| 9 — Scoring & End Game | 8 | All scoring branches, rank change indicators |
+| 10 — Persistence & Resume | 3 | Backgrounding and session recovery |
+| 11 — Internationalisation | 4 | EN/PT switching, persistence across screens |
+| 12 — History & Saved Players | 26 | Auto-save, quick-add, auto-delete conflict, stats accuracy, match history |
+
+Test cases are tracked in [test_plans.md](./test_plans.md) with status, notes, and bug IDs. Test execution and results are managed in **[Qase](https://qase.io)**, a dedicated test case management tool. New test cases are synced to Qase via a local diff script (`scripts/export-tests.js`) that tracks which cases have already been imported and only exports new ones as a JSON file ready for Qase's importer.
+
+**Release criteria:**
+
+| Gate | Threshold |
+|---|---|
+| All Critical manual test cases | 100% pass |
+| All High priority manual test cases | 95% pass |
+| All 80 automated unit tests | 100% pass |
+| No crashes on Android 7.0+ | — |
+
+---
+
+### 4. End-to-End Tests *(planned)*
+
+**Tool:** Detox
+**When:** Future — planned before public store release
+
+End-to-end tests will simulate real user journeys on a physical emulator — tapping, typing, navigating — and assert on what appears on screen. Unlike unit tests, they catch bugs that only appear when the full app stack runs together: navigation regressions, layout issues, and real-device AsyncStorage behaviour. Detox integration is listed in the roadmap as a pre-public-launch target.
 
 ---
 
@@ -265,7 +346,10 @@ Jest is configured with a minimum coverage threshold of 70% across branches, fun
 - [x] Animated end-game score screen (React Native Reanimated)
 - [x] Game state persistence and session resume
 - [x] Bilingual support (English / Brazilian Portuguese)
-- [x] 56 automated unit tests — 100% pass rate
+- [x] Saved player profiles with automatic creation and quick-add on game start
+- [x] Per-player lifetime stats (matches, wins, impostor detection, vote accuracy, score)
+- [x] Rolling 20-match history accessible from the sidebar
+- [x] 80 automated unit tests — 100% pass rate
 - [x] Google Play Store (Android) release (currently closed tests)
 
 ### In Progress
@@ -276,7 +360,6 @@ Jest is configured with a minimum coverage threshold of 70% across branches, fun
 
 ### Future Enhancements
 
-- [ ] Game statistics and match history
 - [ ] Store purchase of themes/characters
 - [ ] Spanish language support
 - [ ] End-to-end tests with Detox

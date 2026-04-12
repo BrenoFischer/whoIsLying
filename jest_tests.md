@@ -2,9 +2,9 @@
 
 ## Overview
 
-The automated test suite covers the entire business logic layer of the application through `GameContext` — the single source of truth for all game state. Every function exposed by the context has dedicated tests that validate its behaviour in isolation.
+The automated test suite covers the entire business logic layer of the application through two context files — `GameContext` (game state and rules) and `HistoryContext` (player persistence and match recording). Every function exposed by each context has dedicated tests that validate its behaviour in isolation.
 
-**Test file:** `__tests__/GameContext.test.tsx`
+**Test files:** `__tests__/GameContext.test.tsx`, `__tests__/HistoryContext.test.tsx`
 **Framework:** Jest 29 + React Native Testing Library
 **Execution:** `npm test`
 
@@ -13,8 +13,8 @@ The automated test suite covers the entire business logic layer of the applicati
 ## Test Results
 
 ```
-Test Suites: 1 passed, 1 total
-Tests:       56 passed, 56 total
+Test Suites: 2 passed, 2 total
+Tests:       80 passed, 80 total
 Snapshots:   0 total
 Pass rate:   100%
 ```
@@ -22,6 +22,8 @@ Pass rate:   100%
 ---
 
 ## Why We Test the Context Layer
+
+### GameContext
 
 The `GameContext` is the most critical file in the application. It drives:
 
@@ -34,11 +36,22 @@ The `GameContext` is the most critical file in the application. It drives:
 
 A bug here affects every screen simultaneously. Testing this layer in isolation means we catch logic errors in milliseconds, without launching a device or navigating the UI.
 
+### HistoryContext
+
+The `HistoryContext` manages all player persistence and match recording. It drives:
+
+- Auto-saving new players after each game and enforcing the 30-player cap
+- Selecting which saved players to evict when the cap is reached (fewest matches, oldest first)
+- Updating per-player stats after every match (score, wins, impostor detection, vote accuracy)
+- Recording a rolling 20-match history with per-player results
+
+A bug here produces no crash — just silently wrong data in the saved-players list, player stats screen, and match history screen. Automated tests catch these regressions instantly.
+
 ---
 
 ## Mock Strategy
 
-Three external dependencies are mocked so tests run entirely in-memory, without device APIs, file system access, or random variance:
+### GameContext mocks
 
 | Module | Why mocked |
 |---|---|
@@ -50,9 +63,17 @@ Three external dependencies are mocked so tests run entirely in-memory, without 
 
 `Math.random` is mocked with `jest.spyOn` inside individual `beforeEach` blocks only for tests where shuffling must be deterministic (impostor selection, round assignment). It is restored after each test.
 
+### HistoryContext mocks
+
+| Module | Why mocked |
+|---|---|
+| `@react-native-async-storage/async-storage` | The context reads and writes on every state change. Mocked to resolve instantly with `null` by default. |
+
+A `seedStorage` helper overrides `AsyncStorage.getItem` per-test to return pre-built `SavedPlayer[]` and `MatchRecord[]` fixtures, allowing tests to start with any desired history state without touching the file system.
+
 ---
 
-## Test Suite Breakdown
+## Test Suite Breakdown — GameContext
 
 ### Suite 1 — Initial State (2 tests)
 
@@ -244,6 +265,102 @@ The `previousRankings` test is critical for the end-game animation: it confirms 
 ```
 
 This is an API-surface smoke test. It enumerates every function the context is expected to export and asserts each one is a function. If a function is renamed or accidentally removed, this test fails immediately — without needing to run any user journey.
+
+---
+
+## Test Suite Breakdown — HistoryContext
+
+### Suite 1 — Hydration (3 tests)
+
+```
+✓ starts with isHydrated = false and sets it to true after loading
+✓ loads savedPlayers and matchHistory from AsyncStorage on mount
+✓ starts with empty arrays when AsyncStorage has no data
+```
+
+`isHydrated` guards writes in both persistence effects — the context must not persist state before it has finished loading. Testing the false→true transition explicitly confirms the async hydration `useEffect` resolves correctly and that the flag is meaningful, not just decorative.
+
+---
+
+### Suite 2 — Persistence (3 tests)
+
+```
+✓ persists savedPlayers to AsyncStorage when they change
+✓ persists matchHistory to AsyncStorage when a match is recorded
+✓ does not write to AsyncStorage before hydration completes
+```
+
+The "no write before hydration" test is the most important of the three. Without it, a regression that drops the `if (!isHydrated) return` guard would silently overwrite valid stored data with empty arrays on every app launch.
+
+---
+
+### Suite 3 — getSavedPlayerByName (2 tests)
+
+```
+✓ returns the player when the name matches
+✓ returns undefined when no player has the given name
+```
+
+Used in `createGame.tsx` to decide whether a typed name belongs to an existing saved profile. A wrong return here would create duplicate profiles or fail to reuse the correct player id.
+
+---
+
+### Suite 4 — deleteSavedPlayer (2 tests)
+
+```
+✓ removes the player with the given id and leaves others intact
+✓ does nothing when the id does not exist
+```
+
+---
+
+### Suite 5 — getAutoDeleteCandidates (4 tests)
+
+```
+✓ returns an empty array when there is enough room
+✓ returns exactly the number of candidates needed to make room
+✓ selects players with the fewest matchesPlayed first
+✓ uses createdAt as a tie-breaker — oldest first
+```
+
+This is the eviction policy for the 30-player cap. The ordering tests verify the two-key sort (`matchesPlayed` ASC, `createdAt` ASC) directly. If either key is wrong, the user sees the wrong players listed for deletion in the conflict modal.
+
+---
+
+### Suite 6 — commitAutoSave (4 tests)
+
+```
+✓ creates new SavedPlayer entries with INITIAL_STATS and the provided id
+✓ deletes playersToDelete before adding new ones
+✓ keeps players that are not in playersToDelete
+✓ does nothing if both arrays are empty
+```
+
+`commitAutoSave` is the atomic operation that replaces evicted profiles with new ones in a single state update. Testing delete-then-create atomically confirms there is no window where a player's id exists in both the old and new list.
+
+---
+
+### Suite 7 — updateSavedPlayerStats (3 tests)
+
+```
+✓ merges stat updates onto the targeted player
+✓ does not affect other players in the list
+✓ does nothing when the playerId does not exist
+```
+
+Called from `endGame.tsx` after every match. The "does not affect other players" test prevents a regression where a spread or map error would broadcast one player's stat update to all players in the list.
+
+---
+
+### Suite 8 — recordMatch (3 tests)
+
+```
+✓ prepends the new match to the front of matchHistory
+✓ caps matchHistory at 20 entries, dropping the oldest
+✓ can record multiple matches sequentially
+```
+
+The cap test starts at exactly 20 entries and adds one more, then asserts the oldest entry is gone. This is the boundary condition where the slice logic activates — testing at exactly MAX + 1 is more precise than testing with an arbitrarily large list.
 
 ---
 

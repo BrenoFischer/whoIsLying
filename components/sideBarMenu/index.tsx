@@ -20,6 +20,9 @@ import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
 import CheckPlayerWord from '../forgotWord';
 import { GameContext } from '@/context/GameContext';
+import { HistoryContext } from '@/context/HistoryContext';
+import PlayerStats from '@/components/playerStats';
+import MatchHistory from '@/components/matchHistory';
 import { radius } from '@/styles/radius';
 import { spacing } from '@/styles/spacing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -415,9 +418,12 @@ export default function SidebarMenu() {
   const [howToPlayModalOpen, setHowToPlayModalOpen] = useState(false);
   const [showForgotWord, setShowForgotWord] = useState(false);
   const [showRanking, setShowRanking] = useState(false);
+  const [showPlayerStats, setShowPlayerStats] = useState(false);
+  const [showMatchHistory, setShowMatchHistory] = useState(false);
   const navigation = useNavigation();
   const { t, language, setLanguage } = useTranslation();
   const { game, createNewGame, getSortedPlayers } = useContext(GameContext);
+  const { savedPlayers, matchHistory } = useContext(HistoryContext);
   const insets = useSafeAreaInsets();
 
   const toggleMenu = () => setVisible(!visible);
@@ -549,85 +555,88 @@ export default function SidebarMenu() {
                 </View>
               )}
 
+              {/* ── Group 1: current game ─────────────────────────── */}
               <View style={styles.menuList}>
                 <TouchableOpacity
                   style={styles.menuItem}
                   onPress={() => setNewGameModalOpen(true)}
                 >
-                  <Ionicons
-                    name="refresh"
-                    size={moderateScale(20)}
-                    color={colors.orange[200]}
-                  />
-                  <Text style={styles.menuItemText}>
-                    {t('Start a new game')}
-                  </Text>
+                  <Ionicons name="refresh" size={moderateScale(20)} color={colors.orange[200]} />
+                  <Text style={styles.menuItemText}>{t('Start a new game')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={() => setHowToPlayModalOpen(true)}
-                >
-                  <Ionicons
-                    name="help-circle-outline"
-                    size={moderateScale(20)}
-                    color={colors.orange[200]}
-                  />
-                  <Text style={styles.menuItemText}>{t('Como jogar')}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.menuItem,
-                    game.players.length === 0 && styles.menuItemDisabled,
-                  ]}
+                  style={[styles.menuItem, game.players.length === 0 && styles.menuItemDisabled]}
                   onPress={() => game.players.length > 0 && setShowRanking(true)}
                 >
                   <Ionicons
                     name="trophy-outline"
                     size={moderateScale(20)}
-                    color={
-                      game.players.length > 0
-                        ? colors.orange[200]
-                        : colors.gray[300]
-                    }
+                    color={game.players.length > 0 ? colors.orange[200] : colors.gray[300]}
                   />
-                  <Text
-                    style={[
-                      styles.menuItemText,
-                      game.players.length === 0 && styles.menuItemTextDisabled,
-                    ]}
-                  >
+                  <Text style={[styles.menuItemText, game.players.length === 0 && styles.menuItemTextDisabled]}>
                     {t('Ranking')}
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[
-                    styles.menuItem,
-                    !isForgotWordAvailable && styles.menuItemDisabled,
-                  ]}
-                  onPress={() =>
-                    isForgotWordAvailable && setShowForgotWord(true)
-                  }
+                  style={[styles.menuItem, !isForgotWordAvailable && styles.menuItemDisabled]}
+                  onPress={() => isForgotWordAvailable && setShowForgotWord(true)}
                 >
                   <Ionicons
                     name="eye-outline"
                     size={moderateScale(20)}
-                    color={
-                      isForgotWordAvailable
-                        ? colors.orange[200]
-                        : colors.gray[300]
-                    }
+                    color={isForgotWordAvailable ? colors.orange[200] : colors.gray[300]}
                   />
-                  <Text
-                    style={[
-                      styles.menuItemText,
-                      !isForgotWordAvailable && styles.menuItemTextDisabled,
-                    ]}
-                  >
+                  <Text style={[styles.menuItemText, !isForgotWordAvailable && styles.menuItemTextDisabled]}>
                     {t('Forgot your word')}?
                   </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.menuDivider} />
+
+              {/* ── Group 2: history ──────────────────────────────── */}
+              <View style={styles.menuList}>
+                <TouchableOpacity
+                  style={[styles.menuItem, savedPlayers.length === 0 && styles.menuItemDisabled]}
+                  onPress={() => savedPlayers.length > 0 && setShowPlayerStats(true)}
+                >
+                  <Ionicons
+                    name="person-outline"
+                    size={moderateScale(20)}
+                    color={savedPlayers.length > 0 ? colors.orange[200] : colors.gray[300]}
+                  />
+                  <Text style={[styles.menuItemText, savedPlayers.length === 0 && styles.menuItemTextDisabled]}>
+                    {t('Player stats')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.menuItem, matchHistory.length === 0 && styles.menuItemDisabled]}
+                  onPress={() => matchHistory.length > 0 && setShowMatchHistory(true)}
+                >
+                  <Ionicons
+                    name="time-outline"
+                    size={moderateScale(20)}
+                    color={matchHistory.length > 0 ? colors.orange[200] : colors.gray[300]}
+                  />
+                  <Text style={[styles.menuItemText, matchHistory.length === 0 && styles.menuItemTextDisabled]}>
+                    {t('Match history')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.menuDivider} />
+
+              {/* ── Group 3: help ─────────────────────────────────── */}
+              <View style={styles.menuList}>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => setHowToPlayModalOpen(true)}
+                >
+                  <Ionicons name="help-circle-outline" size={moderateScale(20)} color={colors.orange[200]} />
+                  <Text style={styles.menuItemText}>{t('Como jogar')}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -659,6 +668,16 @@ export default function SidebarMenu() {
               <HowToPlay
                 setShowHowToPlay={setHowToPlayModalOpen}
                 showHowToPlay={howToPlayModalOpen}
+              />
+
+              <PlayerStats
+                visible={showPlayerStats}
+                onClose={() => setShowPlayerStats(false)}
+              />
+
+              <MatchHistory
+                visible={showMatchHistory}
+                onClose={() => setShowMatchHistory(false)}
               />
 
               <Modal
@@ -800,7 +819,13 @@ const styles = StyleSheet.create({
   },
   menuList: {
     gap: verticalScale(2),
-    marginHorizontal: scale(20)
+    marginHorizontal: scale(20),
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: colors.gray[300] + '30',
+    marginHorizontal: scale(20),
+    marginVertical: verticalScale(spacing.sm),
   },
   menuItem: {
     flexDirection: 'row',
@@ -864,10 +889,10 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(12),
   },
   htpPageTitle: {
-    fontFamily: 'Raleway',
+    fontFamily: 'Raleway-Medium',
     fontWeight: 'bold',
-    fontSize: moderateScale(18),
-    color: colors.white[100],
+    fontSize: fontSize.xl,
+    color: colors.orange[200],
   },
   htpSceneArea: {
     justifyContent: 'center',

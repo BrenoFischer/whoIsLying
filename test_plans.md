@@ -162,6 +162,39 @@ The testing philosophy is to test **behaviour, not implementation**. Tests asser
 
 ---
 
+## Test Plan 12 — History and Saved Players
+
+| ID | Test Case | Steps | Expected Result | Priority |
+|---|---|---|---|---|
+| TC-012.1 | Players auto-saved on first game | Create a game with brand-new players and finish it | All players appear in the saved players list with 0 matches played | Critical |
+| TC-012.2 | Known player reuses existing profile | Add a player whose name already exists in saved players | The existing saved profile (and its id) is reused, no duplicate is created | Critical |
+| TC-012.3 | Saved players button appears when list is non-empty | Open create-game screen after at least one player has been saved | "Saved players" button appears with a badge showing the correct count | High |
+| TC-012.4 | Saved players button hidden when list is empty | Open create-game screen on a fresh install with no saved players | No "Saved players" button is shown | High |
+| TC-012.5 | Add saved player to game | Open saved players list and tap a player | The player is added to the current player list | High |
+| TC-012.6 | Already-added player is not re-addable | Open saved players list when a saved player is already in the current list | That player row shows a checkmark and cannot be tapped again | High |
+| TC-012.7 | Saved players list respects player cap | Have 10 players in the game, open saved players list and tap another | A toast appears saying the player limit is reached; player is not added | High |
+| TC-012.8 | Delete saved player from list | Open saved players list, tap the trash icon on a player, confirm | The player is removed from the list permanently | High |
+| TC-012.9 | Delete confirmation — cancel | Tap trash icon on a player, then tap Cancel | The delete is aborted; the player remains in the list | Medium |
+| TC-012.10 | Auto-delete conflict — limit reached | Have 30 saved players, then create a game with new players | The auto-delete conflict modal appears listing the candidates to be removed | Critical |
+| TC-012.11 | Auto-delete conflict — confirm | In the conflict modal, tap Continue | The listed players are removed and the new players are saved; game starts | Critical |
+| TC-012.12 | Auto-delete conflict — cancel | In the conflict modal, tap Cancel | Nothing is deleted; game does not start; user can manage the list manually | High |
+| TC-012.13 | Auto-delete picks players with fewest matches | Trigger auto-delete with several candidates of different match counts | The candidates shown are the ones with the fewest matches played | High |
+| TC-012.14 | Stats updated after a match — matches played | Play one full match as a saved player | That player's matchesPlayed increments by 1 in Player stats | Critical |
+| TC-012.15 | Stats updated after a match — lifetime score | Play one full match as a saved player | The player's lifetimeScore reflects the score earned in that match | Critical |
+| TC-012.16 | Stats updated after a match — impostor detected | Play as impostor and get voted out | timesDetectedAsImpostor increments; timesUndetectedAsImpostor stays the same | High |
+| TC-012.17 | Stats updated after a match — impostor undetected | Play as impostor and avoid detection | timesUndetectedAsImpostor increments; timesDetectedAsImpostor stays the same | High |
+| TC-012.18 | Stats updated after a match — guessed word | Play as impostor and guess the secret word correctly | timesGuessedWord increments by 1 | High |
+| TC-012.19 | Stats updated after a match — civilian vote accuracy | Play as civilian and vote on impostors | civilianVotesCorrect and civilianVotesTotal both update correctly | High |
+| TC-012.20 | Match recorded in history | Complete a full match | An entry appears at the top of Match history with the correct category, date, and player list | Critical |
+| TC-012.21 | Match history capped at 20 | Play 21 full matches with saved players | Match history shows exactly 20 entries; the oldest entry is gone | High |
+| TC-012.22 | Match history empty state | Open Match history before any match has been played | Empty-state message is shown ("No matches played yet") | Medium |
+| TC-012.23 | Player stats empty state | Open Player stats before any player has been saved | Empty-state message is shown ("No saved players yet") | Medium |
+| TC-012.24 | Player stats expand / collapse | Open Player stats, tap a player card | Detailed stats expand; tapping again collapses them | Medium |
+| TC-012.25 | Match history accessible from sidebar | Open the sidebar menu from any screen | "Match history" option is present and opens the Match history screen | High |
+| TC-012.26 | Player stats accessible from sidebar | Open the sidebar menu from any screen | "Player stats" option is present and opens the Player stats screen | High |
+
+---
+
 ## Test Execution Tracking
 
 | Test Case | Status | Notes | Bug ID |
@@ -187,6 +220,32 @@ The testing philosophy is to test **behaviour, not implementation**. Tests asser
 | TC-002.10 | — | | |
 | TC-002.11 | — | | |
 | TC-002.12 | — | | |
+| TC-012.1 | — | | |
+| TC-012.2 | — | | |
+| TC-012.3 | — | | |
+| TC-012.4 | — | | |
+| TC-012.5 | — | | |
+| TC-012.6 | — | | |
+| TC-012.7 | — | | |
+| TC-012.8 | — | | |
+| TC-012.9 | — | | |
+| TC-012.10 | — | | |
+| TC-012.11 | — | | |
+| TC-012.12 | — | | |
+| TC-012.13 | — | | |
+| TC-012.14 | — | | |
+| TC-012.15 | — | | |
+| TC-012.16 | — | | |
+| TC-012.17 | — | | |
+| TC-012.18 | — | | |
+| TC-012.19 | — | | |
+| TC-012.20 | — | | |
+| TC-012.21 | — | | |
+| TC-012.22 | — | | |
+| TC-012.23 | — | | |
+| TC-012.24 | — | | |
+| TC-012.25 | — | | |
+| TC-012.26 | — | | |
 
 *(Continue for all test plans before a release)*
 
@@ -207,7 +266,8 @@ The testing philosophy is to test **behaviour, not implementation**. Tests asser
 | 9 — Scoring & End Game | 8 | 4 | 2 | 2 |
 | 10 — Persistence & Resume | 3 | 1 | 2 | 0 |
 | 11 — Internationalisation | 4 | 0 | 4 | 0 |
-| **Total** | **73** | **13** | **48** | **12** |
+| 12 — History & Saved Players | 26 | 6 | 15 | 5 |
+| **Total** | **99** | **19** | **63** | **17** |
 
 ---
 
@@ -215,11 +275,16 @@ The testing philosophy is to test **behaviour, not implementation**. Tests asser
 
 ### Current Automated Coverage
 
-All game logic is covered by the automated test suite in `__tests__/GameContext.test.tsx`:
+All game and history logic is covered by the automated test suite:
 
+**`__tests__/GameContext.test.tsx`**
 - 56 unit tests — 100% pass rate
 - Covers `GameContext` API surface: game configuration, word management, round navigation, player management, game creation, impostor identification, voting, scoring, audio, screen tracking, and state reset functions
-- Tests run with `npm test`; coverage report with `npm run test:coverage`
+
+**`__tests__/HistoryContext.test.tsx`**
+- Covers `HistoryContext` API surface: hydration from AsyncStorage, persistence, `getSavedPlayerByName`, `deleteSavedPlayer`, `getAutoDeleteCandidates` (room check, fewest-matches ordering, createdAt tie-breaking), `commitAutoSave`, `updateSavedPlayerStats`, and `recordMatch` (prepend order, 20-entry cap)
+
+Tests run with `npm test`; coverage report with `npm run test:coverage`
 
 ### Future Automation Targets
 

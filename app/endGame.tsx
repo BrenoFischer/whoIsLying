@@ -1,8 +1,12 @@
 import Button from '@/components/button';
 import Character from '@/components/character';
 import { GameContext } from '@/context/GameContext';
+import { HistoryContext } from '@/context/HistoryContext';
+import { MatchRecordPlayer } from '@/types/MatchRecord';
+import { SavedPlayerStats } from '@/types/SavedPlayer';
 import { colors } from '@/styles/colors';
 import { router } from 'expo-router';
+import uuid from 'react-native-uuid';
 import {
   forwardRef,
   useContext,
@@ -301,11 +305,93 @@ PlayerCard.displayName = 'PlayerCard';
 
 export default function EndGame() {
   const { game, setCurrentScreen, getSortedPlayers } = useContext(GameContext);
+  const { savedPlayers, recordMatch, updateSavedPlayerStats } = useContext(HistoryContext);
   const { t } = useTranslation();
   const scrollRef = useRef<ScrollView>(null);
+  const hasRecordedRef = useRef(false);
 
   useEffect(() => {
     setCurrentScreen('/endGame');
+  }, []);
+
+  useEffect(() => {
+    if (hasRecordedRef.current) return;
+    hasRecordedRef.current = true;
+
+    const maxScore = Math.max(...game.players.map(p => p.score));
+    const recordedPlayers: MatchRecordPlayer[] = [];
+
+    game.players.forEach(player => {
+      const saved = savedPlayers.find(s => s.id === player.id);
+      if (!saved) return;
+
+      const isImpostor = game.lyingPlayers.some(lp => lp.id === player.id);
+      const scoreEarned = player.matchScore?.totalScore ?? 0;
+      const isMatchWinner = player.score === maxScore;
+
+      const playerVote = game.votes.find(v => v.playerThatVoted.id === player.id);
+      const civilianVotesTotal = playerVote?.playersVoted.length ?? 0;
+      const civilianVotesCorrect = playerVote
+        ? playerVote.playersVoted.filter(voted =>
+            game.lyingPlayers.some(lp => lp.id === voted.id)
+          ).length
+        : 0;
+
+      let wasDetected: boolean | null = null;
+      let guessedWord: boolean | null = null;
+
+      if (isImpostor) {
+        wasDetected = game.votes.some(vote =>
+          vote.playersVoted.some(voted => voted.id === player.id)
+        );
+        const impostorVote = game.impostorVotes.find(v => v.player.id === player.id);
+        guessedWord = impostorVote ? impostorVote.word === game.word : null;
+      }
+
+      recordedPlayers.push({
+        savedPlayerId: saved.id,
+        name: player.name,
+        role: isImpostor ? 'impostor' : 'civilian',
+        scoreEarned,
+        isMatchWinner,
+        civilianVotesCorrect,
+        civilianVotesTotal,
+        wasDetected,
+        guessedWord,
+      });
+
+      const statsDelta: Partial<SavedPlayerStats> = {
+        matchesPlayed: saved.stats.matchesPlayed + 1,
+        matchesWon: saved.stats.matchesWon + (isMatchWinner ? 1 : 0),
+        lifetimeScore: saved.stats.lifetimeScore + scoreEarned,
+        timesImpostor: saved.stats.timesImpostor + (isImpostor ? 1 : 0),
+      };
+
+      if (isImpostor) {
+        if (wasDetected) {
+          statsDelta.timesDetectedAsImpostor = saved.stats.timesDetectedAsImpostor + 1;
+        } else {
+          statsDelta.timesUndetectedAsImpostor = saved.stats.timesUndetectedAsImpostor + 1;
+        }
+        if (guessedWord) {
+          statsDelta.timesGuessedWord = saved.stats.timesGuessedWord + 1;
+        }
+      } else {
+        statsDelta.civilianVotesCorrect = saved.stats.civilianVotesCorrect + civilianVotesCorrect;
+        statsDelta.civilianVotesTotal = saved.stats.civilianVotesTotal + civilianVotesTotal;
+      }
+
+      updateSavedPlayerStats(saved.id, statsDelta);
+    });
+
+    if (recordedPlayers.length > 0) {
+      recordMatch({
+        id: uuid.v4().toString(),
+        date: new Date().toISOString(),
+        category: game.category ?? '',
+        players: recordedPlayers,
+      });
+    }
   }, []);
 
   const sortedPlayers = useMemo(() => getSortedPlayers(), [game.players]);

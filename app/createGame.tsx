@@ -4,9 +4,11 @@ import { router } from 'expo-router';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { Player } from '@/types/Player';
+import { SavedPlayer } from '@/types/SavedPlayer';
 import NewPlayerInput from '@/components/newPlayerInput';
 import Button from '@/components/button';
 import { GameContext } from '@/context/GameContext';
+import { HistoryContext } from '@/context/HistoryContext';
 import { colors } from '@/styles/colors';
 import Elipse from '@/components/elipse';
 import PlayerInput from '@/components/playerInput';
@@ -24,11 +26,13 @@ import { characters, CharacterTheme } from '@/data/imagesData';
 import CharacterPicker from '@/components/characterPicker';
 import ConfigMenu from '@/components/configMenu';
 import { ToggleButton } from '@/components/toggleButton';
+import SavedPlayersList from '@/components/savedPlayersList';
 
 const MAX_PLAYERS = 10;
 
 export default function CreateGame() {
   const { createGame, game, setCurrentScreen, setNumberOfImpostors, setRandomImpostors } = useContext(GameContext);
+  const { savedPlayers, getSavedPlayerByName, getAutoDeleteCandidates, commitAutoSave } = useContext(HistoryContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -43,6 +47,12 @@ export default function CreateGame() {
   const [characterPickerFilter, setCharacterPickerFilter] = useState<
     CharacterTheme | 'all'
   >('all');
+  const [savedPlayersModalOpen, setSavedPlayersModalOpen] = useState(false);
+  const [autoSaveConflictOpen, setAutoSaveConflictOpen] = useState(false);
+  const [autoDeleteCandidates, setAutoDeleteCandidates] = useState<SavedPlayer[]>([]);
+  const [pendingNewPlayers, setPendingNewPlayers] = useState<
+    (Pick<SavedPlayer, 'name' | 'preferredCharacter' | 'preferredTheme'> & { id: string })[]
+  >([]);
 
   const { height } = useWindowDimensions();
   const characterImageSize = height * 0.15;
@@ -79,10 +89,17 @@ export default function CreateGame() {
   const notAvailableToContinue =
     players.length < 3 || players.length > MAX_PLAYERS;
 
+  function addFromSavedPlayer(player: Player) {
+    if (players.length >= MAX_PLAYERS) return;
+    setPlayers(prev => [player, ...prev]);
+  }
+
   function setNewPlayer({ id, name, theme }: Player) {
     if (players.length >= MAX_PLAYERS) return;
+    const existingSaved = getSavedPlayerByName(name);
+    const playerId = existingSaved?.id ?? id;
     setPlayers(prev => [
-      { id, name, theme, character: currentImageName, score: 0, matchScore: { scoreEvents: [], totalScore: 0 } },
+      { id: playerId, name, theme, character: currentImageName, score: 0, matchScore: { scoreEvents: [], totalScore: 0 } },
       ...prev,
     ]);
   }
@@ -105,6 +122,27 @@ export default function CreateGame() {
     setPlayers(prev => prev.filter(p => p.id !== id));
   }
 
+  function getNewPlayersToSave() {
+    const savedIds = new Set(savedPlayers.map(s => s.id));
+    return players
+      .filter(p => !savedIds.has(p.id))
+      .map(p => ({ id: p.id, name: p.name, preferredCharacter: p.character, preferredTheme: p.theme }));
+  }
+
+  function proceedWithGameCreation() {
+    const newPlayers = getNewPlayersToSave();
+    const candidates = getAutoDeleteCandidates(newPlayers.length);
+    if (candidates.length > 0) {
+      setPendingNewPlayers(newPlayers);
+      setAutoDeleteCandidates(candidates);
+      setAutoSaveConflictOpen(true);
+      return;
+    }
+    commitAutoSave(newPlayers, []);
+    createGame(players);
+    router.replace('/showWordToAll');
+  }
+
   function handleCreateGame() {
     const maxImpostors = players.length - 2;
     if (!game.config.randomImpostors && game.config.numberOfImpostors > maxImpostors) {
@@ -112,8 +150,7 @@ export default function CreateGame() {
       setImpostorConflictOpen(true);
       return;
     }
-    createGame(players);
-    router.replace('/showWordToAll');
+    proceedWithGameCreation();
   }
 
   function handleConflictCreateGame() {
@@ -122,6 +159,13 @@ export default function CreateGame() {
     } else {
       setNumberOfImpostors(conflictImpostorCount);
     }
+    setImpostorConflictOpen(false);
+    proceedWithGameCreation();
+  }
+
+  function handleAutoSaveConflictConfirm() {
+    commitAutoSave(pendingNewPlayers, autoDeleteCandidates);
+    setAutoSaveConflictOpen(false);
     createGame(players);
     router.replace('/showWordToAll');
   }
@@ -269,11 +313,94 @@ export default function CreateGame() {
         </View>
       </CustomModal>
 
+      <CustomModal
+        modalVisible={autoSaveConflictOpen}
+        setModalVisible={setAutoSaveConflictOpen}
+      >
+        <View style={styles.conflictModal}>
+          <TouchableOpacity
+            style={styles.conflictClose}
+            onPress={() => setAutoSaveConflictOpen(false)}
+          >
+            <Ionicons name="close" size={moderateScale(22)} color={colors.orange[200]} />
+          </TouchableOpacity>
+
+          <Ionicons
+            name="people-outline"
+            size={moderateScale(32)}
+            color={colors.orange[200]}
+            style={{ alignSelf: 'center' }}
+          />
+          <Text style={styles.conflictTitle}>{t('Saved players limit reached')}</Text>
+          <Text style={styles.conflictMessage}>
+            {t('To save')} <Text style={{ fontWeight: 'bold' }}>{pendingNewPlayers.length}</Text>{' '}
+            {pendingNewPlayers.length === 1 ?
+              t('new player') 
+            :
+              t('new players')},{' '}
+            {t('the following will be removed')}
+          </Text>
+
+          {autoDeleteCandidates.map(p => (
+            <View key={p.id} style={styles.autoDeleteRow}>
+              <Text style={styles.autoDeleteName}>{p.name}</Text>
+              <Text style={styles.autoDeleteMatches}>
+                {p.stats.matchesPlayed} {p.stats.matchesPlayed === 1 ? t('match') : t('matches')}
+              </Text>
+            </View>
+          ))}
+
+          <Text style={styles.conflictMessage}>
+            {t('You can cancel and manage your saved players list manually.')}
+          </Text>
+
+          <View style={{ paddingTop: verticalScale(spacing.md), gap: verticalScale(spacing.sm) }}>
+            <Button text={t('Continue')} onPress={handleAutoSaveConflictConfirm} />
+            <Button
+              text={t('Cancel')}
+              variants="secondary"
+              onPress={() => setAutoSaveConflictOpen(false)}
+            />
+          </View>
+        </View>
+      </CustomModal>
+
+      <SavedPlayersList
+        visible={savedPlayersModalOpen}
+        onClose={() => setSavedPlayersModalOpen(false)}
+        currentPlayers={players}
+        maxPlayers={MAX_PLAYERS}
+        availableCharacters={availableCharacters.map(c => c.name)}
+        onSelectPlayer={addFromSavedPlayer}
+      />
+
       <View>
         <View style={styles.topContainer}>
           <View style={styles.titleRow}>
-            <Text style={styles.title}>{t('Add') + ' ' + t('players')}</Text>
-            <Text style={styles.playerCountText}>({players.length}/{MAX_PLAYERS})</Text>
+            {savedPlayers.length > 0 && (
+              <TouchableOpacity
+                style={styles.savedPlayersButton}
+                onPress={() => setSavedPlayersModalOpen(true)}
+              >
+                <Ionicons
+                  name="people"
+                  size={moderateScale(15)}
+                  color={colors.orange[200]}
+                />
+                <Text style={styles.savedPlayersButtonText}>
+                  {t('Saved players')}
+                </Text>
+                <View style={styles.savedPlayersCount}>
+                  <Text style={styles.savedPlayersCountText}>
+                    {savedPlayers.length}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            <View>
+              <Text style={styles.title}>{t('Add') + ' ' + t('players')} ({players.length}/{MAX_PLAYERS})</Text>
+              <Text style={styles.playerCountText}></Text>
+            </View>
           </View>
           <TouchableOpacity onPress={() => setModalOpen(true)}>
             <Character mood={currentImageName} size={characterImageSize} />
@@ -408,7 +535,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Raleway',
-    fontSize: moderateScale(26),
+    fontSize: moderateScale(20),
     fontWeight: 'bold',
   },
   titleRow: {
@@ -444,5 +571,58 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     fontSize: fontSize.sm,
     fontFamily: 'Raleway-Medium',
+  },
+  savedPlayersButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: "space-between",
+    gap: scale(spacing.xs),
+    paddingHorizontal: scale(spacing.md),
+    paddingVertical: verticalScale(spacing.xs),
+    borderRadius: moderateScale(radius.pill),
+    borderWidth: 1,
+    borderColor: colors.orange[200] + '60',
+    marginBottom: verticalScale(spacing.sm),
+    backgroundColor: colors.background[100],
+  },
+  savedPlayersButtonText: {
+    fontFamily: 'Raleway',
+    fontWeight: "bold",
+    fontSize: moderateScale(10),
+    color: colors.orange[200],
+  },
+  savedPlayersCount: {
+    backgroundColor: colors.orange[200],
+    borderRadius: moderateScale(radius.pill),
+    minWidth: moderateScale(18),
+    height: moderateScale(18),
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: scale(4),
+  },
+  savedPlayersCountText: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(10),
+    color: colors.background[100],
+  },
+  autoDeleteRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: verticalScale(spacing.xs),
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray[300] + '40',
+  },
+  autoDeleteName: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(13),
+    fontWeight: '600',
+    color: colors.black[100],
+  },
+  autoDeleteMatches: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(12),
+    color: colors.gray[300],
   },
 });
