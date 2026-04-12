@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GameContextProvider } from '@/context/GameContext';
+import { HistoryContextProvider } from '@/context/HistoryContext';
 import { AppResetProvider } from '@/context/AppResetContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
@@ -35,13 +36,15 @@ export default function RootLayout() {
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <AppResetProvider>
           <GameContextProvider>
-            <StatusBar style="light" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                gestureEnabled: false,
-              }}
-            />
+            <HistoryContextProvider>
+              <StatusBar style="light" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                }}
+              />
+            </HistoryContextProvider>
           </GameContextProvider>
         </AppResetProvider>
       </SafeAreaProvider>
