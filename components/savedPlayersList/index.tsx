@@ -30,6 +30,7 @@ interface SavedPlayersListProps {
   maxPlayers: number;
   availableCharacters: string[];
   onSelectPlayer: (player: Player) => void;
+  onLoadGroup?: () => void;
 }
 
 export default function SavedPlayersList({
@@ -39,8 +40,9 @@ export default function SavedPlayersList({
   maxPlayers,
   availableCharacters,
   onSelectPlayer,
+  onLoadGroup,
 }: SavedPlayersListProps) {
-  const { savedPlayers, deleteSavedPlayer } = useContext(HistoryContext);
+  const { savedPlayers, deleteSavedPlayer, matchHistory } = useContext(HistoryContext);
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
@@ -216,6 +218,28 @@ export default function SavedPlayersList({
           </Text>
         </Animated.View>
 
+        {onLoadGroup && matchHistory.length > 0 && (
+          <TouchableOpacity
+            style={styles.loadGroupBanner}
+            onPress={onLoadGroup}
+            activeOpacity={0.75}
+          >
+            <Ionicons
+              name="time-outline"
+              size={moderateScale(16)}
+              color={colors.orange[200]}
+            />
+            <Text style={styles.loadGroupBannerText}>
+              {t('Load a full group from history')}
+            </Text>
+            <Ionicons
+              name="chevron-forward"
+              size={moderateScale(14)}
+              color={colors.orange[200]}
+            />
+          </TouchableOpacity>
+        )}
+
         {savedPlayers.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons
@@ -353,6 +377,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: moderateScale(13),
     color: colors.white[100],
+  },
+  // ── Load group banner ────────────────────────────────────────────────────
+  loadGroupBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(spacing.xs),
+    paddingHorizontal: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.sm),
+    borderRadius: moderateScale(radius.md),
+    borderWidth: 1,
+    borderColor: colors.orange[200] + '50',
+    backgroundColor: colors.orange[200] + '12',
+    marginBottom: verticalScale(spacing.sm),
+  },
+  loadGroupBannerText: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(13),
+    color: colors.orange[200],
+    flex: 1,
   },
   // ── Empty state ─────────────────────────────────────────────────────────
   emptyState: {
