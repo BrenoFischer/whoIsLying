@@ -215,6 +215,7 @@ export const GameContextProvider = ({
   ): Round[] => {
     const perSet = newPlayers.length;
     const categories: any = allCategories;
+    if (!categories[category]) return [];
     const questionPool: { low: string[]; medium: string[]; high: string[] } =
       categories[category].questions;
 

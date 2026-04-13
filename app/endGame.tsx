@@ -318,7 +318,7 @@ export default function EndGame() {
     if (hasRecordedRef.current) return;
     hasRecordedRef.current = true;
 
-    const maxScore = Math.max(...game.players.map(p => p.score));
+    const maxMatchScore = Math.max(...game.players.map(p => p.matchScore.totalScore));
     const recordedPlayers: MatchRecordPlayer[] = [];
 
     game.players.forEach(player => {
@@ -327,7 +327,7 @@ export default function EndGame() {
 
       const isImpostor = game.lyingPlayers.some(lp => lp.id === player.id);
       const scoreEarned = player.matchScore?.totalScore ?? 0;
-      const isMatchWinner = player.score === maxScore;
+      const isMatchWinner = player.score === maxMatchScore;
 
       const playerVote = game.votes.find(v => v.playerThatVoted.id === player.id);
       const civilianVotesTotal = playerVote?.playersVoted.length ?? 0;

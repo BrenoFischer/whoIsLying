@@ -19,7 +19,7 @@ export const getRandomWordIndex = (
     throw new Error(`Category "${category}" not found`);
   }
 
-  if (!categories[category].content) {
+  if (!categories[category]?.content) {
     throw new Error(`Content not found for category "${category}"`);
   }
 

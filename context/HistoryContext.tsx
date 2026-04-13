@@ -7,7 +7,7 @@ const SAVED_PLAYERS_KEY = 'saved_players';
 const MATCH_HISTORY_KEY = 'match_history';
 
 const MAX_SAVED_PLAYERS = 30;
-const MAX_MATCH_HISTORY = 20;
+const MAX_MATCH_HISTORY = 30;
 
 const INITIAL_STATS: SavedPlayerStats = {
   matchesPlayed: 0,

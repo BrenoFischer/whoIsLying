@@ -119,144 +119,150 @@ export default function ConfigMenu() {
                 paddingBottom: scale(40),
               }}
             >
-              <Text style={styles.sectionSubtitle}>{t('Impostors')}</Text>
+              <View style={{ gap: verticalScale(spacing.lg) }}>
+                <View>
+                  <Text style={styles.sectionSubtitle}>{t('Impostors')}</Text>
 
-              <View
-                style={[
-                  styles.settingRow,
-                  randomImpostors && styles.settingRowDisabled,
-                ]}
-                pointerEvents={randomImpostors ? 'none' : 'auto'}
-              >
-                <View style={styles.settingLabelContainer}>
-                  <Ionicons
-                    name="people"
-                    size={scale(22)}
-                    color={colors.orange[200]}
-                  />
-                  <Text style={styles.settingLabel}>{t('# of impostors')}</Text>
-                </View>
-                <View style={styles.counterContainer}>
-                  <TouchableOpacity
-                    onPress={decreaseImpostors}
+                  <View
                     style={[
-                      styles.counterButton,
-                      impostorCount === 1 && styles.counterButtonDisabled,
+                      styles.settingRow,
+                      randomImpostors && styles.settingRowDisabled,
                     ]}
-                    activeOpacity={0.7}
+                    pointerEvents={randomImpostors ? 'none' : 'auto'}
                   >
-                    <Text
-                      style={[
-                        styles.counterButtonText,
-                        impostorCount === 1 && styles.counterButtonTextDisabled,
-                      ]}
-                    >
-                      −
-                    </Text>
-                  </TouchableOpacity>
-                  <View style={styles.counterValueContainer}>
-                    {randomImpostors ? (
+                    <View style={styles.settingLabelContainer}>
                       <Ionicons
-                        name="shuffle"
-                        size={moderateScale(20)}
+                        name="people"
+                        size={scale(22)}
                         color={colors.orange[200]}
                       />
-                    ) : (
-                      <Text style={styles.counterValue}>{impostorCount}</Text>
-                    )}
+                      <Text style={styles.settingLabel}>{t('# of impostors')}</Text>
+                    </View>
+                    <View style={styles.counterContainer}>
+                      <TouchableOpacity
+                        onPress={decreaseImpostors}
+                        style={[
+                          styles.counterButton,
+                          impostorCount === 1 && styles.counterButtonDisabled,
+                        ]}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.counterButtonText,
+                            impostorCount === 1 && styles.counterButtonTextDisabled,
+                          ]}
+                        >
+                          −
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={styles.counterValueContainer}>
+                        {randomImpostors ? (
+                          <Ionicons
+                            name="shuffle"
+                            size={moderateScale(20)}
+                            color={colors.orange[200]}
+                          />
+                        ) : (
+                          <Text style={styles.counterValue}>{impostorCount}</Text>
+                        )}
+                      </View>
+                      <TouchableOpacity
+                        onPress={increaseImpostors}
+                        style={[
+                          styles.counterButton,
+                          impostorCount === 3 && styles.counterButtonDisabled,
+                        ]}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.counterButtonText,
+                            impostorCount === 3 && styles.counterButtonTextDisabled,
+                          ]}
+                        >
+                          +
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                  <TouchableOpacity
-                    onPress={increaseImpostors}
-                    style={[
-                      styles.counterButton,
-                      impostorCount === 3 && styles.counterButtonDisabled,
-                    ]}
-                    activeOpacity={0.7}
-                  >
-                    <Text
-                      style={[
-                        styles.counterButtonText,
-                        impostorCount === 3 && styles.counterButtonTextDisabled,
-                      ]}
-                    >
-                      +
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
 
-              <View style={styles.settingRow}>
-                <View style={styles.settingLabelContainer}>
-                  <Ionicons
-                    name="shuffle"
-                    size={scale(22)}
-                    color={colors.orange[200]}
-                  />
-                  <Text style={styles.settingLabel}>
-                    {t('Random & hidden impostors')}
-                  </Text>
-                </View>
-                <ToggleButton
-                  value={randomImpostors}
-                  onValueChange={setRandomImpostors}
-                />
-              </View>
-
-              <Text style={styles.sectionSubtitle}>
-                {t('Sets of questions')}
-              </Text>
-
-              <View style={styles.settingRow}>
-                <View style={styles.settingLabelContainer}>
-                  <FontAwesome
-                    name="question"
-                    size={24}
-                    color={colors.orange[200]}
-                  />
-                  <Text style={styles.settingLabel}>
-                    {t('Questions per player')}
-                  </Text>
-                </View>
-                <View style={styles.counterContainer}>
-                  <TouchableOpacity
-                    onPress={decreaseQuestions}
-                    style={[
-                      styles.counterButton,
-                      questionsCount === 1 && styles.counterButtonDisabled,
-                    ]}
-                    activeOpacity={0.7}
-                  >
-                    <Text
-                      style={[
-                        styles.counterButtonText,
-                        questionsCount === 1 &&
-                          styles.counterButtonTextDisabled,
-                      ]}
-                    >
-                      −
-                    </Text>
-                  </TouchableOpacity>
-                  <View style={styles.counterValueContainer}>
-                    <Text style={styles.counterValue}>{questionsCount}</Text>
+                  <View style={styles.settingRow}>
+                    <View style={styles.settingLabelContainer}>
+                      <Ionicons
+                        name="shuffle"
+                        size={scale(22)}
+                        color={colors.orange[200]}
+                      />
+                      <Text style={styles.settingLabel}>
+                        {t('Random & hidden impostors')}
+                      </Text>
+                    </View>
+                    <ToggleButton
+                      value={randomImpostors}
+                      onValueChange={setRandomImpostors}
+                    />
                   </View>
-                  <TouchableOpacity
-                    onPress={increaseQuestions}
-                    style={[
-                      styles.counterButton,
-                      questionsCount === 3 && styles.counterButtonDisabled,
-                    ]}
-                    activeOpacity={0.7}
-                  >
-                    <Text
-                      style={[
-                        styles.counterButtonText,
-                        questionsCount === 3 &&
-                          styles.counterButtonTextDisabled,
-                      ]}
-                    >
-                      +
-                    </Text>
-                  </TouchableOpacity>
+                </View>
+
+                <View>
+                  <Text style={styles.sectionSubtitle}>
+                    {t('Sets of questions')}
+                  </Text>
+
+                  <View style={styles.settingRow}>
+                    <View style={styles.settingLabelContainer}>
+                      <FontAwesome
+                        name="question"
+                        size={24}
+                        color={colors.orange[200]}
+                      />
+                      <Text style={styles.settingLabel}>
+                        {t('Questions per player')}
+                      </Text>
+                    </View>
+                    <View style={styles.counterContainer}>
+                      <TouchableOpacity
+                        onPress={decreaseQuestions}
+                        style={[
+                          styles.counterButton,
+                          questionsCount === 1 && styles.counterButtonDisabled,
+                        ]}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.counterButtonText,
+                            questionsCount === 1 &&
+                              styles.counterButtonTextDisabled,
+                          ]}
+                        >
+                          −
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={styles.counterValueContainer}>
+                        <Text style={styles.counterValue}>{questionsCount}</Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={increaseQuestions}
+                        style={[
+                          styles.counterButton,
+                          questionsCount === 3 && styles.counterButtonDisabled,
+                        ]}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.counterButtonText,
+                            questionsCount === 3 &&
+                              styles.counterButtonTextDisabled,
+                          ]}
+                        >
+                          +
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
             </ScrollView>
@@ -309,6 +315,7 @@ const styles = StyleSheet.create({
   },
   modalTitleContainer: {
     paddingBottom: verticalScale(spacing.lg),
+    paddingHorizontal: scale(spacing.lg),
   },
   modalTitle: {
     fontFamily: 'Raleway',

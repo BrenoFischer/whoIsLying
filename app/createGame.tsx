@@ -144,6 +144,10 @@ export default function CreateGame() {
   }
 
   function handleCreateGame() {
+    if (!game.category) {
+      router.replace('/selectCategory');
+      return;
+    }
     const maxImpostors = players.length - 2;
     if (!game.config.randomImpostors && game.config.numberOfImpostors > maxImpostors) {
       setConflictImpostorCount(maxImpostors);
