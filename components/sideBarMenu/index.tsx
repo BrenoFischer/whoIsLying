@@ -603,7 +603,7 @@ export default function SidebarMenu() {
                   onPress={() => savedPlayers.length > 0 && setShowPlayerStats(true)}
                 >
                   <Ionicons
-                    name="person-outline"
+                    name="podium-outline"
                     size={moderateScale(20)}
                     color={savedPlayers.length > 0 ? colors.orange[200] : colors.gray[300]}
                   />
@@ -617,7 +617,7 @@ export default function SidebarMenu() {
                   onPress={() => matchHistory.length > 0 && setShowMatchHistory(true)}
                 >
                   <Ionicons
-                    name="time-outline"
+                    name="journal-outline"
                     size={moderateScale(20)}
                     color={matchHistory.length > 0 ? colors.orange[200] : colors.gray[300]}
                   />

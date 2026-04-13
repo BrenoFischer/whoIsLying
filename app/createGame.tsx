@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import uuid from 'react-native-uuid';
 
 import { Player } from '@/types/Player';
 import { SavedPlayer } from '@/types/SavedPlayer';
@@ -27,6 +28,8 @@ import CharacterPicker from '@/components/characterPicker';
 import ConfigMenu from '@/components/configMenu';
 import { ToggleButton } from '@/components/toggleButton';
 import SavedPlayersList from '@/components/savedPlayersList';
+import MatchHistory from '@/components/matchHistory';
+import { MatchRecord } from '@/types/MatchRecord';
 
 const MAX_PLAYERS = 10;
 
@@ -48,6 +51,7 @@ export default function CreateGame() {
     CharacterTheme | 'all'
   >('all');
   const [savedPlayersModalOpen, setSavedPlayersModalOpen] = useState(false);
+  const [loadGroupModalOpen, setLoadGroupModalOpen] = useState(false);
   const [autoSaveConflictOpen, setAutoSaveConflictOpen] = useState(false);
   const [autoDeleteCandidates, setAutoDeleteCandidates] = useState<SavedPlayer[]>([]);
   const [pendingNewPlayers, setPendingNewPlayers] = useState<
@@ -120,6 +124,41 @@ export default function CreateGame() {
 
   function deletePlayer(id: string) {
     setPlayers(prev => prev.filter(p => p.id !== id));
+  }
+
+  function handleSelectGroup(match: MatchRecord) {
+    const usedChars = new Set<string>();
+
+    const pickChar = (preferred: string): string => {
+      if (!usedChars.has(preferred)) {
+        usedChars.add(preferred);
+        return preferred;
+      }
+      const fallback = characters.find(c => !usedChars.has(c.name));
+      if (fallback) {
+        usedChars.add(fallback.name);
+        return fallback.name;
+      }
+      return characters[0].name;
+    };
+
+    const resolved: Player[] = match.players.map(mp => {
+      const saved = savedPlayers.find(s => s.id === mp.savedPlayerId);
+      const preferred = saved?.preferredCharacter
+        ?? characters.find(c => !usedChars.has(c.name))?.name
+        ?? characters[0].name;
+      return {
+        id: saved?.id ?? uuid.v4().toString(),
+        name: mp.name,
+        theme: saved?.preferredTheme ?? 'male',
+        character: pickChar(preferred),
+        score: 0,
+        matchScore: { scoreEvents: [], totalScore: 0 },
+      };
+    });
+
+    setPlayers(resolved);
+    setLoadGroupModalOpen(false);
   }
 
   function getNewPlayersToSave() {
@@ -376,6 +415,17 @@ export default function CreateGame() {
         maxPlayers={MAX_PLAYERS}
         availableCharacters={availableCharacters.map(c => c.name)}
         onSelectPlayer={addFromSavedPlayer}
+        onLoadGroup={() => {
+          setSavedPlayersModalOpen(false);
+          setLoadGroupModalOpen(true);
+        }}
+      />
+
+      <MatchHistory
+        visible={loadGroupModalOpen}
+        onClose={() => setLoadGroupModalOpen(false)}
+        selectMode
+        onSelectGroup={handleSelectGroup}
       />
 
       <View>
