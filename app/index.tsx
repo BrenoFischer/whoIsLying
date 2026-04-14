@@ -12,8 +12,8 @@ import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 import ScreenLayout from '@/components/screenLayout';
 import { Ionicons } from '@expo/vector-icons';
-import PlayerStats from '@/components/playerStats';
-import MatchHistory from '@/components/matchHistory';
+import StatsModal from '@/components/statsModal';
+import HowToPlay from '@/components/howToPlay';
 
 export default function SkillUpScreen() {
   const { t, language, setLanguage } = useTranslation();
@@ -21,7 +21,7 @@ export default function SkillUpScreen() {
   const { savedPlayers, matchHistory } = useContext(HistoryContext);
 
   const [showStats, setShowStats] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -35,8 +35,7 @@ export default function SkillUpScreen() {
     setLanguage(lan);
   };
 
-  const hasStats = savedPlayers.length > 0;
-  const hasHistory = matchHistory.length > 0;
+  const hasData = savedPlayers.length > 0 || matchHistory.length > 0;
 
   return (
     <>
@@ -46,24 +45,24 @@ export default function SkillUpScreen() {
             <View style={styles.headerLeft}>
               <TouchableOpacity
                 style={styles.iconButton}
-                onPress={() => hasStats && setShowStats(true)}
-                activeOpacity={hasStats ? 0.7 : 1}
+                onPress={() => hasData && setShowStats(true)}
+                activeOpacity={hasData ? 0.7 : 1}
               >
                 <Ionicons
-                  name="podium-outline"
+                  name="bar-chart-outline"
                   size={moderateScale(22)}
-                  color={hasStats ? colors.orange[200] : colors.gray[300]}
+                  color={hasData ? colors.orange[200] : colors.gray[300]}
                 />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.iconButton}
-                onPress={() => hasHistory && setShowHistory(true)}
-                activeOpacity={hasHistory ? 0.7 : 1}
+                onPress={() => setShowHowToPlay(true)}
+                activeOpacity={0.7}
               >
                 <Ionicons
-                  name="journal-outline"
+                  name="help"
                   size={moderateScale(22)}
-                  color={hasHistory ? colors.orange[200] : colors.gray[300]}
+                  color={colors.orange[200]}
                 />
               </TouchableOpacity>
             </View>
@@ -121,8 +120,8 @@ export default function SkillUpScreen() {
         </View>
       </ScreenLayout>
 
-      <PlayerStats visible={showStats} onClose={() => setShowStats(false)} />
-      <MatchHistory visible={showHistory} onClose={() => setShowHistory(false)} />
+      <StatsModal visible={showStats} onClose={() => setShowStats(false)} />
+      <HowToPlay visible={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
     </>
   );
 }
