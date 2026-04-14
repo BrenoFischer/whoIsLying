@@ -3,6 +3,7 @@ import { useContext, useState, useEffect, useRef } from 'react';
 import {
   Text,
   StyleSheet,
+  TouchableOpacity,
   View,
   Image,
   useWindowDimensions,
@@ -33,7 +34,7 @@ const images = {
 };
 
 export default function SelectCategory() {
-  const { setGameWord, setCurrentScreen } = useContext(GameContext);
+  const { setGameWord, setCurrentScreen, game } = useContext(GameContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -126,15 +127,26 @@ export default function SelectCategory() {
           onPress={handleContinueWithSelectedCategory}
         />
       }
-    >
-      <Elipse top={scale(-180)} />
-
-      <View style={styles.contentWrapper}>
-        <View style={styles.menuButtonsRow}>
+      header={
+        <View style={styles.headerContainer}>
+          <Elipse top={-80} />
+          <View style={styles.headerLeft}>
+            <TouchableOpacity onPress={() => router.replace('/selectGameMode')}>
+              <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+            {game.gameMode && (
+              <Text style={styles.headerCategoryTitle}>
+                {t(game.gameMode.charAt(0).toUpperCase() + game.gameMode.slice(1))} {t('Mode')}
+              </Text>
+            )}
+          </View>
           <ConfigMenu />
           <SidebarMenu />
         </View>
-        <View style={styles.headerContainer}>
+      }
+    >
+      <View style={styles.contentWrapper}>
+        <View style={styles.titleRow}>
           <View style={styles.headerTextContainer}>
             <Text style={styles.pageTitle}>{t('Categories')}</Text>
             <Text style={styles.subtitle}>
@@ -165,13 +177,25 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingTop: verticalScale(spacing.xs),
   },
-  menuButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: scale(spacing.md),
-    gap: scale(spacing.xs),
-  },
   headerContainer: {
+    paddingTop: verticalScale(spacing.xs),
+    paddingBottom: verticalScale(spacing.xs),
+    paddingHorizontal: scale(spacing.md),
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(5),
+  },
+  headerCategoryTitle: {
+    textTransform: 'capitalize',
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway-Medium',
+  },
+  titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: scale(spacing.md),

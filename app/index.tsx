@@ -106,7 +106,7 @@ export default function SkillUpScreen() {
         footer={
           <Button
             text={t('New game')}
-            onPress={() => router.replace('/selectCategory')}
+            onPress={() => router.replace('/selectGameMode')}
           />
         }
       >

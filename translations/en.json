@@ -242,5 +242,20 @@
   "No matches played yet": "No matches played yet",
   "Your match history will appear here after your first game.": "Your match history will appear here after your first game.",
   "Statistics": "Statistics",
-  "Guessed word": "Guessed word"
+  "Guessed word": "Guessed word",
+  "Game Mode": "Game Mode",
+  "Mode": "Mode",
+  "Choose how you want to play": "Choose how you want to play",
+  "Party": "Party",
+  "Chaos": "Chaos",
+  "Classic": "Classic",
+  "Custom": "Custom",
+  "partyModeDescription": "More impostors, more confusion. Best for big groups.",
+  "chaosModeDescription": "Random impostors, hidden count. Nobody knows a thing.",
+  "classicModeDescription": "One impostor, two sets of questions. Pure deduction.",
+  "customModeDescription": "Set your own rules. Configure everything manually.",
+  "partyModeTags": "fast paced · social · 3 impostors",
+  "chaosModeTagss": "unpredictable · all random · wild",
+  "classicModeTags": "strategic · balanced · focused",
+  "customModeTags": "fully configurable · your rules"
 }

@@ -48,6 +48,7 @@ interface GameContextType {
   saveRecordingToRound: (recording: string) => void;
   getRoundAudio: () => string | undefined;
   setCurrentScreen: (screen: string) => void;
+  setGameMode: (mode: string) => void;
   getSortedPlayers: () => Player[];
   resolveScoreOfTheMatch: () => void;
   isHydrated: boolean;
@@ -659,6 +660,10 @@ export const GameContextProvider = ({
     setGame(prev => ({ ...prev, currentScreen: screen }));
   };
 
+  const setGameMode = (mode: string) => {
+    setGame(prev => ({ ...prev, gameMode: mode }));
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -684,6 +689,7 @@ export const GameContextProvider = ({
         saveRecordingToRound,
         getRoundAudio,
         setCurrentScreen,
+        setGameMode,
         getSortedPlayers,
         resolveScoreOfTheMatch,
         isHydrated,

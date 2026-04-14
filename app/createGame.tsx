@@ -248,9 +248,11 @@ export default function CreateGame() {
               <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
             <View>
-              <Text style={styles.headerCategoryTitle}>
-                {t('Game')} {game.currentMatch}
-              </Text>
+              {game.gameMode && (
+                <Text style={styles.headerCategoryTitle}>
+                  {t(game.gameMode.charAt(0).toUpperCase() + game.gameMode.slice(1))} {t('Mode')}
+                </Text>
+              )}
               <View style={{ flexDirection: 'row', gap: scale(5), alignItems: "center"}}>
                 <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
                 <Dot color={colors.white[100]} />
