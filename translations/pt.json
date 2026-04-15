@@ -251,11 +251,16 @@
   "Classic": "Clássico",
   "Custom": "Personalizado",
   "partyModeDescription": "Mais impostores, mais confusão. Ideal para grupos grandes.",
-  "chaosModeDescription": "Impostores aleatórios, quantidade oculta. Ninguém sabe de nada.",
-  "classicModeDescription": "Um impostor, dois conjuntos de perguntas. Dedução pura.",
-  "customModeDescription": "Defina suas próprias regras. Configure tudo manualmente.",
-  "partyModeTags": "rápido · social · 3 impostores",
-  "chaosModeTagss": "imprevisível · tudo aleatório · caótico",
-  "classicModeTags": "estratégico · equilibrado · focado",
-  "customModeTags": "totalmente configurável · suas regras"
+  "chaosModeDescription": "Impostores aleatórios, quantidade oculta.",
+  "classicModeDescription": "Um impostor, dois conjuntos de perguntas.",
+  "customModeDescription": "Defina suas próprias regras.",
+  "partyModeTags": "rápido · social",
+  "chaosModeTagss": "imprevisível · aleatório · caótico",
+  "classicModeTags": "estratégico · equilibrado",
+  "customModeTags": "totalmente configurável",
+  "impostor_chip": "impostor",
+  "impostors_chip": "impostores",
+  "round_chip": "rodada",
+  "rounds_chip": "rodadas",
+  "random_chip": "aleatório"
 }

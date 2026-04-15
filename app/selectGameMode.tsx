@@ -2,14 +2,14 @@ import React, { useContext, useEffect } from 'react';
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
-import { Ionicons } from '@expo/vector-icons';
 
 import { GameContext } from '@/context/GameContext';
 import { useTranslation } from '@/translations';
@@ -31,9 +31,9 @@ interface GameMode {
   titleKey: string;
   descriptionKey: string;
   tagsKey: string;
-  gradientStart: string;
-  gradientEnd: string;
+  color: string;
   config: ModeConfig | null;
+  image?: ReturnType<typeof require>;
 }
 
 const GAME_MODES: GameMode[] = [
@@ -42,26 +42,25 @@ const GAME_MODES: GameMode[] = [
     titleKey: 'Party',
     descriptionKey: 'partyModeDescription',
     tagsKey: 'partyModeTags',
-    gradientStart: '#6D28D9',
-    gradientEnd: '#BE185D',
+    color: '#6D28D9',
     config: { numberOfImpostors: 3, randomImpostors: false, setsOfQuestions: 1 },
+    image: require('@/assets/images/partyGameModeBg.png'),
   },
   {
     id: 'chaos',
     titleKey: 'Chaos',
     descriptionKey: 'chaosModeDescription',
     tagsKey: 'chaosModeTagss',
-    gradientStart: '#991B1B',
-    gradientEnd: '#B45309',
+    color: '#991B1B',
     config: { numberOfImpostors: 1, randomImpostors: true, setsOfQuestions: 1 },
+    image: require('@/assets/images/chaosGameModeBg.png'),
   },
   {
     id: 'classic',
     titleKey: 'Classic',
     descriptionKey: 'classicModeDescription',
     tagsKey: 'classicModeTags',
-    gradientStart: '#1E3A8A',
-    gradientEnd: '#0E7490',
+    color: colors.orange[200],
     config: { numberOfImpostors: 1, randomImpostors: false, setsOfQuestions: 2 },
   },
   {
@@ -69,8 +68,7 @@ const GAME_MODES: GameMode[] = [
     titleKey: 'Custom',
     descriptionKey: 'customModeDescription',
     tagsKey: 'customModeTags',
-    gradientStart: '#1F2937',
-    gradientEnd: '#4B5563',
+    color: '#1F2937',
     config: null,
   },
 ];
@@ -114,40 +112,69 @@ export default function SelectGameMode() {
           {GAME_MODES.map(mode => (
             <TouchableOpacity
               key={mode.id}
-              style={styles.card}
+              style={[styles.card, { backgroundColor: mode.color }]}
               onPress={() => handleSelectMode(mode)}
-              activeOpacity={0.85}
+              activeOpacity={0.9}
             >
-              {/* Gradient background */}
-              <Svg style={StyleSheet.absoluteFill} preserveAspectRatio="none">
-                <Defs>
-                  <LinearGradient id={`grad-${mode.id}`} x1="0" y1="0" x2="1" y2="0">
-                    <Stop offset="0" stopColor={mode.gradientStart} stopOpacity="1" />
-                    <Stop offset="1" stopColor={mode.gradientEnd} stopOpacity="1" />
-                  </LinearGradient>
-                </Defs>
-                <Rect width="100%" height="100%" fill={`url(#grad-${mode.id})`} />
-              </Svg>
+              {/* Image anchored to the right side */}
+              {mode.image && (
+                <View style={styles.imageContainer}>
+                  <Image
+                    source={mode.image}
+                    style={styles.cardImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              )}
 
-              {/* Subtle dark overlay on left for text legibility */}
-              <View style={styles.cardLeftFade} />
+              {/* Uniform dark overlay */}
+              <View style={styles.darkOverlay} />
 
-              {/* Content */}
+              {/* Left accent bar */}
+              <View style={[styles.accentBar, { backgroundColor: mode.color }]} />
+
+              {/* Config chips — top-right corner */}
+              {mode.config && (
+                <View style={styles.statsColumn}>
+                  <View style={styles.statChip}>
+                    <Ionicons name="people-outline" size={moderateScale(9)} color="rgba(255,255,255,0.9)" />
+                    <Text style={styles.statText}>
+                      {mode.config.numberOfImpostors}{' '}
+                      {t(mode.config.numberOfImpostors === 1 ? 'impostor_chip' : 'impostors_chip')}
+                    </Text>
+                  </View>
+                  <View style={styles.statChip}>
+                    <Ionicons name="layers-outline" size={moderateScale(9)} color="rgba(255,255,255,0.9)" />
+                    <Text style={styles.statText}>
+                      {mode.config.setsOfQuestions}{' '}
+                      {t(mode.config.setsOfQuestions === 1 ? 'round_chip' : 'rounds_chip')}
+                    </Text>
+                  </View>
+                  {mode.config.randomImpostors && (
+                    <View style={[styles.statChip, styles.statChipHighlight]}>
+                      <Ionicons name="shuffle-outline" size={moderateScale(9)} color="rgba(255,255,255,0.9)" />
+                      <Text style={styles.statText}>{t('random_chip')}</Text>
+                    </View>
+                  )}
+                </View>
+              )}
+
+              {/* Content — left side only */}
               <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{t(mode.titleKey)}</Text>
-                <Text style={styles.cardDescription} numberOfLines={2}>
-                  {t(mode.descriptionKey)}
-                </Text>
-                <Text style={styles.cardTags}>{t(mode.tagsKey)}</Text>
-              </View>
+                <View style={styles.textBlock}>
+                  <Text style={styles.cardTitle}>{t(mode.titleKey)}</Text>
+                  <Text style={styles.cardDescription} numberOfLines={2}>
+                    {t(mode.descriptionKey)}
+                  </Text>
+                </View>
 
-              {/* Arrow hint */}
-              <View style={styles.cardArrow}>
-                <Ionicons
-                  name="chevron-forward"
-                  size={moderateScale(20)}
-                  color={'rgba(255,255,255,0.5)'}
-                />
+                <View style={styles.tagsRow}>
+                  {t(mode.tagsKey).split(' · ').map((tag, i) => (
+                    <View key={i} style={styles.tagPill}>
+                      <Text style={styles.tagPillText}>{tag}</Text>
+                    </View>
+                  ))}
+                </View>
               </View>
             </TouchableOpacity>
           ))}
@@ -189,51 +216,113 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: scale(spacing.lg),
+    paddingHorizontal: scale(spacing.md),
     paddingBottom: verticalScale(spacing.xl),
     gap: verticalScale(spacing.sm),
   },
   card: {
-    height: verticalScale(140),
+    height: verticalScale(200),
     borderRadius: moderateScale(radius.lg),
     overflow: 'hidden',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  cardLeftFade: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.18)',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
   },
   cardContent: {
+    position: 'absolute',
+    zIndex: 2,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: '70%',
+    padding: scale(spacing.lg),
+    justifyContent: 'space-between',
+  },
+  darkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
+  accentBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: scale(4),
+    zIndex: 3,
+  },
+  textBlock: {
     flex: 1,
-    paddingHorizontal: scale(spacing.lg),
-    paddingVertical: verticalScale(spacing.md),
-    justifyContent: 'center',
-    gap: verticalScale(spacing.xs),
+  },
+  statsColumn: {
+    position: 'absolute',
+    top: scale(spacing.lg),
+    right: scale(spacing.lg),
+    zIndex: 3,
+    alignItems: 'flex-end',
+    gap: verticalScale(4),
+  },
+  statChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(3),
+    backgroundColor: '#111827',
+    borderRadius: moderateScale(4),
+    paddingHorizontal: scale(6),
+    paddingVertical: verticalScale(3),
+  },
+  statChipHighlight: {
+    backgroundColor: colors.orange[200],
+  },
+  statText: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(9),
+    color: colors.white[100],
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: scale(5),
+    paddingBottom: verticalScale(2),
+  },
+  tagPill: {
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: moderateScale(20),
+    paddingHorizontal: scale(8),
+    paddingVertical: verticalScale(3),
+  },
+  tagPillText: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(9),
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.75)',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  imageContainer: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: '50%',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
   },
   cardTitle: {
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: moderateScale(22),
+    fontSize: moderateScale(fontSize.xxl),
     color: colors.white[100],
     letterSpacing: 0.3,
   },
   cardDescription: {
     fontFamily: 'Raleway',
     fontSize: moderateScale(12),
-    color: 'rgba(255,255,255,0.80)',
-    lineHeight: moderateScale(17),
-  },
-  cardTags: {
-    fontFamily: 'Raleway',
-    fontSize: moderateScale(10),
-    fontWeight: '700',
-    color: 'rgba(255,255,255,0.55)',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginTop: verticalScale(spacing.xs),
-  },
-  cardArrow: {
-    paddingRight: scale(spacing.md),
+    color: 'rgba(255,255,255,0.85)',
+    marginTop: verticalScale(4),
   },
 });

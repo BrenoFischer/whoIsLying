@@ -251,11 +251,16 @@
   "Classic": "Classic",
   "Custom": "Custom",
   "partyModeDescription": "More impostors, more confusion. Best for big groups.",
-  "chaosModeDescription": "Random impostors, hidden count. Nobody knows a thing.",
-  "classicModeDescription": "One impostor, two sets of questions. Pure deduction.",
-  "customModeDescription": "Set your own rules. Configure everything manually.",
-  "partyModeTags": "fast paced · social · 3 impostors",
-  "chaosModeTagss": "unpredictable · all random · wild",
-  "classicModeTags": "strategic · balanced · focused",
-  "customModeTags": "fully configurable · your rules"
+  "chaosModeDescription": "Random impostors, hidden count.",
+  "classicModeDescription": "One impostor, two sets of questions.",
+  "customModeDescription": "Set your own rules.",
+  "partyModeTags": "fast paced · social",
+  "chaosModeTagss": "unpredictable · random · wild",
+  "classicModeTags": "strategic · balanced",
+  "customModeTags": "fully configurable",
+  "impostor_chip": "impostor",
+  "impostors_chip": "impostors",
+  "round_chip": "round",
+  "rounds_chip": "rounds",
+  "random_chip": "random"
 }

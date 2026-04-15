@@ -80,10 +80,12 @@ export default function SelectCategory() {
         <View style={styles.cardOverlay} />
         {!isAvailable && <View style={styles.lockedOverlay} />}
         <Text></Text>
-        <Image
-          source={images[categoryName as keyof typeof images]}
-          style={styles.categoryImage}
-        />
+        {images[categoryName as keyof typeof images] != null && (
+          <Image
+            source={images[categoryName as keyof typeof images]}
+            style={styles.categoryImage}
+          />
+        )}
         {!isAvailable && (
           <View style={styles.lockIconContainer}>
             <Ionicons
