@@ -33,7 +33,7 @@ interface GameMode {
   tagsKey: string;
   color: string;
   config: ModeConfig | null;
-  image?: ReturnType<typeof require>;
+  image?: number;
 }
 
 const GAME_MODES: GameMode[] = [

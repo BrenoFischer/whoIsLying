@@ -6,7 +6,9 @@ import i18n from './i18n';
 export type Language = 'en' | 'pt';
 
 export function useTranslation() {
-  const { t } = useI18nextTranslation();
+  const { t: tRaw } = useI18nextTranslation();
+  const t = (key: string, options?: Record<string, unknown>): string =>
+    tRaw(key, options) as string;
   const [isLoaded, setIsLoaded] = useState(false);
   const language = i18n.language as Language;
 
