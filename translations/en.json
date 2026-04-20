@@ -262,5 +262,7 @@
   "impostors_chip": "impostors",
   "round_chip": "round",
   "rounds_chip": "rounds",
-  "random_chip": "random"
+  "random_chip": "random",
+  "Who voted on who?": "Who voted on who?",
+  "voted on": "voted on"
 }

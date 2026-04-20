@@ -42,13 +42,6 @@ export default function Character({
     werewolf: require('@/assets/images/werewolf.png'),
     werewolfFem: require('@/assets/images/werewolfFem.png'),
     puca: require('@/assets/images/puca.png'),
-    slide1: require('@/assets/images/slides/slide1.png'),
-    slide2: require('@/assets/images/slides/slide2.png'),
-    slide3: require('@/assets/images/slides/slide3.png'),
-    slide4: require('@/assets/images/slides/slide4.png'),
-    slide5: require('@/assets/images/slides/slide5.png'),
-    slide6: require('@/assets/images/slides/slide6.png'),
-    slide7: require('@/assets/images/slides/slide7.png'),
   };
 
   return (

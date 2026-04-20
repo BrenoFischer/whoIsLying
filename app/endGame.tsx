@@ -44,7 +44,7 @@ import { Ionicons } from '@expo/vector-icons';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDE_DURATION_MS = 400;
 const EVENT_FADE_IN_MS = 350;
-const EVENT_HOLD_MS = 2000;
+const EVENT_HOLD_MS = 500;
 const EVENT_FADE_OUT_MS = 800;
 const TICK_INTERVAL_MS = 120;
 

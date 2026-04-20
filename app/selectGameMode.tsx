@@ -62,6 +62,7 @@ const GAME_MODES: GameMode[] = [
     tagsKey: 'classicModeTags',
     color: colors.orange[200],
     config: { numberOfImpostors: 1, randomImpostors: false, setsOfQuestions: 2 },
+    image: require('@/assets/images/classicGameModeBg.png'),
   },
   {
     id: 'custom',
@@ -70,6 +71,7 @@ const GAME_MODES: GameMode[] = [
     tagsKey: 'customModeTags',
     color: '#1F2937',
     config: null,
+    image: require('@/assets/images/customGameModeBg.png'),
   },
 ];
 
