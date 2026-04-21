@@ -15,7 +15,7 @@ const INITIAL_GAME: Game = {
   currentRound: 1,
   rounds: [],
   lyingPlayers: [],
-  config: { numberOfImpostors: 1, setsOfQuestions: 2, randomImpostors: false },
+  config: { numberOfImpostors: 1, setsOfQuestions: 2, randomImpostors: false, timedRound: false, roundDuration: 10 },
   category: undefined,
   word: undefined,
   wordIndex: undefined,
@@ -49,6 +49,8 @@ interface GameContextType {
   getRoundAudio: () => string | undefined;
   setCurrentScreen: (screen: string) => void;
   setGameMode: (mode: string) => void;
+  setTimedRound: (timed: boolean) => void;
+  setRoundDuration: (seconds: number) => void;
   getSortedPlayers: () => Player[];
   resolveScoreOfTheMatch: () => void;
   isHydrated: boolean;
@@ -664,6 +666,14 @@ export const GameContextProvider = ({
     setGame(prev => ({ ...prev, gameMode: mode }));
   };
 
+  const setTimedRound = (timed: boolean) => {
+    setGame(prev => ({ ...prev, config: { ...prev.config, timedRound: timed } }));
+  };
+
+  const setRoundDuration = (seconds: number) => {
+    setGame(prev => ({ ...prev, config: { ...prev.config, roundDuration: seconds } }));
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -690,6 +700,8 @@ export const GameContextProvider = ({
         getRoundAudio,
         setCurrentScreen,
         setGameMode,
+        setTimedRound,
+        setRoundDuration,
         getSortedPlayers,
         resolveScoreOfTheMatch,
         isHydrated,

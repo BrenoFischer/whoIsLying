@@ -236,34 +236,31 @@ export default function CreateGame() {
       header={
         <View style={styles.headerContainer}>
           <Elipse top={-80} />
-          <View
-            style={{
-              alignItems: 'center',
-              flexDirection: 'row',
-              gap: scale(5),
-              flex: 1,
-            }}
-          >
-            <TouchableOpacity onPress={() => router.replace('/selectCategory')}>
-              <Ionicons name="arrow-back" size={24} color="black" />
-            </TouchableOpacity>
-            <View>
-              {game.gameMode && (
-                <Text style={styles.headerCategoryTitle}>
-                  {t(game.gameMode.charAt(0).toUpperCase() + game.gameMode.slice(1))} {t('Mode')}
-                </Text>
-              )}
-              <View style={{ flexDirection: 'row', gap: scale(5), alignItems: "center"}}>
-                <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
-                <Dot color={colors.white[100]} />
-                <Text style={styles.headerCategoryTitle}>
-                  {t(game.category || '')}
-                </Text>
+          <View style={styles.headerRow}>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity onPress={() => router.replace('/selectCategory')}>
+                <Ionicons name="arrow-back" size={24} color="black" />
+              </TouchableOpacity>
+              <View style={{ flex: 1 }}>
+                {game.gameMode && (
+                  <Text style={styles.headerCategoryTitle} numberOfLines={1}>
+                    {t(game.gameMode.charAt(0).toUpperCase() + game.gameMode.slice(1))} {t('Mode')}
+                  </Text>
+                )}
+                <View style={{ flexDirection: 'row', gap: scale(5), alignItems: 'center' }}>
+                  <Text style={styles.headerCategoryTitle}>{t('Category')}</Text>
+                  <Dot color={colors.white[100]} />
+                  <Text style={styles.headerCategoryTitle} numberOfLines={1} ellipsizeMode="tail">
+                    {t(game.category || '')}
+                  </Text>
+                </View>
               </View>
             </View>
+            <SidebarMenu />
           </View>
-          <ConfigMenu />
-          <SidebarMenu />
+          <View style={styles.headerConfigRow}>
+            <ConfigMenu />
+          </View>
         </View>
       }
     >
@@ -580,8 +577,22 @@ const styles = StyleSheet.create({
     paddingTop: verticalScale(spacing.xs),
     paddingBottom: verticalScale(spacing.xs),
     paddingHorizontal: scale(spacing.md),
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: scale(5),
+  },
+  headerLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(5),
+    overflow: 'hidden',
+  },
+  headerConfigRow: {
+    alignItems: 'flex-end',
+    marginTop: verticalScale(4),
   },
   topContainer: {
     paddingHorizontal: scale(spacing.xl),

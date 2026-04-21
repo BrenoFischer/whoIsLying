@@ -61,13 +61,36 @@ export default function RoundScreen() {
     boolean | null
   >(null);
 
+  const timedRound = game.config.timedRound;
+  const roundDuration = game.config.roundDuration;
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(roundDuration);
+  const [timeExpired, setTimeExpired] = useState(false);
+
   const audioRecorder = useAudioRecorder(RecordingPresets.LOW_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder, 900);
 
   useEffect(() => {
     const currentAudio = getRoundAudio();
     setAudioUri(currentAudio ?? null);
+    setTimerStarted(false);
+    setTimeLeft(roundDuration);
+    setTimeExpired(false);
   }, [game.currentRound]);
+
+  useEffect(() => {
+    if (!timedRound || !timerStarted || timeExpired) return;
+    if (timeLeft <= 0) {
+      setTimeExpired(true);
+      return;
+    }
+    const id = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearTimeout(id);
+  }, [timedRound, timerStarted, timeLeft, timeExpired]);
+
+  useEffect(() => {
+    if (timeExpired && isRecording) handleStopRecording();
+  }, [timeExpired]);
 
   useEffect(() => {
     (async () => {
@@ -191,8 +214,14 @@ export default function RoundScreen() {
   const playerThatAnswers = round.playerThatAnswers;
   const question = t(getCurrentQuestion(), { ns: 'categories' });
 
+  const startTimer = () => {
+    if (timerStarted || timeExpired) return;
+    setTimerStarted(true);
+  };
+
   const startRecording = async () => {
     if (!micPermissionGranted) return;
+    startTimer();
     setIsRecording(true);
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record({ forDuration: 50 });
@@ -254,6 +283,9 @@ export default function RoundScreen() {
     word2Scale.value = 1;
     word3Scale.value = 1;
     setShowIntro(true);
+    setTimerStarted(false);
+    setTimeLeft(roundDuration);
+    setTimeExpired(false);
     nextRound();
   };
 
@@ -315,11 +347,19 @@ export default function RoundScreen() {
             </View>
 
             <View>
-              <Button
-                text={isRecording ? t('Recording...') : t('Continue')}
-                onPress={handleNextRound}
-                variants={isRecording ? 'disabled' : 'primary'}
-              />
+              {timedRound && !timerStarted ? (
+                <Button
+                  text={t('Start answering')}
+                  onPress={startTimer}
+                  variants="primary"
+                />
+              ) : (
+                <Button
+                  text={isRecording ? t('Recording...') : t('Continue')}
+                  onPress={handleNextRound}
+                  variants={isRecording ? 'disabled' : 'primary'}
+                />
+              )}
             </View>
 
             <View style={styles.rightFooterArea} />
@@ -336,6 +376,20 @@ export default function RoundScreen() {
             <Character mood={playerThatAsks.character} />
             <Character mood={playerThatAnswers.character} flip />
           </View>
+          {timedRound && timerStarted && (
+            <View style={styles.timerRow}>
+              <View style={[styles.countdown, timeExpired && styles.countdownExpired]}>
+                <FontAwesome6
+                  name="hourglass-half"
+                  size={moderateScale(13)}
+                  color={timeExpired ? colors.white[100] : colors.orange[200]}
+                />
+                <Text style={[styles.countdownText, timeExpired && styles.countdownTextExpired]}>
+                  {timeExpired ? t("Time's up!") : `${timeLeft}s`}
+                </Text>
+              </View>
+            </View>
+          )}
           <View style={styles.recordingContainer}>
             {isRecording ? (
               <View
@@ -514,5 +568,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     maxHeight: moderateScale(180),
+  },
+  timerRow: {
+    alignItems: 'center',
+    marginBottom: verticalScale(8),
+  },
+  countdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(6),
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(7),
+    borderRadius: moderateScale(radius.pill),
+    borderWidth: 1,
+    borderColor: colors.orange[200],
+  },
+  countdownExpired: {
+    backgroundColor: colors.orange[200],
+    borderColor: colors.orange[200],
+  },
+  countdownText: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: fontSize.sm,
+    color: colors.orange[200],
+  },
+  countdownTextExpired: {
+    color: colors.white[100],
   },
 });

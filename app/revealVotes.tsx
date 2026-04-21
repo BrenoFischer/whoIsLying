@@ -223,10 +223,10 @@ export default function RevealVotes() {
         if (!animationActiveRef.current) return;
 
         // Reset state for the new card (card is invisible while this happens)
+        cardOpacity.value = 0;
         setCurrentCardIndex(i);
         setRevealedLabel(false);
         setRevealedVotesCount(0);
-        cardOpacity.value = 0;
 
         await delay(60);
         if (!animationActiveRef.current) return;

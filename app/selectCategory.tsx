@@ -132,18 +132,22 @@ export default function SelectCategory() {
       header={
         <View style={styles.headerContainer}>
           <Elipse top={-80} />
-          <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => router.replace('/selectGameMode')}>
-              <Ionicons name="arrow-back" size={24} color="black" />
-            </TouchableOpacity>
-            {game.gameMode && (
-              <Text style={styles.headerCategoryTitle}>
-                {t(game.gameMode.charAt(0).toUpperCase() + game.gameMode.slice(1))} {t('Mode')}
-              </Text>
-            )}
+          <View style={styles.headerRow}>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity onPress={() => router.replace('/selectGameMode')}>
+                <Ionicons name="arrow-back" size={24} color="black" />
+              </TouchableOpacity>
+              {game.gameMode && (
+                <Text style={styles.headerCategoryTitle} numberOfLines={1}>
+                  {t(game.gameMode.charAt(0).toUpperCase() + game.gameMode.slice(1))} {t('Mode')}
+                </Text>
+              )}
+            </View>
+            <SidebarMenu />
           </View>
-          <ConfigMenu />
-          <SidebarMenu />
+          <View style={styles.headerConfigRow}>
+            <ConfigMenu />
+          </View>
         </View>
       }
     >
@@ -183,6 +187,8 @@ const styles = StyleSheet.create({
     paddingTop: verticalScale(spacing.xs),
     paddingBottom: verticalScale(spacing.xs),
     paddingHorizontal: scale(spacing.md),
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -191,6 +197,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: scale(5),
+    overflow: 'hidden',
+  },
+  headerConfigRow: {
+    alignItems: 'flex-end',
+    marginTop: verticalScale(4),
   },
   headerCategoryTitle: {
     textTransform: 'capitalize',

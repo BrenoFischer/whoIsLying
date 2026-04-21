@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Button from '@/components/button';
 import { useTranslation } from '@/translations';
 import { Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -14,7 +15,7 @@ import { spacing } from '@/styles/spacing';
 import { GameContext } from '@/context/GameContext';
 
 export default function ConfigMenu() {
-  const { setNumberOfImpostors, game, setSetsOfQuestions, setRandomImpostors } =
+  const { setNumberOfImpostors, game, setSetsOfQuestions, setRandomImpostors, setTimedRound, setRoundDuration } =
     useContext(GameContext);
   const [menuOpened, setMenuOpened] = useState(false);
   const [impostorCount, setImpostorCount] = useState(
@@ -24,8 +25,13 @@ export default function ConfigMenu() {
     game.config.setsOfQuestions
   );
   const randomImpostors = game.config.randomImpostors;
+  const timedRound = game.config.timedRound;
+  const roundDuration = game.config.roundDuration;
 
   const { t } = useTranslation();
+
+  const ROUND_MAX = 15;
+  const ROUND_MIN = 3;
 
   const toggleMenu = () => {
     setMenuOpened(!menuOpened);
@@ -56,6 +62,26 @@ export default function ConfigMenu() {
     if (questionsCount > 1) {
       setQuestionsCount(questionsCount - 1);
       setSetsOfQuestions(questionsCount - 1);
+    }
+  };
+
+  const decreaseRoundDuration = () => {
+    if (roundDuration > ROUND_MIN) {
+      if(roundDuration === 5) {
+        setRoundDuration(ROUND_MIN);
+        return;
+      }
+      setRoundDuration(roundDuration - 5);
+    }
+  };
+
+  const increaseRoundDuration = () => {
+    if (roundDuration < ROUND_MAX) {
+      if(roundDuration === ROUND_MIN) {
+        setRoundDuration(ROUND_MIN + 2);
+        return;
+      }
+      setRoundDuration(roundDuration + 5);
     }
   };
 
@@ -92,6 +118,16 @@ export default function ConfigMenu() {
                 {game.config.setsOfQuestions}
               </Text>
             </View>
+            <View style={styles.configRow}>
+              <Ionicons
+                name="time-outline"
+                size={moderateScale(12)}
+                color={timedRound ? colors.orange[200] : colors.gray[100]}
+              />
+              <Text style={[styles.configValue, !timedRound && styles.configValueDisabled]}>
+                {timedRound ? `${roundDuration}s` : '—'}
+              </Text>
+            </View>
           </View>
           <Entypo name="cog" size={scale(28)} color={colors.orange[200]} />
         </TouchableOpacity>
@@ -99,14 +135,6 @@ export default function ConfigMenu() {
       <Modal transparent={false} visible={menuOpened} animationType="slide">
         <SafeAreaProvider>
           <SafeAreaView style={styles.modalContainer}>
-            <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
-              <Ionicons
-                name="close"
-                size={scale(28)}
-                color={colors.orange[200]}
-              />
-            </TouchableOpacity>
-
             <View style={styles.modalTitleContainer}>
               <Text style={styles.modalTitle}>
                 {t('Customize game settings')}
@@ -264,8 +292,91 @@ export default function ConfigMenu() {
                     </View>
                   </View>
                 </View>
+
+                <View>
+                  <Text style={styles.sectionSubtitle}>{t('Timed rounds')}</Text>
+
+                  <View style={styles.settingRow}>
+                    <View style={styles.settingLabelContainer}>
+                      <Ionicons
+                        name="timer-outline"
+                        size={scale(22)}
+                        color={colors.orange[200]}
+                      />
+                      <Text style={styles.settingLabel}>
+                        {t('Timed answering')}
+                      </Text>
+                    </View>
+                    <ToggleButton
+                      value={timedRound}
+                      onValueChange={setTimedRound}
+                    />
+                  </View>
+
+                  <View
+                    style={[
+                      styles.settingRow,
+                      !timedRound && styles.settingRowDisabled,
+                    ]}
+                    pointerEvents={timedRound ? 'auto' : 'none'}
+                  >
+                    <View style={styles.settingLabelContainer}>
+                      <Ionicons
+                        name="hourglass-outline"
+                        size={scale(22)}
+                        color={colors.orange[200]}
+                      />
+                      <Text style={styles.settingLabel}>
+                        {t('Seconds per answer')}
+                      </Text>
+                    </View>
+                    <View style={styles.counterContainer}>
+                      <TouchableOpacity
+                        onPress={decreaseRoundDuration}
+                        style={[
+                          styles.counterButton,
+                          roundDuration === ROUND_MIN && styles.counterButtonDisabled,
+                        ]}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.counterButtonText,
+                            roundDuration === ROUND_MIN && styles.counterButtonTextDisabled,
+                          ]}
+                        >
+                          −
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={styles.counterValueContainer}>
+                        <Text style={styles.counterValue}>{roundDuration}</Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={increaseRoundDuration}
+                        style={[
+                          styles.counterButton,
+                          roundDuration === ROUND_MAX && styles.counterButtonDisabled,
+                        ]}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.counterButtonText,
+                            roundDuration === ROUND_MAX && styles.counterButtonTextDisabled,
+                          ]}
+                        >
+                          +
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
               </View>
             </ScrollView>
+
+            <View style={styles.doneButtonContainer}>
+              <Button text={t('Done')} onPress={toggleMenu} variants="primary" />
+            </View>
           </SafeAreaView>
         </SafeAreaProvider>
       </Modal>
@@ -275,7 +386,6 @@ export default function ConfigMenu() {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    zIndex: 100,
     backgroundColor: colors.background[100],
     borderRadius: moderateScale(radius.pill),
     padding: scale(5),
@@ -301,19 +411,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.orange[200],
   },
-  closeButton: {
-    zIndex: 100,
-    backgroundColor: colors.background[100],
-    borderRadius: moderateScale(radius.pill),
-    padding: scale(5),
-    alignSelf: 'flex-end',
-    margin: scale(10),
+  configValueDisabled: {
+    color: colors.gray[100],
   },
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background[100],
   },
+  doneButtonContainer: {
+    paddingHorizontal: scale(spacing.lg),
+    paddingVertical: verticalScale(spacing.md),
+    alignItems: 'center',
+  },
   modalTitleContainer: {
+    paddingTop: verticalScale(spacing.lg),
     paddingBottom: verticalScale(spacing.lg),
     paddingHorizontal: scale(spacing.lg),
   },
