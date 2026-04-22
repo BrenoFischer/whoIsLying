@@ -264,5 +264,21 @@
   "rounds_chip": "rounds",
   "random_chip": "random",
   "Who voted on who?": "Who voted on who?",
-  "voted on": "voted on"
+  "voted on": "voted on",
+  "to answer": "to answer",
+  "Timed rounds": "Timed rounds",
+  "Timed answering": "Timed answering",
+  "Seconds per answer": "Seconds per answer",
+  "Done": "Done",
+  "Start countdown": "Start countdown",
+  "Stop countdown": "Stop countdown",
+  "Time's up!": "Time's up!",
+  "Record a new answer": "Record a new answer",
+  "detected_1_impostor": "Detected 1 impostor",
+  "detected_2_impostors": "Detected 2 impostors",
+  "detected_3_impostors": "Detected 3 impostors",
+  "detected_player": "Detected {{name}}",
+  "undetected_by_player": "Undetected by a player",
+  "never_detected": "Never detected",
+  "right_word_guess": "Right word guess"
 }

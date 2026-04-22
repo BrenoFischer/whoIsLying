@@ -66,7 +66,7 @@ type PlayerCardHandle = {
   startSlide: () => void;
   skipToEnd: () => void;
   reset: () => void;
-  animateEvent: (text: string, points: number) => Promise<void>;
+  animateEvent: (text: string, points: number, params?: Record<string, string>) => Promise<void>;
   tickScore: (target: number) => Promise<void>;
   hideEvent: () => void;
   showMatchScore: () => void;
@@ -74,7 +74,7 @@ type PlayerCardHandle = {
 
 type PlayerCardProps = {
   player: RankedPlayer;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, unknown>) => string;
   idx: number;
 };
 
@@ -84,6 +84,7 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
     const eventOpacity = useSharedValue(0);
 
     const [currentEventText, setCurrentEventText] = useState('');
+    const [currentEventParams, setCurrentEventParams] = useState<Record<string, string> | undefined>(undefined);
     const [currentEventPoints, setCurrentEventPoints] = useState(0);
     const [runningScore, setRunningScore] = useState(player.previousScore);
     const runningScoreRef = useRef(player.previousScore);
@@ -132,14 +133,16 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
           eventOpacity.value = 0;
           matchScoreOpacity.value = 0;
           setCurrentEventText('');
+          setCurrentEventParams(undefined);
           setCurrentEventPoints(0);
           runningScoreRef.current = player.previousScore;
           setRunningScore(player.previousScore);
         },
-        animateEvent: (text: string, points: number) =>
+        animateEvent: (text: string, points: number, params?: Record<string, string>) =>
           new Promise<void>(resolve => {
             eventResolveRef.current = resolve;
             setCurrentEventText(text);
+            setCurrentEventParams(params);
             setCurrentEventPoints(points);
             eventOpacity.value = 0;
 
@@ -292,7 +295,7 @@ const PlayerCard = forwardRef<PlayerCardHandle, PlayerCardProps>(
               >
                 +{currentEventPoints} {t('pts')}
               </Text>
-              <Text style={styles.eventText}>{currentEventText}</Text>
+              <Text style={styles.eventText}>{t(currentEventText, currentEventParams)}</Text>
             </Animated.View>
           </View>
         </View>
@@ -453,7 +456,7 @@ export default function EndGame() {
 
       for (const event of events) {
         if (!animationActiveRef.current) return;
-        await cardRefs.current[idx]?.animateEvent(event.text, event.points);
+        await cardRefs.current[idx]?.animateEvent(event.text, event.points, event.params);
         if (!animationActiveRef.current) return;
 
         runningTotal += event.points;

@@ -1,12 +1,14 @@
 import { GameContext } from '@/context/GameContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedProps,
   withTiming,
   withSequence,
   withDelay,
   runOnJS,
+  Easing,
 } from 'react-native-reanimated';
 import {
   StyleSheet,
@@ -16,6 +18,7 @@ import {
   AppState,
   Linking,
 } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 import Button from '@/components/button';
 import { colors } from '@/styles/colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -39,6 +42,61 @@ import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 
+const RING_SIZE = moderateScale(160);
+const STROKE_WIDTH = moderateScale(10);
+const RADIUS = (RING_SIZE - STROKE_WIDTH) / 2;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+function TimerRing({ timeLeft, roundDuration }: { timeLeft: number; roundDuration: number }) {
+  const animOffset = useSharedValue(0);
+  const urgent = timeLeft <= 5;
+
+  // Single continuous drain — avoids per-second jumps and the first-second stall.
+  useEffect(() => {
+    animOffset.value = withTiming(CIRCUMFERENCE, {
+      duration: roundDuration * 1000,
+      easing: Easing.linear,
+    });
+  }, []);
+
+  const animatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: animOffset.value,
+  }));
+
+  return (
+    <View style={{ width: RING_SIZE, height: RING_SIZE, alignItems: 'center', justifyContent: 'center' }}>
+      <Svg width={RING_SIZE} height={RING_SIZE}>
+        <Circle
+          cx={RING_SIZE / 2}
+          cy={RING_SIZE / 2}
+          r={RADIUS}
+          stroke={colors.gray[300]}
+          strokeWidth={STROKE_WIDTH}
+          fill="none"
+        />
+        <AnimatedCircle
+          cx={RING_SIZE / 2}
+          cy={RING_SIZE / 2}
+          r={RADIUS}
+          stroke={urgent ? '#ef4444' : colors.orange[200]}
+          strokeWidth={STROKE_WIDTH}
+          fill="none"
+          strokeDasharray={`${CIRCUMFERENCE} ${CIRCUMFERENCE}`}
+          strokeLinecap="round"
+          rotation="-90"
+          origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
+          animatedProps={animatedProps}
+        />
+      </Svg>
+      <Text style={styles.ringNumber}>{timeLeft}</Text>
+    </View>
+  );
+}
+
+type TimerPhase = 'idle' | 'prepare' | 'counting' | 'expired';
+
 export default function RoundScreen() {
   const {
     game,
@@ -57,71 +115,90 @@ export default function RoundScreen() {
 
   const [isRecording, setIsRecording] = useState(false);
   const [audioUri, setAudioUri] = useState<string | null>(null);
-  const [micPermissionGranted, setMicPermissionGranted] = useState<
-    boolean | null
-  >(null);
+  const [micPermissionGranted, setMicPermissionGranted] = useState<boolean | null>(null);
 
   const timedRound = game.config.timedRound;
   const roundDuration = game.config.roundDuration;
-  const [timerStarted, setTimerStarted] = useState(false);
+  const [timerPhase, setTimerPhase] = useState<TimerPhase>('idle');
+  const [prepareCount, setPrepareCount] = useState(3);
   const [timeLeft, setTimeLeft] = useState(roundDuration);
-  const [timeExpired, setTimeExpired] = useState(false);
+  const pendingRecord = useRef(false);
 
   const audioRecorder = useAudioRecorder(RecordingPresets.LOW_QUALITY);
-  const recorderState = useAudioRecorderState(audioRecorder, 900);
+  const recorderState = useAudioRecorderState(audioRecorder, 200);
 
   useEffect(() => {
     const currentAudio = getRoundAudio();
     setAudioUri(currentAudio ?? null);
-    setTimerStarted(false);
+    setTimerPhase('idle');
+    setPrepareCount(3);
     setTimeLeft(roundDuration);
-    setTimeExpired(false);
+    pendingRecord.current = false;
   }, [game.currentRound]);
 
+  // 3-2-1 prepare countdown
   useEffect(() => {
-    if (!timedRound || !timerStarted || timeExpired) return;
-    if (timeLeft <= 0) {
-      setTimeExpired(true);
-      return;
-    }
-    const id = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+    if (timerPhase !== 'prepare' || prepareCount <= 0) return;
+    const id = setTimeout(() => setPrepareCount(prev => prev - 1), 1000);
     return () => clearTimeout(id);
-  }, [timedRound, timerStarted, timeLeft, timeExpired]);
+  }, [timerPhase, prepareCount]);
 
+  // prepare done → counting
   useEffect(() => {
-    if (timeExpired && isRecording) handleStopRecording();
-  }, [timeExpired]);
+    if (timerPhase !== 'prepare' || prepareCount > 0) return;
+    (async () => {
+      setTimerPhase('counting');
+      if (pendingRecord.current) {
+        pendingRecord.current = false;
+        setIsRecording(true);
+        await audioRecorder.prepareToRecordAsync();
+        audioRecorder.record({ forDuration: 50 });
+      }
+    })();
+  }, [timerPhase, prepareCount]);
+
+  // main countdown — uses Date.now() to avoid setTimeout drift
+  useEffect(() => {
+    if (timerPhase !== 'counting') return;
+    const startTime = Date.now();
+    const id = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const remaining = roundDuration - elapsed;
+      if (remaining <= 0) {
+        setTimeLeft(0);
+        setTimerPhase('expired');
+      } else {
+        setTimeLeft(remaining);
+      }
+    }, 200);
+    return () => clearInterval(id);
+  }, [timerPhase]);
+
+  // stop recording on expire
+  useEffect(() => {
+    if (timerPhase === 'expired' && isRecording) handleStopRecording();
+  }, [timerPhase]);
 
   useEffect(() => {
     (async () => {
       const status = await AudioModule.requestRecordingPermissionsAsync();
       setMicPermissionGranted(status.granted);
       if (status.granted) {
-        setAudioModeAsync({
-          playsInSilentMode: true,
-          allowsRecording: true,
-        });
+        setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
       }
     })();
   }, []);
 
-  // Re-check permission when the user returns from Settings
   useEffect(() => {
-    const subscription = AppState.addEventListener(
-      'change',
-      async nextState => {
-        if (nextState === 'active' && micPermissionGranted === false) {
-          const status = await AudioModule.getRecordingPermissionsAsync();
-          if (status.granted) {
-            setMicPermissionGranted(true);
-            setAudioModeAsync({
-              playsInSilentMode: true,
-              allowsRecording: true,
-            });
-          }
+    const subscription = AppState.addEventListener('change', async nextState => {
+      if (nextState === 'active' && micPermissionGranted === false) {
+        const status = await AudioModule.getRecordingPermissionsAsync();
+        if (status.granted) {
+          setMicPermissionGranted(true);
+          setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
         }
       }
-    );
+    });
     return () => subscription.remove();
   }, [micPermissionGranted]);
 
@@ -156,11 +233,7 @@ export default function RoundScreen() {
       withTiming(1.3, { duration: SCALE_DURATION }),
       withTiming(1.0, { duration: SCALE_BACK_DURATION })
     );
-
-    word2Opacity.value = withDelay(
-      WORD_DELAY,
-      withTiming(1, { duration: OPACITY_DURATION })
-    );
+    word2Opacity.value = withDelay(WORD_DELAY, withTiming(1, { duration: OPACITY_DURATION }));
     word2Scale.value = withDelay(
       WORD_DELAY,
       withSequence(
@@ -168,11 +241,7 @@ export default function RoundScreen() {
         withTiming(1.0, { duration: SCALE_BACK_DURATION })
       )
     );
-
-    word3Opacity.value = withDelay(
-      WORD_DELAY * 2,
-      withTiming(1, { duration: OPACITY_DURATION })
-    );
+    word3Opacity.value = withDelay(WORD_DELAY * 2, withTiming(1, { duration: OPACITY_DURATION }));
     word3Scale.value = withDelay(
       WORD_DELAY * 2,
       withSequence(
@@ -180,7 +249,6 @@ export default function RoundScreen() {
         withTiming(1.0, { duration: SCALE_BACK_DURATION })
       )
     );
-
     overlayOpacity.value = withDelay(
       WORD_DELAY * 3 + 600,
       withTiming(0, { duration: 400 }, finished => {
@@ -204,48 +272,74 @@ export default function RoundScreen() {
   const introOverlayAnimatedStyle = useAnimatedStyle(() => ({
     opacity: overlayOpacity.value,
   }));
+
+  // --- Time's up animation ---
+  const timesUpOpacity = useSharedValue(0);
+  const timesUpTranslateY = useSharedValue(0);
+
+  useEffect(() => {
+    if (timerPhase !== 'expired') {
+      timesUpOpacity.value = 0;
+      timesUpTranslateY.value = 0;
+      return;
+    }
+    timesUpOpacity.value = 1;
+    timesUpTranslateY.value = 0;
+    timesUpOpacity.value = withDelay(2000, withTiming(0, { duration: 500 }));
+    timesUpTranslateY.value = withDelay(2000, withTiming(-verticalScale(30), { duration: 500 }));
+  }, [timerPhase]);
+
+  const animatedTimesUpStyle = useAnimatedStyle(() => ({
+    opacity: timesUpOpacity.value,
+    transform: [{ translateY: timesUpTranslateY.value }],
+  }));
+  // --- End Time's up animation ---
+
   // --- End intro animation ---
 
-  if (!round) {
-    return null;
-  }
+  if (!round) return null;
 
   const playerThatAsks = round.playerThatAsks;
   const playerThatAnswers = round.playerThatAnswers;
   const question = t(getCurrentQuestion(), { ns: 'categories' });
 
-  const startTimer = () => {
-    if (timerStarted || timeExpired) return;
-    setTimerStarted(true);
+  const startCountdown = () => {
+    setTimeLeft(roundDuration);
+    setPrepareCount(3);
+    setTimerPhase('prepare');
+  };
+
+  const handleStopCountdown = async () => {
+    if (isRecording) await handleStopRecording();
+    pendingRecord.current = false;
+    setPrepareCount(0); // prevent prepare→counting effect from firing
+    setTimerPhase('expired');
   };
 
   const startRecording = async () => {
     if (!micPermissionGranted) return;
-    startTimer();
-    setIsRecording(true);
-    await audioRecorder.prepareToRecordAsync();
-    audioRecorder.record({ forDuration: 50 });
+    if (timedRound && (timerPhase === 'idle' || timerPhase === 'expired')) {
+      pendingRecord.current = true;
+      startCountdown();
+    } else {
+      setIsRecording(true);
+      await audioRecorder.prepareToRecordAsync();
+      audioRecorder.record({ forDuration: 50 });
+    }
   };
 
   const handleStopRecording = async () => {
     if (!recorderState.isRecording) return;
-
     setIsRecording(false);
-
     try {
       await audioRecorder.stop();
       const uri = audioRecorder.uri;
-
       if (uri) {
-        // Delete the previous recording for this round if one exists (re-record case)
         if (audioUri) {
-          try {
-            new FileSystem.File(audioUri).delete();
-          } catch (e) {
+          try { new FileSystem.File(audioUri).delete(); } catch (e) {
             console.warn('Failed to delete previous audio file:', e);
           }
         }
-        // Copy to a unique file so subsequent recordings don't overwrite this one
         const dest = new FileSystem.File(
           FileSystem.Paths.cache,
           `round_${round.id}_${Date.now()}.m4a`
@@ -263,18 +357,21 @@ export default function RoundScreen() {
     const totalSeconds = Math.floor(miliSeconds / 1000);
     const mins = Math.floor(totalSeconds / 60);
     const secs = totalSeconds % 60;
-    const formattedMins = mins.toString().padStart(2, '0');
-    const formattedSecs = secs.toString().padStart(2, '0');
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
-    return `${formattedMins}:${formattedSecs}`;
+  const resetTimerState = () => {
+    setTimerPhase('idle');
+    setPrepareCount(3);
+    setTimeLeft(roundDuration);
+    pendingRecord.current = false;
+    timesUpOpacity.value = 0;
+    timesUpTranslateY.value = 0;
   };
 
   const handleNextRound = async () => {
-    if (isRecording) {
-      await handleStopRecording();
-    }
-    // Reset overlay synchronously before the round state updates so there's
-    // no frame where the new round content is visible without the overlay.
+    if (isRecording) await handleStopRecording();
+    resetTimerState();
     overlayOpacity.value = 1;
     word1Opacity.value = 0;
     word2Opacity.value = 0;
@@ -283,32 +380,26 @@ export default function RoundScreen() {
     word2Scale.value = 1;
     word3Scale.value = 1;
     setShowIntro(true);
-    setTimerStarted(false);
-    setTimeLeft(roundDuration);
-    setTimeExpired(false);
     nextRound();
   };
 
   const handlePreviousRound = async () => {
-    if (isRecording) {
-      await handleStopRecording();
-    }
+    if (isRecording) await handleStopRecording();
+    resetTimerState();
     previousRound();
   };
+
+  const arrowDisabled =
+    game.currentRound === 1 ||
+    isRecording ||
+    (timedRound && (timerPhase === 'prepare' || timerPhase === 'counting'));
 
   return (
     <>
       <ScreenLayout
         header={
           <View style={styles.headerContainer}>
-            <View
-              style={{
-                alignItems: 'center',
-                flexDirection: 'row',
-                gap: scale(5),
-                flex: 1,
-              }}
-            >
+            <View style={{ alignItems: 'center', flexDirection: 'row', gap: scale(5), flex: 1 }}>
               <Text style={styles.headerCategoryTitle}>
                 {t('Round')} {game.currentRound} {t('of')} {totalRounds}
               </Text>
@@ -321,38 +412,30 @@ export default function RoundScreen() {
           </View>
         }
         footer={
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: scale(spacing.sm),
-            }}
-          >
+          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: scale(spacing.sm) }}>
             <View style={styles.leftFooterArea}>
               <TouchableOpacity
                 onPress={handlePreviousRound}
                 style={styles.arrowTouchable}
-                disabled={game.currentRound === 1 || isRecording}
+                disabled={arrowDisabled}
               >
                 <AntDesign
                   name="left"
                   size={moderateScale(24)}
-                  color={
-                    game.currentRound === 1 || isRecording
-                      ? colors.gray[300]
-                      : colors.orange[200]
-                  }
+                  color={arrowDisabled ? colors.gray[300] : colors.orange[200]}
                 />
               </TouchableOpacity>
             </View>
 
             <View>
-              {timedRound && !timerStarted ? (
-                <Button
-                  text={t('Start answering')}
-                  onPress={startTimer}
-                  variants="primary"
-                />
+              {timedRound ? (
+                timerPhase === 'idle' ? (
+                  <Button text={t('Start countdown')} onPress={startCountdown} variants="primary" />
+                ) : timerPhase === 'prepare' || timerPhase === 'counting' ? (
+                  <Button text={t('Stop countdown')} onPress={handleStopCountdown} variants="secondary" />
+                ) : (
+                  <Button text={t('Continue')} onPress={handleNextRound} variants="primary" />
+                )
               ) : (
                 <Button
                   text={isRecording ? t('Recording...') : t('Continue')}
@@ -372,88 +455,83 @@ export default function RoundScreen() {
             <Text style={styles.playerThatAnswers}>{t('asks')}</Text>{' '}
             {playerThatAnswers.name}
           </Text>
-          <View style={styles.charactersRow}>
-            <Character mood={playerThatAsks.character} />
-            <Character mood={playerThatAnswers.character} flip />
-          </View>
-          {timedRound && timerStarted && (
-            <View style={styles.timerRow}>
-              <View style={[styles.countdown, timeExpired && styles.countdownExpired]}>
-                <FontAwesome6
-                  name="hourglass-half"
-                  size={moderateScale(13)}
-                  color={timeExpired ? colors.white[100] : colors.orange[200]}
-                />
-                <Text style={[styles.countdownText, timeExpired && styles.countdownTextExpired]}>
-                  {timeExpired ? t("Time's up!") : `${timeLeft}s`}
-                </Text>
-              </View>
+
+          {/* Small Time's up badge — appears above characters without shifting layout */}
+          {timedRound && timerPhase === 'expired' && (
+            <View style={styles.timesUpBadge}>
+              <FontAwesome6 name="hourglass-end" size={moderateScale(11)} color={colors.orange[200]} />
+              <Text style={styles.timesUpBadgeText}>{t("Time's up!")}</Text>
             </View>
           )}
-          <View style={styles.recordingContainer}>
-            {isRecording ? (
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                }}
-              >
-                <TouchableOpacity onPress={handleStopRecording}>
-                  <FontAwesome6
-                    name="circle-stop"
-                    size={24}
-                    color={colors.orange[200]}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.recordingText}>
-                  {formatTime(recorderState.durationMillis)}
-                </Text>
-                <View />
+
+          {/* Action area — same slot, different content per phase */}
+          <View style={{ position: 'relative' }}>
+            {!timedRound || timerPhase === 'idle' || timerPhase === 'expired' ? (
+              <View style={styles.charactersRow}>
+                <Character mood={playerThatAsks.character} />
+                <Character mood={playerThatAnswers.character} flip />
               </View>
-            ) : micPermissionGranted === false ? (
-              <TouchableOpacity onPress={() => Linking.openSettings()}>
-                <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                    gap: scale(5),
-                  }}
-                >
-                  <FontAwesome6
-                    name="microphone-slash"
-                    size={24}
-                    color={colors.gray[100]}
-                  />
-                  <Text
-                    style={[styles.recordingText, styles.recordingTextDenied]}
-                  >
-                    {t('No mic permission. Tap to open settings')}
-                  </Text>
-                  <View />
-                </View>
-              </TouchableOpacity>
+            ) : timerPhase === 'prepare' ? (
+              <View style={styles.timerCenterArea}>
+                <Text style={styles.prepareCountText}>{prepareCount}</Text>
+              </View>
             ) : (
-              <TouchableOpacity onPress={startRecording}>
-                <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}
-                >
-                  <FontAwesome6
-                    name="microphone"
-                    size={24}
-                    color={colors.orange[200]}
-                  />
-                  <Text style={styles.recordingText}>
-                    {audioUri ? t('Record a new answer') : t('Record answer')}
-                  </Text>
-                  <View />
-                </View>
-              </TouchableOpacity>
+              <View style={styles.timerCenterArea}>
+                <TimerRing timeLeft={timeLeft} roundDuration={roundDuration} />
+              </View>
+            )}
+
+            {/* Big "Time's up!" overlay — fades out after 2s revealing characters */}
+            {timedRound && timerPhase === 'expired' && (
+              <Animated.View
+                pointerEvents="none"
+                style={[StyleSheet.absoluteFillObject, styles.timesUpOverlay, animatedTimesUpStyle]}
+              >
+                <FontAwesome6 name="hourglass-end" size={moderateScale(40)} color={colors.orange[200]} />
+                <Text style={styles.timesUpText}>{t("Time's up!")}</Text>
+              </Animated.View>
             )}
           </View>
+
+          {/* Recording container */}
+          <View style={styles.recordingContainer}>
+              {isRecording ? (
+                <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+                  <TouchableOpacity onPress={handleStopRecording}>
+                    <FontAwesome6 name="circle-stop" size={24} color={colors.orange[200]} />
+                  </TouchableOpacity>
+                  <Text style={styles.recordingText}>
+                    {formatTime(recorderState.durationMillis)}
+                  </Text>
+                  <View />
+                </View>
+              ) : micPermissionGranted === false ? (
+                <TouchableOpacity onPress={() => Linking.openSettings()}>
+                  <View style={{ justifyContent: 'space-between', flexDirection: 'row', gap: scale(5) }}>
+                    <FontAwesome6 name="microphone-slash" size={24} color={colors.gray[100]} />
+                    <Text style={[styles.recordingText, styles.recordingTextDenied]}>
+                      {t('No mic permission. Tap to open settings')}
+                    </Text>
+                    <View />
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={startRecording}
+                  disabled={timedRound && (timerPhase === 'prepare' || timerPhase === 'counting' && isRecording)}
+                >
+                  <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+                    <FontAwesome6 name="microphone" size={24} color={colors.orange[200]} />
+                    <Text style={styles.recordingText}>
+                      {audioUri ? t('Record a new answer') : t('Record answer')}
+                    </Text>
+                    <View />
+                  </View>
+                </TouchableOpacity>
+              )}
+          </View>
         </View>
+
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <Text style={styles.question}>{question}</Text>
         </View>
@@ -461,18 +539,12 @@ export default function RoundScreen() {
 
       {showIntro && (
         <Animated.View
-          style={[
-            StyleSheet.absoluteFillObject,
-            styles.introOverlay,
-            introOverlayAnimatedStyle,
-          ]}
+          style={[StyleSheet.absoluteFillObject, styles.introOverlay, introOverlayAnimatedStyle]}
         >
           <Animated.Text style={[styles.introWord, animatedWord1Style]}>
             {playerThatAsks.name}
           </Animated.Text>
-          <Animated.Text
-            style={[styles.introWord, styles.introWordAsks, animatedWord2Style]}
-          >
+          <Animated.Text style={[styles.introWord, styles.introWordAsks, animatedWord2Style]}>
             {t('asks')}
           </Animated.Text>
           <Animated.Text style={[styles.introWord, animatedWord3Style]}>
@@ -509,6 +581,17 @@ const styles = StyleSheet.create({
   },
   playerThatAnswers: {
     color: colors.orange[200],
+  },
+  charactersRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    maxHeight: moderateScale(180),
+  },
+  timerCenterArea: {
+    height: moderateScale(180),
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: verticalScale(8),
   },
   recordingContainer: {
     backgroundColor: colors.gray[300],
@@ -564,36 +647,46 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
     fontSize: fontSize.xl,
   },
-  charactersRow: {
-    flexDirection: 'row',
+  timesUpOverlay: {
+    backgroundColor: colors.background[100],
     justifyContent: 'center',
-    maxHeight: moderateScale(180),
-  },
-  timerRow: {
     alignItems: 'center',
-    marginBottom: verticalScale(8),
+    gap: verticalScale(8),
   },
-  countdown: {
+  timesUpText: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: fontSize.xxl,
+    color: colors.orange[200],
+    textAlign: 'center',
+  },
+  timesUpBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scale(6),
-    paddingHorizontal: scale(16),
-    paddingVertical: verticalScale(7),
-    borderRadius: moderateScale(radius.pill),
-    borderWidth: 1,
-    borderColor: colors.orange[200],
+    justifyContent: 'center',
+    gap: scale(5),
+    paddingVertical: verticalScale(4),
   },
-  countdownExpired: {
-    backgroundColor: colors.orange[200],
-    borderColor: colors.orange[200],
-  },
-  countdownText: {
+  timesUpBadgeText: {
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     fontSize: fontSize.sm,
     color: colors.orange[200],
   },
-  countdownTextExpired: {
+  prepareCountText: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(100),
+    color: colors.orange[200],
+    textAlign: 'center',
+    lineHeight: moderateScale(110),
+  },
+  ringNumber: {
+    position: 'absolute',
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(52),
     color: colors.white[100],
+    textAlign: 'center',
   },
 });

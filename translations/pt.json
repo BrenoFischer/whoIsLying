@@ -264,5 +264,21 @@
   "rounds_chip": "rodadas",
   "random_chip": "aleatório",
   "Who voted on who?": "Quem votou em quem?",
-  "voted on": "votou em"
+  "voted on": "votou em",
+  "to answer": "para responder",
+  "Timed rounds": "Rodadas cronometradas",
+  "Timed answering": "Resposta cronometrada",
+  "Seconds per answer": "Segundos por resposta",
+  "Done": "Pronto",
+  "Start countdown": "Iniciar contagem",
+  "Stop countdown": "Parar contagem",
+  "Time's up!": "Tempo esgotado!",
+  "Record a new answer": "Gravar nova resposta",
+  "detected_1_impostor": "Detectou 1 impostor",
+  "detected_2_impostors": "Detectou 2 impostores",
+  "detected_3_impostors": "Detectou 3 impostores",
+  "detected_player": "Detectou {{name}}",
+  "undetected_by_player": "Não detectado por um jogador",
+  "never_detected": "Nunca detectado",
+  "right_word_guess": "Adivinhou a palavra"
 }

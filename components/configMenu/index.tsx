@@ -30,7 +30,7 @@ export default function ConfigMenu() {
 
   const { t } = useTranslation();
 
-  const ROUND_MAX = 15;
+  const ROUND_MAX = 25;
   const ROUND_MIN = 3;
 
   const toggleMenu = () => {

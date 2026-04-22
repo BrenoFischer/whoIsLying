@@ -5,7 +5,7 @@ export interface Player {
   character: string;
   score: number;
   matchScore: {
-    scoreEvents: { text: string; points: number }[];
+    scoreEvents: { text: string; points: number; params?: Record<string, string> }[];
     totalScore: number;
   };
 }

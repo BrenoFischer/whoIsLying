@@ -515,19 +515,19 @@ export const GameContextProvider = ({
                 globalImpostorsUncovered.push(playerVoted.id);
               if (impostorsUncovered.length === 1) {
                 eventsForPlayer.push({
-                  text: `Detected 1 impostor`,
+                  text: 'detected_1_impostor',
                   points: 2,
                 });
                 totalPointsForPlayer += 2;
               } else if (impostorsUncovered.length === 2) {
                 eventsForPlayer.push({
-                  text: `Detected 2 impostors!`,
+                  text: 'detected_2_impostors',
                   points: 3,
                 });
                 totalPointsForPlayer += 3;
               } else if (impostorsUncovered.length === 3) {
                 eventsForPlayer.push({
-                  text: `Detected 3 impostors!!!`,
+                  text: 'detected_3_impostors',
                   points: 5,
                 });
                 totalPointsForPlayer += 5;
@@ -540,7 +540,8 @@ export const GameContextProvider = ({
               if (!globalImpostorsUncovered.find(imp => imp === playerVoted.id))
                 globalImpostorsUncovered.push(playerVoted.id);
               eventsForPlayer.push({
-                text: `Detected ${playerVoted.name}`,
+                text: 'detected_player',
+                params: { name: playerVoted.name },
                 points: 2,
               });
               totalPointsForPlayer += 2;
@@ -554,7 +555,7 @@ export const GameContextProvider = ({
             const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
             const playerEvents = [
               ...current.matchScore.scoreEvents,
-              { text: 'Undetected by a player', points: 1 },
+              { text: 'undetected_by_player', points: 1 },
             ];
             updatedPlayers = updateScoreOfTheMatchToPlayer(
               updatedPlayers,
@@ -582,15 +583,15 @@ export const GameContextProvider = ({
             numberOfImpostors === 1 ? 3 : numberOfImpostors === 2 ? 5 : 10;
           const current = updatedPlayers.find(p => p.id === lyingPlayer.id)!;
           const undiscoveredCount = current.matchScore.scoreEvents.filter(
-            e => e.text === 'Undetected by a player'
+            e => e.text === 'undetected_by_player'
           ).length;
           const filteredEvents = current.matchScore.scoreEvents.filter(
-            e => e.text !== 'Undetected by a player'
+            e => e.text !== 'undetected_by_player'
           );
           // Replace accumulated +1 pts with the flat bonus; store points: pointsToAdd so the animation ticks correctly
           const playerEvents = [
             ...filteredEvents,
-            { text: `Never detected!!!`, points: pointsToAdd },
+            { text: 'never_detected', points: pointsToAdd },
           ];
           updatedPlayers = updateScoreOfTheMatchToPlayer(
             updatedPlayers,
@@ -608,7 +609,7 @@ export const GameContextProvider = ({
           const current = updatedPlayers.find(p => p.id === vote.player.id)!;
           const playerEvents = [
             ...current.matchScore.scoreEvents,
-            { text: 'Right word guess', points: 3 },
+            { text: 'right_word_guess', points: 3 },
           ];
           updatedPlayers = updateScoreOfTheMatchToPlayer(
             updatedPlayers,

@@ -24,6 +24,8 @@ interface ModeConfig {
   numberOfImpostors: number;
   randomImpostors: boolean;
   setsOfQuestions: number;
+  timedRound?: boolean;
+  roundDuration?: number;
 }
 
 interface GameMode {
@@ -34,6 +36,7 @@ interface GameMode {
   color: string;
   config: ModeConfig | null;
   image?: number;
+  randomImpostorCount?: boolean;
 }
 
 const GAME_MODES: GameMode[] = [
@@ -43,7 +46,7 @@ const GAME_MODES: GameMode[] = [
     descriptionKey: 'partyModeDescription',
     tagsKey: 'partyModeTags',
     color: '#6D28D9',
-    config: { numberOfImpostors: 3, randomImpostors: false, setsOfQuestions: 1 },
+    config: { numberOfImpostors: 3, randomImpostors: false, setsOfQuestions: 1, timedRound: true, roundDuration: 5 },
     image: require('@/assets/images/partyGameModeBg.png'),
   },
   {
@@ -52,8 +55,9 @@ const GAME_MODES: GameMode[] = [
     descriptionKey: 'chaosModeDescription',
     tagsKey: 'chaosModeTagss',
     color: '#991B1B',
-    config: { numberOfImpostors: 1, randomImpostors: true, setsOfQuestions: 1 },
+    config: { numberOfImpostors: 1, randomImpostors: true, setsOfQuestions: 1, timedRound: true, roundDuration: 10 },
     image: require('@/assets/images/chaosGameModeBg.png'),
+    randomImpostorCount: true,
   },
   {
     id: 'classic',
@@ -61,7 +65,7 @@ const GAME_MODES: GameMode[] = [
     descriptionKey: 'classicModeDescription',
     tagsKey: 'classicModeTags',
     color: colors.orange[200],
-    config: { numberOfImpostors: 1, randomImpostors: false, setsOfQuestions: 2 },
+    config: { numberOfImpostors: 1, randomImpostors: false, setsOfQuestions: 2, timedRound: false },
     image: require('@/assets/images/classicGameModeBg.png'),
   },
   {
@@ -76,7 +80,7 @@ const GAME_MODES: GameMode[] = [
 ];
 
 export default function SelectGameMode() {
-  const { setNumberOfImpostors, setRandomImpostors, setSetsOfQuestions, setCurrentScreen, setGameMode } =
+  const { setNumberOfImpostors, setRandomImpostors, setSetsOfQuestions, setTimedRound, setRoundDuration, setCurrentScreen, setGameMode } =
     useContext(GameContext);
   const { t } = useTranslation();
 
@@ -90,6 +94,8 @@ export default function SelectGameMode() {
       setNumberOfImpostors(mode.config.numberOfImpostors);
       setRandomImpostors(mode.config.randomImpostors);
       setSetsOfQuestions(mode.config.setsOfQuestions);
+      if (mode.config.timedRound !== undefined) setTimedRound(mode.config.timedRound);
+      if (mode.config.roundDuration !== undefined) setRoundDuration(mode.config.roundDuration);
     }
     router.push('/selectCategory');
   };
@@ -138,13 +144,21 @@ export default function SelectGameMode() {
               {/* Config chips — top-right corner */}
               {mode.config && (
                 <View style={styles.statsColumn}>
+                  {/* Impostor chip: "random" for chaos, count for others */}
                   <View style={styles.statChip}>
-                    <Ionicons name="people-outline" size={moderateScale(9)} color="rgba(255,255,255,0.9)" />
+                    <Ionicons
+                      name={mode.randomImpostorCount ? 'shuffle-outline' : 'people-outline'}
+                      size={moderateScale(9)}
+                      color="rgba(255,255,255,0.9)"
+                    />
                     <Text style={styles.statText}>
-                      {mode.config.numberOfImpostors}{' '}
-                      {t(mode.config.numberOfImpostors === 1 ? 'impostor_chip' : 'impostors_chip')}
+                      {mode.randomImpostorCount
+                        ? t('random_chip')
+                        : `${mode.config.numberOfImpostors} ${t(mode.config.numberOfImpostors === 1 ? 'impostor_chip' : 'impostors_chip')}`}
                     </Text>
                   </View>
+
+                  {/* Sets chip */}
                   <View style={styles.statChip}>
                     <Ionicons name="layers-outline" size={moderateScale(9)} color="rgba(255,255,255,0.9)" />
                     <Text style={styles.statText}>
@@ -152,10 +166,20 @@ export default function SelectGameMode() {
                       {t(mode.config.setsOfQuestions === 1 ? 'round_chip' : 'rounds_chip')}
                     </Text>
                   </View>
-                  {mode.config.randomImpostors && (
+
+                  {/* Random chip — only when not already shown as the impostor chip */}
+                  {mode.config.randomImpostors && !mode.randomImpostorCount && (
                     <View style={[styles.statChip, styles.statChipHighlight]}>
                       <Ionicons name="shuffle-outline" size={moderateScale(9)} color="rgba(255,255,255,0.9)" />
                       <Text style={styles.statText}>{t('random_chip')}</Text>
+                    </View>
+                  )}
+
+                  {/* Timed round chip */}
+                  {mode.config.timedRound && (
+                    <View style={[styles.statChip, styles.statChipHighlight]}>
+                      <Ionicons name="timer-outline" size={moderateScale(9)} color="rgba(255,255,255,0.9)" />
+                      <Text style={styles.statText}>{mode.config.roundDuration}s {t('to answer')}</Text>
                     </View>
                   )}
                 </View>
