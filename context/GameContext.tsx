@@ -40,7 +40,7 @@ interface GameContextType {
   nextRound: () => void;
   previousRound: () => void;
   showWordToNextPlayer: () => void;
-  addVote: (playerThatVoted: Player, playersVoted: Player[]) => void;
+  addVote: (playerThatVoted: Player, playersVoted: Player[], reaction?: string) => void;
   updatePlayers: (players: Player[]) => void;
   resetGameWithExistingPlayers: () => void;
   getCurrentWord: () => string;
@@ -465,9 +465,9 @@ export const GameContextProvider = ({
     );
   };
 
-  const addVote = (playerThatVoted: Player, playersVoted: Player[]) => {
+  const addVote = (playerThatVoted: Player, playersVoted: Player[], reaction?: string) => {
     setGame(prev => {
-      const newVotes = [...prev.votes, { playerThatVoted, playersVoted }];
+      const newVotes = [...prev.votes, { playerThatVoted, playersVoted, reaction }];
       return { ...prev, votes: newVotes };
     });
   };

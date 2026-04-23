@@ -280,5 +280,21 @@
   "detected_player": "Detected {{name}}",
   "undetected_by_player": "Undetected by a player",
   "never_detected": "Never detected",
-  "right_word_guess": "Right word guess"
+  "right_word_guess": "Right word guess",
+  "Suspicious...": "Suspicious...",
+  "Very convincing!": "Very convincing!",
+  "That's a lie!": "That's a lie!",
+  "No way!": "No way!",
+  "Something's off...": "Something's off...",
+  "Interesting...": "Interesting...",
+  "Wait, what?!": "Wait, what?!",
+  "Can't believe it...": "Can't believe it...",
+  "Definitely this": "Definitely this",
+  "Not sure...": "Not sure...",
+  "Clues point here": "Clues point here",
+  "Just a feeling": "Just a feeling",
+  "I'm certain!": "I'm certain!",
+  "Could be wrong...": "Could be wrong...",
+  "Hard to tell...": "Hard to tell...",
+  "It's you!": "It's you!"
 }

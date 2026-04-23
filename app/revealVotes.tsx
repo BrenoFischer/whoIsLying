@@ -16,6 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { GameContext } from '@/context/GameContext';
 import { useTranslation } from '@/translations';
 import { Vote } from '@/types/Vote';
+import { displayReaction } from '@/components/reactionModal';
 import Character from '@/components/character';
 import Button from '@/components/button';
 import SidebarMenu from '@/components/sideBarMenu';
@@ -85,6 +86,11 @@ function RevealVoteCard({
         <Text style={styles.voterName} numberOfLines={2} adjustsFontSizeToFit>
           {vote.playerThatVoted.name}
         </Text>
+        {vote.reaction && (
+          <View style={styles.reactionPill}>
+            <Text style={styles.reactionPillText}>{displayReaction(vote.reaction!, t)}</Text>
+          </View>
+        )}
         <View style={styles.voterCharacterWrapper}>
           <Character
             mood={vote.playerThatVoted.character}
@@ -133,6 +139,11 @@ function VoteCard({ vote, t }: { vote: Vote; t: (key: string) => string }) {
         <Text style={styles.voterName} numberOfLines={2} adjustsFontSizeToFit>
           {vote.playerThatVoted.name}
         </Text>
+        {vote.reaction && (
+          <View style={styles.reactionPill}>
+            <Text style={styles.reactionPillText}>{displayReaction(vote.reaction!, t)}</Text>
+          </View>
+        )}
         <View style={styles.voterCharacterWrapper}>
           <Character
             mood={vote.playerThatVoted.character}
@@ -512,5 +523,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway',
     fontSize: moderateScale(18),
     color: 'rgba(255,255,255,0.5)',
+  },
+  reactionPill: {
+    alignSelf: 'center',
+    backgroundColor: colors.background[100],
+    borderRadius: moderateScale(12),
+    paddingHorizontal: scale(8),
+    paddingVertical: verticalScale(3),
+    marginTop: verticalScale(4),
+  },
+  reactionPillText: {
+    fontSize: moderateScale(11),
+    fontFamily: 'Raleway-Medium',
+    color: colors.white[100],
+    textAlign: 'center',
   },
 });

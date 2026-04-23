@@ -25,6 +25,7 @@ import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
 import SidebarMenu from '@/components/sideBarMenu';
 import { Round } from '@/types/Round';
+import { displayReaction } from '@/components/reactionModal';
 
 export default function Discussion() {
   const { game, setCurrentScreen } = useContext(GameContext);
@@ -163,7 +164,7 @@ export default function Discussion() {
                   </Text>
                   {round.reaction && (
                     <View style={styles.reactionBadge}>
-                      <Text style={styles.reactionBadgeText}>{round.reaction}</Text>
+                      <Text style={styles.reactionBadgeText}>{displayReaction(round.reaction!, t)}</Text>
                     </View>
                   )}
                 </View>

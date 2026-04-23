@@ -280,5 +280,21 @@
   "detected_player": "Detectou {{name}}",
   "undetected_by_player": "Não detectado por um jogador",
   "never_detected": "Nunca detectado",
-  "right_word_guess": "Adivinhou a palavra"
+  "right_word_guess": "Adivinhou a palavra",
+  "Suspicious...": "Suspeito...",
+  "Very convincing!": "Muito convincente!",
+  "That's a lie!": "Isso é mentira!",
+  "No way!": "De jeito nenhum!",
+  "Something's off...": "Tem algo errado...",
+  "Interesting...": "Interessante...",
+  "Wait, what?!": "Espera, o quê?!",
+  "Can't believe it...": "Não acredito...",
+  "Definitely this": "Definitivamente esse",
+  "Not sure...": "Não tenho certeza...",
+  "Clues point here": "As pistas apontam aqui",
+  "Just a feeling": "É só uma sensação",
+  "I'm certain!": "Tenho certeza!",
+  "Could be wrong...": "Posso estar errado...",
+  "Hard to tell...": "Difícil dizer...",
+  "It's you!": "É você!"
 }

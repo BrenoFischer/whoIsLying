@@ -17,13 +17,14 @@ import { Player } from '@/types/Player';
 import PlayerModal from '@/components/playerModal';
 import PlayerInput from '@/components/playerInput';
 import { useTranslation } from '@/translations';
-import { scale, verticalScale } from 'react-native-size-matters';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Dot from '@/components/dot';
 import ScreenLayout from '@/components/screenLayout';
 import SidebarMenu from '@/components/sideBarMenu';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
+import ReactionModal, { VOTE_REACTIONS, displayReaction } from '@/components/reactionModal';
 
 export default function Votes() {
   const { game, addVote, setCurrentScreen } = useContext(GameContext);
@@ -38,9 +39,9 @@ export default function Votes() {
   const [player, setPlayer] = useState(players[0]);
   const [playerIndex, setPlayerIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
-  const [selectedPlayers, setSelectedPlayers] = useState<Player[] | undefined>(
-    undefined
-  );
+  const [selectedPlayers, setSelectedPlayers] = useState<Player[] | undefined>(undefined);
+  const [reaction, setReaction] = useState<string | undefined>(undefined);
+  const [reactionModalVisible, setReactionModalVisible] = useState(false);
 
   const numberOfImpostors = game.lyingPlayers.length;
   const scrollRef = useRef<ScrollView>(null);
@@ -51,7 +52,7 @@ export default function Votes() {
 
   const handleNextPlayer = () => {
     const newIndex = playerIndex + 1;
-    addVote(player, selectedPlayers ?? []);
+    addVote(player, selectedPlayers ?? [], reaction);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
 
     if (newIndex >= players.length) {
@@ -61,6 +62,7 @@ export default function Votes() {
       setPlayer(players[newIndex]);
       setModalVisible(true);
       setSelectedPlayers(undefined);
+      setReaction(undefined);
     }
   };
 
@@ -172,9 +174,26 @@ export default function Votes() {
               );
             })}
           </View>
+
+          <TouchableOpacity
+            style={styles.reactionTrigger}
+            onPress={() => setReactionModalVisible(true)}
+          >
+            <Text style={styles.reactionTriggerText}>
+              {reaction ? displayReaction(reaction, t) : '😶 +'}
+            </Text>
+          </TouchableOpacity>
         </View>
         <Character mood={player.character} size={characterSize} />
       </View>
+
+      <ReactionModal
+        visible={reactionModalVisible}
+        currentReaction={reaction}
+        onSelect={setReaction}
+        onClose={() => setReactionModalVisible(false)}
+        reactions={VOTE_REACTIONS}
+      />
 
       <View
         style={[
@@ -306,5 +325,18 @@ const styles = StyleSheet.create({
   },
   voteOptionsContainer: {
     gap: verticalScale(spacing.xs),
+  },
+  reactionTrigger: {
+    alignSelf: 'flex-start',
+    marginTop: verticalScale(spacing.xs),
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: moderateScale(14),
+    paddingHorizontal: scale(10),
+    paddingVertical: verticalScale(4),
+  },
+  reactionTriggerText: {
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway-Medium',
+    color: colors.white[100],
   },
 });

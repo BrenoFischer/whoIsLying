@@ -1,11 +1,12 @@
 import { colors } from '@/styles/colors';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
+import { useTranslation } from '@/translations';
 import { useEffect, useRef } from 'react';
 import { Animated, Modal, PanResponder, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
-const REACTIONS = [
+export const ROUND_REACTIONS = [
   { emoji: '🤔', label: 'Suspicious...' },
   { emoji: '😅', label: 'Very convincing!' },
   { emoji: '🤥', label: "That's a lie!" },
@@ -13,8 +14,27 @@ const REACTIONS = [
   { emoji: '🧐', label: "Something's off..." },
   { emoji: '🙄', label: 'Interesting...' },
   { emoji: '😱', label: 'Wait, what?!' },
-  { emoji: '🫣', label: "I can't believe it..." },
+  { emoji: '🫣', label: "Can't believe it..." },
 ];
+
+export const VOTE_REACTIONS = [
+  { emoji: '💯', label: 'Definitely this' },
+  { emoji: '🤷', label: 'Not sure...' },
+  { emoji: '🔍', label: 'Clues point here' },
+  { emoji: '😬', label: 'Just a feeling' },
+  { emoji: '😤', label: "I'm certain!" },
+  { emoji: '😅', label: 'Could be wrong...' },
+  { emoji: '🤔', label: 'Hard to tell...' },
+  { emoji: '🫵', label: "It's you!" },
+];
+
+export function displayReaction(reaction: string, t: (key: string) => string): string {
+  const spaceIdx = reaction.indexOf(' ');
+  if (spaceIdx === -1) return reaction;
+  const emoji = reaction.slice(0, spaceIdx);
+  const label = reaction.slice(spaceIdx + 1);
+  return `${emoji} ${t(label)}`;
+}
 
 const SHEET_OFFSET = 500;
 const DISMISS_THRESHOLD = 80;
@@ -24,9 +44,11 @@ interface ReactionModalProps {
   currentReaction: string | undefined;
   onSelect: (reaction: string | undefined) => void;
   onClose: () => void;
+  reactions?: { emoji: string; label: string }[];
 }
 
-export default function ReactionModal({ visible, currentReaction, onSelect, onClose }: ReactionModalProps) {
+export default function ReactionModal({ visible, currentReaction, onSelect, onClose, reactions = ROUND_REACTIONS }: ReactionModalProps) {
+  const { t } = useTranslation();
   const translateY = useRef(new Animated.Value(SHEET_OFFSET)).current;
 
   useEffect(() => {
@@ -51,7 +73,7 @@ export default function ReactionModal({ visible, currentReaction, onSelect, onCl
 
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (_, { dy }) => dy > 5,
+      onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (_, { dy }) => {
         if (dy > 0) translateY.setValue(dy);
       },
@@ -66,29 +88,32 @@ export default function ReactionModal({ visible, currentReaction, onSelect, onCl
   ).current;
 
   const handleSelect = (emoji: string, label: string) => {
-    const value = `${emoji} ${label}`;
-    onSelect(currentReaction === value ? undefined : value);
+    const key = `${emoji} ${label}`;
+    onSelect(currentReaction === key ? undefined : key);
     dismiss();
   };
 
   return (
     <Modal transparent animationType="none" visible={visible} onRequestClose={dismiss}>
       <Pressable style={styles.backdrop} onPress={dismiss} />
-      <Animated.View style={[styles.sheet, { transform: [{ translateY }] }]} {...panResponder.panHandlers}>
-        <View style={styles.handle} />
+      <Animated.View style={[styles.sheet, { transform: [{ translateY }] }]}>
+        {/* Handle area — panHandlers here only, chips get unobstructed touches */}
+        <View style={styles.handleWrapper} {...panResponder.panHandlers}>
+          <View style={styles.handle} />
+        </View>
         <View style={styles.grid}>
-          {REACTIONS.map(({ emoji, label }) => {
-            const value = `${emoji} ${label}`;
-            const selected = currentReaction === value;
+          {reactions.map(({ emoji, label }) => {
+            const key = `${emoji} ${label}`;
+            const selected = currentReaction === key;
             return (
               <TouchableOpacity
-                key={value}
+                key={key}
                 style={[styles.chip, selected && styles.chipSelected]}
                 onPress={() => handleSelect(emoji, label)}
               >
                 <Text style={styles.chipEmoji}>{emoji}</Text>
                 <Text style={[styles.chipLabel, selected && styles.chipLabelSelected]} numberOfLines={1}>
-                  {label}
+                  {t(label)}
                 </Text>
               </TouchableOpacity>
             );
@@ -102,7 +127,7 @@ export default function ReactionModal({ visible, currentReaction, onSelect, onCl
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'transparent',
   },
   sheet: {
     backgroundColor: colors.background[100],
@@ -110,15 +135,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: moderateScale(20),
     paddingHorizontal: scale(20),
     paddingBottom: verticalScale(32),
-    paddingTop: verticalScale(12),
+  },
+  handleWrapper: {
+    alignItems: 'center',
+    paddingVertical: verticalScale(14),
   },
   handle: {
     width: scale(40),
     height: verticalScale(4),
     borderRadius: radius.sm,
     backgroundColor: colors.gray[300],
-    alignSelf: 'center',
-    marginBottom: verticalScale(16),
   },
   grid: {
     flexDirection: 'row',

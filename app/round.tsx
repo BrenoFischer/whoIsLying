@@ -38,7 +38,7 @@ import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import ScreenLayout from '@/components/screenLayout';
 import SidebarMenu from '@/components/sideBarMenu';
-import ReactionModal from '@/components/reactionModal';
+import ReactionModal, { displayReaction } from '@/components/reactionModal';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
@@ -502,7 +502,7 @@ export default function RoundScreen() {
                 onPress={() => setReactionModalVisible(true)}
               >
                 <Text style={styles.reactionTriggerText}>
-                  {round.reaction ?? '😶 +'}
+                  {round.reaction ? displayReaction(round.reaction, t) : '😶 +'}
                 </Text>
               </TouchableOpacity>
             )}
