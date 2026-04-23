@@ -38,6 +38,7 @@ import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import ScreenLayout from '@/components/screenLayout';
 import SidebarMenu from '@/components/sideBarMenu';
+import ReactionModal from '@/components/reactionModal';
 import { spacing } from '@/styles/spacing';
 import { fontSize } from '@/styles/fontSize';
 import { radius } from '@/styles/radius';
@@ -106,6 +107,7 @@ export default function RoundScreen() {
     saveRecordingToRound,
     getRoundAudio,
     setCurrentScreen,
+    setRoundReaction,
   } = useContext(GameContext);
   const { t } = useTranslation();
 
@@ -114,6 +116,7 @@ export default function RoundScreen() {
   }, []);
 
   const [isRecording, setIsRecording] = useState(false);
+  const [reactionModalVisible, setReactionModalVisible] = useState(false);
   const [audioUri, setAudioUri] = useState<string | null>(null);
   const [micPermissionGranted, setMicPermissionGranted] = useState<boolean | null>(null);
 
@@ -491,6 +494,18 @@ export default function RoundScreen() {
                 <Text style={styles.timesUpText}>{t("Time's up!")}</Text>
               </Animated.View>
             )}
+
+            {/* Reaction button — bottom-left, near playerThatAsks */}
+            {(!timedRound || timerPhase === 'idle' || timerPhase === 'expired') && (
+              <TouchableOpacity
+                style={styles.reactionTrigger}
+                onPress={() => setReactionModalVisible(true)}
+              >
+                <Text style={styles.reactionTriggerText}>
+                  {round.reaction ?? '😶 +'}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Recording container */}
@@ -536,6 +551,13 @@ export default function RoundScreen() {
           <Text style={styles.question}>{question}</Text>
         </View>
       </ScreenLayout>
+
+      <ReactionModal
+        visible={reactionModalVisible}
+        currentReaction={round.reaction}
+        onSelect={reaction => setRoundReaction(round.id, reaction)}
+        onClose={() => setReactionModalVisible(false)}
+      />
 
       {showIntro && (
         <Animated.View
@@ -680,6 +702,20 @@ const styles = StyleSheet.create({
     color: colors.orange[200],
     textAlign: 'center',
     lineHeight: moderateScale(110),
+  },
+  reactionTrigger: {
+    position: 'absolute',
+    top: 0,
+    left: scale(10),
+    backgroundColor: colors.gray[300] + '55',
+    borderRadius: moderateScale(14),
+    paddingHorizontal: scale(8),
+    paddingVertical: verticalScale(4),
+  },
+  reactionTriggerText: {
+    fontSize: fontSize.sm,
+    fontFamily: 'Raleway-Medium',
+    color: colors.white[100],
   },
   ringNumber: {
     position: 'absolute',

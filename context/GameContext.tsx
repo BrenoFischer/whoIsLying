@@ -47,6 +47,7 @@ interface GameContextType {
   getCurrentQuestion: () => string;
   saveRecordingToRound: (recording: string) => void;
   getRoundAudio: () => string | undefined;
+  setRoundReaction: (roundId: string, reaction: string | undefined) => void;
   setCurrentScreen: (screen: string) => void;
   setGameMode: (mode: string) => void;
   setTimedRound: (timed: boolean) => void;
@@ -659,6 +660,15 @@ export const GameContextProvider = ({
     return game.rounds[game.currentRound - 1]?.audio;
   };
 
+  const setRoundReaction = (roundId: string, reaction: string | undefined) => {
+    setGame(prev => ({
+      ...prev,
+      rounds: prev.rounds.map(r =>
+        r.id === roundId ? { ...r, reaction } : r
+      ),
+    }));
+  };
+
   const setCurrentScreen = (screen: string) => {
     setGame(prev => ({ ...prev, currentScreen: screen }));
   };
@@ -699,6 +709,7 @@ export const GameContextProvider = ({
         getCurrentQuestion,
         saveRecordingToRound,
         getRoundAudio,
+        setRoundReaction,
         setCurrentScreen,
         setGameMode,
         setTimedRound,

@@ -157,9 +157,16 @@ export default function Discussion() {
           {agregateByPlayerRounds.map((round, index) => {
             return (
               <View key={`${round.playerThatAnswers.id}-${index}`}>
-                <Text style={styles.playerName}>
-                  {round.playerThatAnswers.name}
-                </Text>
+                <View style={styles.playerNameRow}>
+                  <Text style={styles.playerName}>
+                    {round.playerThatAnswers.name}
+                  </Text>
+                  {round.reaction && (
+                    <View style={styles.reactionBadge}>
+                      <Text style={styles.reactionBadgeText}>{round.reaction}</Text>
+                    </View>
+                  )}
+                </View>
                 <Text style={styles.question}>
                   {t(round.question, { ns: 'categories' })}
                 </Text>
@@ -235,6 +242,23 @@ const styles = StyleSheet.create({
   question: {
     fontSize: moderateScale(15),
     fontFamily: 'Raleway-Medium',
+  },
+  playerNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: scale(6),
+  },
+  reactionBadge: {
+    backgroundColor: colors.orange[100],
+    borderRadius: moderateScale(12),
+    paddingHorizontal: scale(8),
+    paddingVertical: verticalScale(2),
+  },
+  reactionBadgeText: {
+    fontSize: moderateScale(11),
+    fontFamily: 'Raleway-Medium',
+    color: colors.background[100],
   },
   audioContainer: {
     flexDirection: 'row',

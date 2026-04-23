@@ -11,4 +11,5 @@ export interface Round {
   questionSet: 1 | 2 | 3;
   exposure: ExposureLevel;
   audio: undefined | string;
+  reaction?: string;
 }
