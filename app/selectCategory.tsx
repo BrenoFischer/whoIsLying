@@ -13,7 +13,7 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import categories from '@/data/categories.json';
 import { colors } from '@/styles/colors';
 import Button from '@/components/button';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import Elipse from '@/components/elipse';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Character from '@/components/character';
@@ -36,6 +36,7 @@ const images = {
 export default function SelectCategory() {
   const { setGameWord, setCurrentScreen, game } = useContext(GameContext);
   const { t } = useTranslation();
+  const { openConfig } = useLocalSearchParams<{ openConfig?: string }>();
 
   useEffect(() => {
     setCurrentScreen('/selectCategory');
@@ -146,7 +147,7 @@ export default function SelectCategory() {
             <SidebarMenu />
           </View>
           <View style={styles.headerConfigRow}>
-            <ConfigMenu />
+            <ConfigMenu initialOpen={openConfig === 'true'} />
           </View>
         </View>
       }

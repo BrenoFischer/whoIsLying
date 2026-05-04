@@ -97,7 +97,7 @@ export default function SelectGameMode() {
       if (mode.config.timedRound !== undefined) setTimedRound(mode.config.timedRound);
       if (mode.config.roundDuration !== undefined) setRoundDuration(mode.config.roundDuration);
     }
-    router.push('/selectCategory');
+    router.push(mode.id === 'custom' ? '/selectCategory?openConfig=true' : '/selectCategory');
   };
 
   return (

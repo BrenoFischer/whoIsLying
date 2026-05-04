@@ -14,10 +14,10 @@ import { ToggleButton } from '../toggleButton';
 import { spacing } from '@/styles/spacing';
 import { GameContext } from '@/context/GameContext';
 
-export default function ConfigMenu() {
+export default function ConfigMenu({ initialOpen = false }: { initialOpen?: boolean }) {
   const { setNumberOfImpostors, game, setSetsOfQuestions, setRandomImpostors, setTimedRound, setRoundDuration } =
     useContext(GameContext);
-  const [menuOpened, setMenuOpened] = useState(false);
+  const [menuOpened, setMenuOpened] = useState(initialOpen);
   const [impostorCount, setImpostorCount] = useState(
     game.config.numberOfImpostors
   );
