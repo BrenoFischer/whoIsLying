@@ -2,6 +2,7 @@ import { Game } from '@/types/Game';
 import { Player } from '@/types/Player';
 import { Round, ExposureLevel } from '@/types/Round';
 import allCategories from '@/data/categories.json';
+import allMimicQuestions from '@/data/mimicQuestions.json';
 import React, { createContext, useState, useEffect } from 'react';
 import uuid from 'react-native-uuid';
 import * as FileSystem from 'expo-file-system';
@@ -215,11 +216,48 @@ export const GameContextProvider = ({
   const setAllRounds = (
     newPlayers: Player[],
     category: string,
-    setsOfQuestions: number
+    setsOfQuestions: number,
+    gameMode?: string
   ): Round[] => {
     const perSet = newPlayers.length;
     const categories: any = allCategories;
     if (!categories[category]) return [];
+
+    if (gameMode === 'mimic') {
+      const mimicPool: string[] = (allMimicQuestions as any)[category] ?? [];
+      const usedIndices = new Set<number>();
+      let allRounds: Round[] = [];
+
+      for (let s = 0; s < setsOfQuestions; s++) {
+        const setNumber = (s + 1) as 1 | 2 | 3;
+        const pairs: [Player, Player][] = newPlayers.map((player, i) => {
+          const offset = setNumber === 2 ? -1 : setNumber === 3 ? 2 : 1;
+          const partnerIdx = (i + offset + perSet) % perSet;
+          return [player, newPlayers[partnerIdx]];
+        });
+
+        const setRounds: Round[] = shuffleRounds(
+          pairs.map(pair => {
+            const { question, questionIndex } = pickOneFromPool(mimicPool, usedIndices);
+            return {
+              id: uuid.v4().toString(),
+              playerThatAsks: pair[0],
+              playerThatAnswers: pair[1],
+              question,
+              questionIndex,
+              questionSet: setNumber,
+              exposure: 'medium' as ExposureLevel,
+              audio: undefined,
+            };
+          })
+        );
+
+        allRounds = allRounds.concat(setRounds);
+      }
+
+      return allRounds;
+    }
+
     const questionPool: { low: string[]; medium: string[]; high: string[] } =
       categories[category].questions;
 
@@ -413,7 +451,7 @@ export const GameContextProvider = ({
     setGame(prev => {
       const category = prev.category ?? '';
       const setsOfQuestions = prev.config.setsOfQuestions;
-      const rounds = setAllRounds(newPlayers, category, setsOfQuestions);
+      const rounds = setAllRounds(newPlayers, category, setsOfQuestions, prev.gameMode);
       const maxImpostors = Math.min(3, newPlayers.length - 2);
       const impostorCount = prev.config.randomImpostors
         ? Math.floor(Math.random() * maxImpostors) + 1

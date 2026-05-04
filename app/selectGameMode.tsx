@@ -77,6 +77,14 @@ const GAME_MODES: GameMode[] = [
     config: null,
     image: require('@/assets/images/customGameModeBg.png'),
   },
+  {
+    id: 'mimic',
+    titleKey: 'Mimic',
+    descriptionKey: 'mimicModeDescription',
+    tagsKey: 'mimicModeTags',
+    color: '#065F46',
+    config: { numberOfImpostors: 1, randomImpostors: false, setsOfQuestions: 2, timedRound: false, roundDuration: 10 },
+  },
 ];
 
 export default function SelectGameMode() {

@@ -548,6 +548,12 @@ export default function RoundScreen() {
         </View>
 
         <View style={{ flex: 1, justifyContent: 'center' }}>
+          {game.gameMode === 'mimic' && (
+            <View style={styles.mimicBadge}>
+              <FontAwesome6 name="masks-theater" size={moderateScale(12)} color={colors.orange[200]} />
+              <Text style={styles.mimicBadgeText}>{t('Act it out')}</Text>
+            </View>
+          )}
           <Text style={styles.question}>{question}</Text>
         </View>
       </ScreenLayout>
@@ -724,5 +730,25 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(52),
     color: colors.white[100],
     textAlign: 'center',
+  },
+  mimicBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: scale(5),
+    alignSelf: 'center',
+    backgroundColor: colors.gray[300] + '55',
+    borderRadius: moderateScale(20),
+    paddingHorizontal: scale(10),
+    paddingVertical: verticalScale(4),
+    marginBottom: verticalScale(10),
+  },
+  mimicBadgeText: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(11),
+    color: colors.orange[200],
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });
