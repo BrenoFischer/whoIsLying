@@ -16,10 +16,8 @@ import { GameContext } from '@/context/GameContext';
 
 export default function ConfigMenu({
   initialOpen = false,
-  variant = 'default',
 }: {
   initialOpen?: boolean;
-  variant?: 'default' | 'accent';
 }) {
   const { setNumberOfImpostors, game, setSetsOfQuestions, setRandomImpostors, setTimedRound, setRoundDuration } =
     useContext(GameContext);
@@ -93,54 +91,9 @@ export default function ConfigMenu({
 
   return (
     <>
-      <View>
-        <TouchableOpacity
-          onPress={toggleMenu}
-          style={[styles.buttonContainer, variant === 'accent' && styles.buttonContainerAccent]}
-        >
-          <View style={styles.configSummary}>
-            <View style={styles.configRow}>
-              <FontAwesome
-                name="user-secret"
-                size={moderateScale(12)}
-                color={colors.orange[200]}
-              />
-              {randomImpostors ? (
-                <Ionicons
-                  name="shuffle"
-                  size={moderateScale(12)}
-                  color={colors.orange[200]}
-                />
-              ) : (
-                <Text style={styles.configValue}>
-                  {game.config.numberOfImpostors}
-                </Text>
-              )}
-            </View>
-            <View style={styles.configRow}>
-              <FontAwesome
-                name="question"
-                size={moderateScale(12)}
-                color={colors.orange[200]}
-              />
-              <Text style={styles.configValue}>
-                {game.config.setsOfQuestions}
-              </Text>
-            </View>
-            <View style={styles.configRow}>
-              <Ionicons
-                name="time-outline"
-                size={moderateScale(12)}
-                color={timedRound ? colors.orange[200] : colors.gray[100]}
-              />
-              <Text style={[styles.configValue, !timedRound && styles.configValueDisabled]}>
-                {timedRound ? `${roundDuration}s` : '—'}
-              </Text>
-            </View>
-          </View>
-          <Entypo name="cog" size={scale(28)} color={colors.orange[200]} />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
+        <Entypo name="cog" size={scale(28)} color={colors.orange[200]} />
+      </TouchableOpacity>
       <Modal transparent={false} visible={menuOpened} animationType="slide">
         <SafeAreaProvider>
           <SafeAreaView style={styles.modalContainer}>
@@ -398,34 +351,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background[100],
     borderRadius: moderateScale(radius.pill),
     padding: scale(5),
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scale(6),
-  },
-  buttonContainerAccent: {
-    borderWidth: 1.5,
-    borderColor: colors.orange[200],
-  },
-  configSummary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scale(13),
-    paddingLeft: scale(4),
-  },
-  configRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scale(3),
-  },
-  configValue: {
-    fontFamily: 'Raleway',
-    fontSize: moderateScale(11),
-    fontWeight: '700',
-    color: colors.orange[200],
-  },
-  configValueDisabled: {
-    color: colors.gray[100],
   },
   modalContainer: {
     flex: 1,

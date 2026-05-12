@@ -256,10 +256,8 @@ export default function CreateGame() {
                 </View>
               </View>
             </View>
-            <SidebarMenu />
-          </View>
-          <View style={styles.headerConfigRow}>
             <ConfigMenu />
+            <SidebarMenu />
           </View>
         </View>
       }
@@ -589,10 +587,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: scale(5),
     overflow: 'hidden',
-  },
-  headerConfigRow: {
-    alignItems: 'flex-end',
-    marginTop: verticalScale(4),
   },
   topContainer: {
     paddingHorizontal: scale(spacing.xl),
