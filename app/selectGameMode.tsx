@@ -69,6 +69,15 @@ const GAME_MODES: GameMode[] = [
     image: require('@/assets/images/classicGameModeBg.png'),
   },
   {
+    id: 'mimic',
+    titleKey: 'Mimic',
+    descriptionKey: 'mimicModeDescription',
+    tagsKey: 'mimicModeTags',
+    color: '#065F46',
+    config: { numberOfImpostors: 1, randomImpostors: false, setsOfQuestions: 2, timedRound: false, roundDuration: 10 },
+    image: require('@/assets/images/mimicGameModeBg.png'),
+  },
+  {
     id: 'custom',
     titleKey: 'Custom',
     descriptionKey: 'customModeDescription',
@@ -76,14 +85,6 @@ const GAME_MODES: GameMode[] = [
     color: '#1F2937',
     config: null,
     image: require('@/assets/images/customGameModeBg.png'),
-  },
-  {
-    id: 'mimic',
-    titleKey: 'Mimic',
-    descriptionKey: 'mimicModeDescription',
-    tagsKey: 'mimicModeTags',
-    color: '#065F46',
-    config: { numberOfImpostors: 1, randomImpostors: false, setsOfQuestions: 2, timedRound: false, roundDuration: 10 },
   },
 ];
 

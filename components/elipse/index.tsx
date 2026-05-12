@@ -5,11 +5,13 @@ import { scale, verticalScale } from 'react-native-size-matters';
 export default function Elipse({
   top = 0,
   left = -86,
+  opacity = 1,
 }: {
   top?: number;
   left?: number;
+  opacity?: number;
 }) {
-  return <View style={[styles.elipse, { top, left }]} />;
+  return <View style={[styles.elipse, { top, left, opacity }]} />;
 }
 
 const styles = StyleSheet.create({

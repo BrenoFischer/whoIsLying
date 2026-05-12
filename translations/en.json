@@ -61,9 +61,9 @@
   "foods": "Foods",
   "animals": "Animals",
   "halloween": "Halloween",
-  "movies": "Movies & TV",
+  "movies": "Movies",
   "sports": "Sports",
-  "music": "Music & Artists",
+  "music": "Music",
   "geography": "Countries",
   "professions": "Professions",
   "foodsDescription": "From comfort classics to international delicacies. Each round one player is bluffing — can you sniff out who doesn't really know the dish?",
@@ -300,5 +300,6 @@
   "I'm certain!": "I'm certain!",
   "Could be wrong...": "Could be wrong...",
   "Hard to tell...": "Hard to tell...",
-  "It's you!": "It's you!"
+  "It's you!": "It's you!",
+  "Examples": "Examples"
 }

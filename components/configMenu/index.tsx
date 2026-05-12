@@ -14,7 +14,13 @@ import { ToggleButton } from '../toggleButton';
 import { spacing } from '@/styles/spacing';
 import { GameContext } from '@/context/GameContext';
 
-export default function ConfigMenu({ initialOpen = false }: { initialOpen?: boolean }) {
+export default function ConfigMenu({
+  initialOpen = false,
+  variant = 'default',
+}: {
+  initialOpen?: boolean;
+  variant?: 'default' | 'accent';
+}) {
   const { setNumberOfImpostors, game, setSetsOfQuestions, setRandomImpostors, setTimedRound, setRoundDuration } =
     useContext(GameContext);
   const [menuOpened, setMenuOpened] = useState(initialOpen);
@@ -88,7 +94,10 @@ export default function ConfigMenu({ initialOpen = false }: { initialOpen?: bool
   return (
     <>
       <View>
-        <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={toggleMenu}
+          style={[styles.buttonContainer, variant === 'accent' && styles.buttonContainerAccent]}
+        >
           <View style={styles.configSummary}>
             <View style={styles.configRow}>
               <FontAwesome
@@ -393,6 +402,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: scale(6),
+  },
+  buttonContainerAccent: {
+    borderWidth: 1.5,
+    borderColor: colors.orange[200],
   },
   configSummary: {
     flexDirection: 'row',

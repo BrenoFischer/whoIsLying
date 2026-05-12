@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { TouchableOpacity, View, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -19,14 +19,14 @@ export interface FlipCardRef {
 interface FlipCardProps {
   front: React.ReactNode;
   back: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 const FLIP_DURATION = 400;
 
 const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
   ({ front, back, style }, ref) => {
-    const rotation = useSharedValue(0); // 0 = front, 1 = back
+    const rotation = useSharedValue(0);
 
     useImperativeHandle(ref, () => ({
       flipToFront: () => {
@@ -42,36 +42,18 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
           : withTiming(0, { duration: FLIP_DURATION });
     };
 
-    // The entire card container (including orange border) rotates
-    const cardRotateStyle = useAnimatedStyle(() => ({
+    const frontStyle = useAnimatedStyle(() => ({
+      opacity: interpolate(rotation.value, [0, 0.5, 0.5, 1], [1, 1, 0, 0], Extrapolation.CLAMP),
       transform: [
-        { perspective: 1000 },
-        {
-          rotateY: `${interpolate(rotation.value, [0, 1], [0, 180], Extrapolation.CLAMP)}deg`,
-        },
+        { scaleX: interpolate(rotation.value, [0, 0.5], [1, 0], Extrapolation.CLAMP) },
       ],
     }));
 
-    // Front face fades out as card passes 90°
-    const frontOpacityStyle = useAnimatedStyle(() => ({
-      opacity: interpolate(
-        rotation.value,
-        [0, 0.49, 0.5, 1],
-        [1, 1, 0, 0],
-        Extrapolation.CLAMP
-      ),
-    }));
-
-    // Back face fades in after card passes 90°; scaleX:-1 counteracts the 180° rotation
-    // so text and layout appear readable and correctly positioned
-    const backOpacityStyle = useAnimatedStyle(() => ({
-      opacity: interpolate(
-        rotation.value,
-        [0, 0.5, 0.51, 1],
-        [0, 0, 1, 1],
-        Extrapolation.CLAMP
-      ),
-      transform: [{ scaleX: -1 }],
+    const backStyle = useAnimatedStyle(() => ({
+      opacity: interpolate(rotation.value, [0, 0.499, 0.5, 1], [0, 0, 1, 1], Extrapolation.CLAMP),
+      transform: [
+        { scaleX: interpolate(rotation.value, [0.5, 1], [0, 1], Extrapolation.CLAMP) },
+      ],
     }));
 
     return (
@@ -80,12 +62,10 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
         activeOpacity={0.95}
         style={styles.touchable}
       >
-        {/* This Animated.View is what actually rotates — style prop carries the border/bg */}
-        <Animated.View style={[styles.card, style, cardRotateStyle]}>
-          {/* Front face — flex:1 so it sizes the card and stays inside the orange border */}
-          <Animated.View style={[styles.face, frontOpacityStyle]}>
+        <View style={[styles.card, style]}>
+          <Animated.View style={[styles.face, frontStyle]}>
             {front}
-            <View pointerEvents="none" style={styles.flipButtonFront}>
+            <View pointerEvents="none" style={styles.flipButton}>
               <Ionicons
                 name="sync-outline"
                 size={moderateScale(20)}
@@ -94,14 +74,9 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
             </View>
           </Animated.View>
 
-          {/* Back face — absoluteFill on top of front; scaleX:-1 un-mirrors content */}
-          <Animated.View style={[StyleSheet.absoluteFill, backOpacityStyle]}>
+          <Animated.View style={[StyleSheet.absoluteFill, styles.face, backStyle]}>
             {back}
-            {/*
-            Button uses `left` not `right` because scaleX:-1 swaps sides.
-            local left:8 → visual right:8 after the mirror.
-          */}
-            <View pointerEvents="none" style={styles.flipButtonBack}>
+            <View pointerEvents="none" style={styles.flipButton}>
               <Ionicons
                 name="sync-outline"
                 size={moderateScale(20)}
@@ -109,7 +84,7 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
               />
             </View>
           </Animated.View>
-        </Animated.View>
+        </View>
       </TouchableOpacity>
     );
   }
@@ -129,14 +104,9 @@ const styles = StyleSheet.create({
   face: {
     flex: 1,
   },
-  flipButtonFront: {
+  flipButton: {
     position: 'absolute',
     top: scale(8),
     right: scale(8),
-  },
-  flipButtonBack: {
-    position: 'absolute',
-    top: scale(8),
-    right: scale(8), // appears at visual right because parent has scaleX:-1
   },
 });

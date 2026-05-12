@@ -69,11 +69,9 @@ export default function SidebarMenu() {
 
   return (
     <>
-      <View>
-        <TouchableOpacity onPress={toggleMenu} style={styles.buttonContainer}>
-          <Ionicons name="menu" size={scale(28)} color={colors.orange[200]} />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={toggleMenu} style={styles.triggerButton}>
+        <Ionicons name="menu" size={scale(28)} color={colors.orange[200]} />
+      </TouchableOpacity>
 
       <Modal transparent={false} visible={visible} animationType="slide">
         <View
@@ -334,6 +332,11 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background[100],
+  },
+  triggerButton: {
+    backgroundColor: colors.background[100],
+    borderRadius: moderateScale(radius.pill),
+    padding: scale(5),
   },
   buttonContainer: {
     zIndex: 100,

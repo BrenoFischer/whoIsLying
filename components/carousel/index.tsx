@@ -36,6 +36,7 @@ export default function Carousel({
 
   const totalItemWidth = itemWidth + spacing;
   const snapToOffsets = data.map((_, index) => index * totalItemWidth);
+  const sidePadding = Math.max(0, (SCREEN_WIDTH - itemWidth - spacing) / 2);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -65,7 +66,7 @@ export default function Carousel({
         onScroll={handleScroll}
         onMomentumScrollEnd={handleScrollEnd}
         scrollEventThrottle={16}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingHorizontal: sidePadding }]}
         style={styles.scrollView}
       >
         {data.map((item, index) => {
@@ -75,7 +76,11 @@ export default function Carousel({
               key={index}
               style={[
                 styles.itemContainer,
-                { width: itemWidth, marginHorizontal: spacing / 2 },
+                {
+                  width: itemWidth,
+                  marginHorizontal: spacing / 2,
+                  transform: [{ scale: isActive ? 1.04 : 0.97 }],
+                },
               ]}
             >
               {renderItem(item, index, isActive)}
@@ -92,7 +97,9 @@ export default function Carousel({
             style={[
               styles.indicator,
               {
-                width: currentIndex === index ? scale(24) : scale(8),
+                width: currentIndex === index ? scale(22) : scale(4),
+                height: currentIndex === index ? scale(7) : scale(4),
+                opacity: currentIndex === index ? 1 : 0.28,
               },
             ]}
           />
@@ -111,9 +118,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   scrollContent: {
-    paddingHorizontal: SCREEN_WIDTH * 0.15,
     alignItems: 'center',
-    paddingBottom: scale(spacing.xs),
+    paddingVertical: scale(spacing.sm),
   },
   itemContainer: {
     justifyContent: 'center',
@@ -121,11 +127,12 @@ const styles = StyleSheet.create({
   },
   indicatorContainer: {
     flexDirection: 'row',
-    marginTop: scale(30),
-    gap: scale(8),
+    alignItems: 'center',
+    marginTop: scale(10),
+    gap: scale(4),
   },
   indicator: {
-    height: scale(8),
+    height: scale(6),
     borderRadius: scale(4),
     backgroundColor: colors.orange[200],
   },

@@ -35,9 +35,9 @@
   "foods": "Comidas",
   "animals": "Animais",
   "halloween": "Halloween",
-  "movies": "Filmes e Séries",
+  "movies": "Filmes",
   "sports": "Esportes",
-  "music": "Música e Artistas",
+  "music": "Música",
   "geography": "Países",
   "professions": "Profissões",
   "foodsDescription": "De clássicos reconfortantes a iguarias internacionais. Em cada rodada um jogador está blefando — você consegue farejar quem não conhece o prato?",
@@ -300,5 +300,6 @@
   "I'm certain!": "Tenho certeza!",
   "Could be wrong...": "Posso estar errado...",
   "Hard to tell...": "Difícil dizer...",
-  "It's you!": "É você!"
+  "It's you!": "É você!",
+  "Examples": "Exemplos"
 }
