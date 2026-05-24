@@ -1,4 +1,7 @@
 {
+  "Restore purchases": "Restaurar compras",
+  "Restore now": "Restaurar agora",
+  "Your packs are linked to your App Store / Google Play account, not to this device. Signing in with the same account on any device lets you restore them.": "Seus pacotes estão vinculados à sua conta da App Store / Google Play, não a este aparelho. Basta entrar com a mesma conta em qualquer dispositivo para restaurá-los.",
   "Buy now!": "Comprar agora!",
   "Who is Lying": "Quem Está Mentindo",
   "New game": "Novo jogo",
@@ -304,11 +307,13 @@
   "It's you!": "É você!",
   "Examples": "Exemplos",
   "packIncludes": "Inclui",
+  "packCharactersLabel": "Personagens",
   "packAccountNote": "As compras estão vinculadas à sua conta da loja e podem ser restauradas a qualquer momento.",
-  "halloweenHighlight1": "10 personagens de halloween",
-  "halloweenHighlight2": "30 palavras secretas assustadoras",
+  "A new {{name}} category to play": "Uma nova categoria de {{name}} para jogar",
+  "{{count}} new categories to play": "{{count}} novas categorias para jogar",
+  "{{count}} secret words": "{{count}} palavras secretas",
+  "{{count}} questions based on the theme": "{{count}} perguntas baseadas no tema",
+  "{{count}} new characters to choose from": "{{count}} novos personagens para escolher",
   "Countries": "Países",
-  "geographyHighlight1": "30 países para descobrir",
-  "Professions": "Profissões",
-  "professionsHighlight1": "30 profissões únicas"
+  "Professions": "Profissões"
 }

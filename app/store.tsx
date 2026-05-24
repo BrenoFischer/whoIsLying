@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Image,
+  Pressable,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -19,8 +20,11 @@ import { fontSize } from '@/styles/fontSize';
 import ScreenLayout from '@/components/screenLayout';
 import Character from '@/components/character';
 import FlipCard, { FlipCardRef } from '@/components/flipCard';
+import CustomModal from '@/components/modal';
 import { usePurchase } from '@/context/PurchaseContext';
-import { PACKS, type Pack } from '@/data/packs';
+import { PACKS, BASE_PACK_THEMES, type Pack } from '@/data/packs';
+import categories from '@/data/categories.json';
+import { characters } from '@/data/imagesData';
 import { useTranslation } from '@/translations';
 
 const PACK_ART: Record<string, number> = {
@@ -31,12 +35,54 @@ const PACK_ART: Record<string, number> = {
 
 function PackCard({ pack }: { pack: Pack }) {
   const { isPurchased, purchasePack, storeProducts, isLoading } = usePurchase();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [purchasing, setPurchasing] = useState(false);
   const cardRef = useRef<FlipCardRef>(null);
 
   const owned = isPurchased(pack.id);
   const storeProduct = pack.productId ? storeProducts[pack.productId] : null;
+
+  const packCharacters = useMemo(() => {
+    const newThemes = pack.characterThemes.filter(theme => !BASE_PACK_THEMES.has(theme));
+    return characters.filter(c => newThemes.includes(c.theme)).map(c => c.name);
+  }, [pack]);
+
+  const highlights = useMemo(() => {
+    const lines: string[] = [];
+
+    let words = 0;
+    let questions = 0;
+    const categoryNames: string[] = [];
+
+    for (const key of pack.categories) {
+      const cat = (categories as any)[key];
+      if (!cat) continue;
+      categoryNames.push(t(key));
+      words += Array.isArray(cat.content) ? cat.content.length : 0;
+      if (cat.questions) {
+        for (const arr of Object.values(cat.questions)) {
+          if (Array.isArray(arr)) questions += arr.length;
+        }
+      }
+    }
+
+    if (categoryNames.length === 1) {
+      lines.push(t('A new {{name}} category to play', { name: categoryNames[0] }));
+    } else if (categoryNames.length > 1) {
+      lines.push(t('{{count}} new categories to play', { count: categoryNames.length }));
+    }
+    if (words > 0) {
+      lines.push(t('{{count}} secret words', { count: words }));
+    }
+    if (questions > 0) {
+      lines.push(t('{{count}} questions based on the theme', { count: questions }));
+    }
+    if (packCharacters.length > 0) {
+      lines.push(t('{{count}} new characters to choose from', { count: packCharacters.length }));
+    }
+
+    return lines;
+  }, [pack, t, language, packCharacters]);
 
   const handleBuy = useCallback(async () => {
     if (owned) return;
@@ -52,29 +98,18 @@ function PackCard({ pack }: { pack: Pack }) {
 
   const priceLabel = storeProduct?.displayPrice ?? '$2.99';
   const artImage = PACK_ART[pack.id] ?? null;
-  const chars = pack.previewCharacters.slice(0, 3);
 
   const front = (
     <View style={[StyleSheet.absoluteFill, styles.frontFace, { backgroundColor: pack.color }]}>
-      {artImage && (
-        <View style={styles.artImageContainer} pointerEvents="none">
-          <Image source={artImage} style={styles.artImage} resizeMode="contain" />
-        </View>
-      )}
-      <View style={styles.cardTextContent} pointerEvents="none">
+      <View style={styles.frontHeader} pointerEvents="none">
         <Text style={styles.cardTitle}>{t(pack.nameKey)}</Text>
         <Text style={styles.cardPrice}>{priceLabel}</Text>
       </View>
-      <View style={styles.charRow} pointerEvents="none">
-        {chars.map((charName, i) => (
-          <View
-            key={charName}
-            style={[styles.charSlot, { left: i * scale(40), zIndex: i * (-1) }]}
-          >
-            <Character mood={charName} size={scale(72)} />
-          </View>
-        ))}
-      </View>
+      {artImage && (
+        <View style={styles.frontArtContainer} pointerEvents="none">
+          <Image source={artImage} style={styles.frontArt} resizeMode="contain" />
+        </View>
+      )}
     </View>
   );
 
@@ -86,14 +121,36 @@ function PackCard({ pack }: { pack: Pack }) {
       <View style={styles.backSection}>
         <Text style={styles.backSectionLabel}>{t('packIncludes')}</Text>
         <View style={styles.highlightList}>
-          {pack.highlights.map(key => (
-            <View key={key} style={styles.highlightRow}>
+          {highlights.map((line, i) => (
+            <View key={i} style={styles.highlightRow}>
               <Text style={styles.highlightBullet}>•</Text>
-              <Text style={styles.highlightText}>{t(key)}</Text>
+              <Text style={styles.highlightText}>{line}</Text>
             </View>
           ))}
         </View>
       </View>
+      {packCharacters.length > 0 && (
+        <View style={styles.backSection}>
+          <Text style={styles.backSectionLabel}>{t('packCharactersLabel')}</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            decelerationRate="fast"
+            directionalLockEnabled
+            contentContainerStyle={styles.backCharRow}
+          >
+            {packCharacters.map(name => (
+              <Pressable
+                key={name}
+                onPress={() => {}}
+                style={styles.backCharItem}
+              >
+                <Character mood={name} size={scale(56)} />
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
+      )}
       <Text style={styles.accountNote}>{t('packAccountNote')}</Text>
       {owned ? (
         <View style={styles.ownedIndicator}>
@@ -129,8 +186,10 @@ function PackCard({ pack }: { pack: Pack }) {
 export default function Store() {
   const { restorePurchases, isLoading } = usePurchase();
   const { t } = useTranslation();
+  const [restoreInfoVisible, setRestoreInfoVisible] = useState(false);
 
   const handleRestore = useCallback(async () => {
+    setRestoreInfoVisible(false);
     try {
       await restorePurchases();
       Alert.alert(t('Purchases restored'), t('Your purchases have been restored.'));
@@ -143,11 +202,19 @@ export default function Store() {
     <ScreenLayout
       header={
         <View style={styles.header}>
+          <Text style={styles.headerTitle} pointerEvents="none">{t('Store')}</Text>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={moderateScale(24)} color={colors.orange[200]} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('Store')}</Text>
-          <View style={styles.headerRight} />
+          <TouchableOpacity
+            onPress={() => setRestoreInfoVisible(true)}
+            style={[styles.restoreHeaderButton, isLoading && styles.restoreHeaderButtonDisabled]}
+            disabled={isLoading}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="cloud-download-outline" size={moderateScale(14)} color={colors.orange[200]} />
+            <Text style={styles.restoreHeaderText}>{t('Restore purchases')}</Text>
+          </TouchableOpacity>
         </View>
       }
     >
@@ -165,16 +232,48 @@ export default function Store() {
           {PACKS.filter(p => !p.isFree).map(pack => (
             <PackCard key={pack.id} pack={pack} />
           ))}
-
-          <TouchableOpacity
-            style={styles.restoreButton}
-            onPress={handleRestore}
-            disabled={isLoading}
-          >
-            <Text style={styles.restoreText}>{t('Restore Purchases')}</Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
+
+      <CustomModal
+        modalVisible={restoreInfoVisible}
+        setModalVisible={setRestoreInfoVisible}
+      >
+        <View style={styles.restoreModalIconWrap}>
+          <Ionicons
+            name="cloud-download-outline"
+            size={moderateScale(40)}
+            color={colors.orange[200]}
+          />
+        </View>
+        <Text style={styles.restoreModalTitle}>{t('Restore purchases')}</Text>
+        <Text style={styles.restoreModalBody}>
+          {t('Your packs are linked to your App Store / Google Play account, not to this device. Signing in with the same account on any device lets you restore them.')}
+        </Text>
+        <View style={styles.restoreModalActions}>
+          <TouchableOpacity
+            onPress={() => setRestoreInfoVisible(false)}
+            style={[styles.restoreModalButton, styles.restoreModalButtonSecondary]}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.restoreModalButtonSecondaryText}>{t('Cancel')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleRestore}
+            disabled={isLoading}
+            style={[
+              styles.restoreModalButton,
+              styles.restoreModalButtonPrimary,
+              isLoading && styles.restoreHeaderButtonDisabled,
+            ]}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.restoreModalButtonPrimaryText}>
+              {isLoading ? t('Processing...') : t('Restore now')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </CustomModal>
     </ScreenLayout>
   );
 }
@@ -183,6 +282,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: scale(spacing.md),
     paddingTop: verticalScale(spacing.xs),
     paddingBottom: verticalScale(spacing.xs),
@@ -191,15 +291,83 @@ const styles = StyleSheet.create({
     padding: scale(spacing.xs),
   },
   headerTitle: {
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    right: 0,
     textAlign: 'center',
     fontFamily: 'Raleway',
     fontWeight: 'bold',
     fontSize: fontSize.md,
     color: colors.white[100],
   },
-  headerRight: {
-    width: moderateScale(24) + scale(spacing.xs) * 2,
+  restoreHeaderButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(4),
+    paddingHorizontal: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.xs),
+    borderRadius: moderateScale(radius.pill),
+    borderWidth: 1,
+    borderColor: colors.orange[200],
+  },
+  restoreHeaderButtonDisabled: {
+    opacity: 0.5,
+  },
+  restoreHeaderText: {
+    fontFamily: 'Raleway',
+    fontWeight: '600',
+    fontSize: moderateScale(11),
+    color: colors.orange[200],
+  },
+  restoreModalIconWrap: {
+    alignItems: 'center',
+    marginBottom: verticalScale(spacing.sm),
+  },
+  restoreModalTitle: {
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: moderateScale(18),
+    color: colors.background[100],
+    textAlign: 'center',
+    marginBottom: verticalScale(spacing.sm),
+  },
+  restoreModalBody: {
+    fontFamily: 'Raleway',
+    fontSize: moderateScale(13),
+    lineHeight: moderateScale(19),
+    color: colors.gray[300],
+    textAlign: 'center',
+    marginBottom: verticalScale(spacing.lg),
+  },
+  restoreModalActions: {
+    flexDirection: 'row',
+    gap: scale(spacing.sm),
+  },
+  restoreModalButton: {
+    flex: 1,
+    paddingVertical: verticalScale(spacing.sm),
+    borderRadius: moderateScale(radius.md),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  restoreModalButtonPrimary: {
+    backgroundColor: colors.orange[200],
+  },
+  restoreModalButtonPrimaryText: {
+    fontFamily: 'Raleway',
+    fontWeight: '700',
+    fontSize: moderateScale(13),
+    color: colors.white[100],
+  },
+  restoreModalButtonSecondary: {
+    borderWidth: 1,
+    borderColor: colors.gray[300],
+  },
+  restoreModalButtonSecondaryText: {
+    fontFamily: 'Raleway',
+    fontWeight: '600',
+    fontSize: moderateScale(13),
+    color: colors.gray[300],
   },
   contentWrapper: {
     flex: 1,
@@ -232,59 +400,46 @@ const styles = StyleSheet.create({
     gap: verticalScale(spacing.sm),
   },
   card: {
-    height: verticalScale(170),
+    height: verticalScale(290),
     borderRadius: moderateScale(radius.lg),
   },
   frontFace: {
     borderRadius: moderateScale(radius.lg),
     overflow: 'hidden',
+    alignItems: 'center',
+    paddingTop: verticalScale(spacing.lg),
+    paddingBottom: verticalScale(spacing.md),
   },
-  artImageContainer: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: '55%',
-  },
-  artImage: {
-    flex: 1,
-    width: '100%',
-  },
-  cardTextContent: {
-    position: 'absolute',
-    top: verticalScale(spacing.lg),
-    left: scale(spacing.lg),
-    right: '48%',
-    zIndex: 2,
+  frontHeader: {
+    alignItems: 'center',
     gap: verticalScale(4),
+    zIndex: 2,
   },
   cardTitle: {
     fontFamily: 'Raleway',
     fontWeight: 'bold',
-    fontSize: moderateScale(26),
+    fontSize: moderateScale(28),
     color: colors.white[100],
     letterSpacing: 0.3,
+    textAlign: 'center',
   },
   cardPrice: {
     fontFamily: 'Raleway',
     fontWeight: '700',
-    fontSize: moderateScale(16),
+    fontSize: moderateScale(18),
     color: colors.orange[200],
+    textAlign: 'center',
   },
-  cardPriceOwned: {
-    color: colors.green[100],
+  frontArtContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: verticalScale(spacing.sm),
   },
-  charRow: {
-    position: 'absolute',
-    bottom: 0,
-    left: scale(spacing.sm),
-    width: scale(72 + 2 * 40),
-    height: scale(72),
-    zIndex: 2,
-  },
-  charSlot: {
-    position: 'absolute',
-    bottom: 0,
+  frontArt: {
+    width: '65%',
+    height: '100%',
   },
   backFace: {
     flex: 1,
@@ -331,6 +486,17 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(12),
     color: colors.white[100],
   },
+  backCharRow: {
+    gap: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.xs),
+    paddingRight: scale(spacing.md),
+    alignItems: 'center',
+  },
+  backCharItem: {
+    backgroundColor: colors.white[100] + '18',
+    borderRadius: moderateScale(radius.pill),
+    padding: scale(4),
+  },
   accountNote: {
     fontFamily: 'Raleway',
     fontSize: moderateScale(8),
@@ -361,16 +527,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: moderateScale(14),
     color: colors.green[100],
-  },
-  restoreButton: {
-    alignSelf: 'center',
-    marginTop: verticalScale(spacing.sm),
-    paddingVertical: verticalScale(spacing.sm),
-  },
-  restoreText: {
-    fontFamily: 'Raleway',
-    fontSize: moderateScale(12),
-    color: colors.gray[300],
-    textDecorationLine: 'underline',
   },
 });

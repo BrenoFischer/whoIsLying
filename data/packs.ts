@@ -108,7 +108,6 @@ export interface Pack {
   color: string;          // hex color for the store card background
   isFree: boolean;
   previewCharacters: string[]; // character names shown overlapping on the store card (max 4)
-  highlights: string[];  // translation keys for the back face "what's included" bullets
 }
 
 export const PACKS: Pack[] = [
@@ -122,7 +121,6 @@ export const PACKS: Pack[] = [
     color: '#1E3A5F',
     isFree: true,
     previewCharacters: ['breno', 'paola', 'surfer', 'gabs'],
-    highlights: [],
   },
   {
     id: 'halloween',
@@ -134,7 +132,6 @@ export const PACKS: Pack[] = [
     color: '#3B0764',
     isFree: false,
     previewCharacters: ['pumpkinMale', 'frank', 'ghost', 'skeleton'],
-    highlights: ['halloweenHighlight1', 'halloweenHighlight2'],
   },
   {
     id: 'geography',
@@ -146,7 +143,6 @@ export const PACKS: Pack[] = [
     color: '#7C2D12',
     isFree: false,
     previewCharacters: ['surfer', 'gio', 'pedro'],
-    highlights: ['geographyHighlight1'],
   },
   {
     id: 'professions',
@@ -158,9 +154,14 @@ export const PACKS: Pack[] = [
     color: '#1F2937',
     isFree: false,
     previewCharacters: ['fabricin', 'luh', 'diana'],
-    highlights: ['professionsHighlight1'],
   },
 ];
+
+// Returns the set of character themes already covered by the free base pack —
+// used to identify "new" themes a paid pack introduces.
+export const BASE_PACK_THEMES: Set<CharacterTheme> = new Set(
+  PACKS.find(p => p.id === 'base')?.characterThemes ?? []
+);
 
 // Derived constants — do not edit these manually.
 export const FREE_PACK_IDS = new Set(PACKS.filter(p => p.isFree).map(p => p.id));

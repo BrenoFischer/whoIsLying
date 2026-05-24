@@ -1,4 +1,7 @@
 {
+  "Restore purchases": "Restore purchases",
+  "Restore now": "Restore now",
+  "Your packs are linked to your App Store / Google Play account, not to this device. Signing in with the same account on any device lets you restore them.": "Your packs are linked to your App Store / Google Play account, not to this device. Signing in with the same account on any device lets you restore them.",
   "Buy now!": "Buy now!",
   "Who is Lying": "Who is Lying",
   "New game": "New game",
@@ -304,11 +307,13 @@
   "It's you!": "It's you!",
   "Examples": "Examples",
   "packIncludes": "Includes",
+  "packCharactersLabel": "Characters",
   "packAccountNote": "Purchases are linked to your store account and can be restored anytime.",
-  "halloweenHighlight1": "10 halloween characters",
-  "halloweenHighlight2": "30 spooky secret words",
+  "A new {{name}} category to play": "A new {{name}} category to play",
+  "{{count}} new categories to play": "{{count}} new categories to play",
+  "{{count}} secret words": "{{count}} secret words",
+  "{{count}} questions based on the theme": "{{count}} questions based on the theme",
+  "{{count}} new characters to choose from": "{{count}} new characters to choose from",
   "Countries": "Countries",
-  "geographyHighlight1": "30 countries to discover",
-  "Professions": "Professions",
-  "professionsHighlight1": "30 unique professions"
+  "Professions": "Professions"
 }
