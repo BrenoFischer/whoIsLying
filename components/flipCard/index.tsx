@@ -17,6 +17,7 @@ import { radius } from '@/styles/radius';
 
 export interface FlipCardRef {
   flipToFront: () => void;
+  flip: () => void;
 }
 
 interface FlipCardProps {
@@ -38,9 +39,15 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
       flipToFront: () => {
         rotation.value = withTiming(0, { duration: FLIP_DURATION });
       },
+      flip: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        rotation.value =
+          rotation.value < 0.5
+            ? withTiming(1, { duration: FLIP_DURATION })
+            : withTiming(0, { duration: FLIP_DURATION });
+      },
     }));
 
-    // Switch pointer events exactly when the face changes at the 0.5 midpoint
     useAnimatedReaction(
       () => rotation.value < 0.5,
       (nowFront, wasFront) => {
@@ -58,19 +65,27 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
           : withTiming(0, { duration: FLIP_DURATION });
     };
 
-    const frontAnimStyle = useAnimatedStyle(() => ({
-      opacity: interpolate(rotation.value, [0, 0.5, 0.5, 1], [1, 1, 0, 0], Extrapolation.CLAMP),
-      transform: [
-        { scaleX: interpolate(rotation.value, [0, 0.5], [1, 0], Extrapolation.CLAMP) },
-      ],
-    }));
+    const frontAnimStyle = useAnimatedStyle(() => {
+      const rotateY = interpolate(rotation.value, [0, 0.5], [0, 90], Extrapolation.CLAMP);
+      return {
+        opacity: interpolate(rotation.value, [0, 0.45, 0.5, 1], [1, 1, 0, 0], Extrapolation.CLAMP),
+        transform: [
+          { perspective: 800 },
+          { rotateY: `${rotateY}deg` },
+        ],
+      };
+    });
 
-    const backAnimStyle = useAnimatedStyle(() => ({
-      opacity: interpolate(rotation.value, [0, 0.499, 0.5, 1], [0, 0, 1, 1], Extrapolation.CLAMP),
-      transform: [
-        { scaleX: interpolate(rotation.value, [0.5, 1], [0, 1], Extrapolation.CLAMP) },
-      ],
-    }));
+    const backAnimStyle = useAnimatedStyle(() => {
+      const rotateY = interpolate(rotation.value, [0.5, 1], [-90, 0], Extrapolation.CLAMP);
+      return {
+        opacity: interpolate(rotation.value, [0, 0.499, 0.5, 1], [0, 0, 1, 1], Extrapolation.CLAMP),
+        transform: [
+          { perspective: 800 },
+          { rotateY: `${rotateY}deg` },
+        ],
+      };
+    });
 
     return (
       <TouchableOpacity
@@ -106,7 +121,7 @@ const FlipCard = forwardRef<FlipCardRef, FlipCardProps>(
               style={styles.flipButtonBack}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons name="sync-outline" size={moderateScale(26)} color={colors.background[100]} />
+              <Ionicons name="sync-outline" size={moderateScale(26)} color={colors.white[100]} />
             </TouchableOpacity>
             {selected && <View style={styles.selectedOverlay} pointerEvents="none" />}
           </Animated.View>
@@ -140,7 +155,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: scale(8),
     right: scale(8),
-    backgroundColor: 'rgba(0,0,0,0.08)',
+    backgroundColor: 'rgba(0,0,0,0.35)',
     borderRadius: moderateScale(radius.pill),
     padding: scale(4),
   },

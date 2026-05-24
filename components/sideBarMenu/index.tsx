@@ -14,7 +14,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { colors } from '@/styles/colors';
 import Button from '../button';
 import Character from '../character';
-import { useNavigation } from 'expo-router';
+import { useNavigation, router } from 'expo-router';
 import { CommonActions } from '@react-navigation/native';
 import { Language, useTranslation } from '@/translations';
 import CheckPlayerWord from '../forgotWord';
@@ -230,7 +230,20 @@ export default function SidebarMenu() {
 
               <View style={styles.menuDivider} />
 
-              {/* ── Group 3: help ─────────────────────────────────── */}
+              {/* ── Group 3: store ────────────────────────────────── */}
+              <View style={styles.menuList}>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => { setVisible(false); router.push('/store'); }}
+                >
+                  <Ionicons name="cart-outline" size={moderateScale(20)} color={colors.orange[200]} />
+                  <Text style={styles.menuItemText}>{t('Store')}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.menuDivider} />
+
+              {/* ── Group 4: help ─────────────────────────────────── */}
               <View style={styles.menuList}>
                 <TouchableOpacity
                   style={styles.menuItem}

@@ -12,6 +12,8 @@ import {
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import categories from '@/data/categories.json';
+import { getPackForCategory } from '@/data/packs';
+import { usePurchase } from '@/context/PurchaseContext';
 import { colors } from '@/styles/colors';
 import Button from '@/components/button';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -32,6 +34,8 @@ const images = {
   movies: require('@/assets/images/moviesCategory.png'),
   sports: require('@/assets/images/sportsCategory.png'),
   music: require('@/assets/images/musicCategory.png'),
+  professions: require('@/assets/images/professionsCategory.png'),
+  geography: require('@/assets/images/geographyCategory.png'),
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -48,6 +52,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function SelectCategory() {
   const { setGameWord, setCurrentScreen, game } = useContext(GameContext);
   const { t } = useTranslation();
+  const { isPurchased } = usePurchase();
   const { openConfig } = useLocalSearchParams<{ openConfig?: string }>();
 
   useEffect(() => {
@@ -81,9 +86,19 @@ export default function SelectCategory() {
     router.push('/createGame');
   };
 
+  const isCategoryLocked = (categoryName: string): boolean => {
+    const pack = getPackForCategory(categoryName);
+    return !!pack && !pack.isFree && !isPurchased(pack.id);
+  };
+
   const handleSelectCard = (categoryName: string) => {
     const categoryData = categories[categoryName as keyof typeof categories] as any;
     if (!categoryData?.available) return;
+
+    if (isCategoryLocked(categoryName)) {
+      router.push('/store');
+      return;
+    }
 
     if (selectedCategory === categoryName) {
       setSelectedCategory('');
@@ -99,6 +114,7 @@ export default function SelectCategory() {
   const renderCategoryCard = (categoryName: string, index: number) => {
     const categoryData = categories[categoryName as keyof typeof categories] as any;
     const isAvailable = categoryData?.available ?? true;
+    const isLocked = isAvailable && isCategoryLocked(categoryName);
     const categoryColor = CATEGORY_COLORS[categoryName] ?? '#1F2937';
     const content = (categoryData?.content as string[]) ?? [];
     const sampleWords = content.length >= 3
@@ -109,10 +125,12 @@ export default function SelectCategory() {
         ]
       : content.slice(0, 3);
 
+    const showLockUI = !isAvailable || isLocked;
+
     const front = (
-      <View style={[styles.cardFront, { backgroundColor: categoryColor, opacity: isAvailable ? 1 : 0.82 }]}>
-        {!isAvailable && <View style={styles.lockedOverlay} />}
-        {!isAvailable && (
+      <View style={[styles.cardFront, { backgroundColor: categoryColor, opacity: showLockUI ? 0.82 : 1 }]}>
+        {showLockUI && <View style={styles.lockedOverlay} />}
+        {showLockUI && (
           <View style={styles.lockIconCenter}>
             <View style={styles.lockIconBackground}>
               <Ionicons name="lock-closed" size={moderateScale(28)} color={colors.white[100]} />
@@ -130,10 +148,12 @@ export default function SelectCategory() {
 
     const back = (
       <View style={styles.cardBack}>
-        {!isAvailable && (
+        {showLockUI && (
           <View style={styles.comingSoonBadge}>
             <Ionicons name="lock-closed" size={moderateScale(9)} color={colors.orange[200]} />
-            <Text style={styles.comingSoonText}>{t('Buy now!')}</Text>
+            <Text style={styles.comingSoonText}>
+              {isLocked ? t('Get Pack') : t('Coming soon')}
+            </Text>
           </View>
         )}
         <Text style={styles.backCategoryTitle}>{t(categoryName)}</Text>

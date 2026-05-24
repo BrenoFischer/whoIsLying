@@ -23,6 +23,8 @@ export default function SkillUpScreen() {
   const [showStats, setShowStats] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
+  const handleOpenStore = () => router.push('/store');
+
   useEffect(() => {
     if (!isHydrated) return;
     if (game.currentScreen && game.players.length > 0) {
@@ -68,6 +70,17 @@ export default function SkillUpScreen() {
             </View>
 
             <View style={styles.headerRight}>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={handleOpenStore}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name="cart-outline"
+                  size={moderateScale(22)}
+                  color={colors.orange[200]}
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.langButton,

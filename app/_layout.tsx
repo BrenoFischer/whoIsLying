@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { GameContextProvider } from '@/context/GameContext';
 import { HistoryContextProvider } from '@/context/HistoryContext';
 import { AppResetProvider } from '@/context/AppResetContext';
+import { PurchaseContextProvider } from '@/context/PurchaseContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   SafeAreaProvider,
@@ -35,17 +36,19 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <AppResetProvider>
-          <GameContextProvider>
-            <HistoryContextProvider>
-              <StatusBar style="light" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  gestureEnabled: false,
-                }}
-              />
-            </HistoryContextProvider>
-          </GameContextProvider>
+          <PurchaseContextProvider>
+            <GameContextProvider>
+              <HistoryContextProvider>
+                <StatusBar style="light" />
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    gestureEnabled: false,
+                  }}
+                />
+              </HistoryContextProvider>
+            </GameContextProvider>
+          </PurchaseContextProvider>
         </AppResetProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

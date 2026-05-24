@@ -40,7 +40,8 @@
         {
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone to record audio responses."
         }
-      ]
+      ],
+      "expo-iap"
     ],
     "experiments": {
       "typedRoutes": true
