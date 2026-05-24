@@ -42,6 +42,8 @@ export default function Character({
     werewolf: require('@/assets/images/werewolf.png'),
     werewolfFem: require('@/assets/images/werewolfFem.png'),
     puca: require('@/assets/images/puca.png'),
+    vampire: require('@/assets/images/vampire.png'),
+    witch: require('@/assets/images/witch.png'),
   };
 
   return (

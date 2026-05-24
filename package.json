@@ -1,7 +1,7 @@
 {
   "name": "whoislying",
   "main": "expo-router/entry",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "scripts": {
     "start": "expo start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -51,7 +51,7 @@
         "statements": 70
       }
     },
-    "moduleNameMapping": {
+    "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1"
     },
     "transformIgnorePatterns": [

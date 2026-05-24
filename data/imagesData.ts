@@ -35,6 +35,8 @@ export const characters: CharacterData[] = [
   { name: 'werewolf', theme: 'halloween' },
   { name: 'werewolfFem', theme: 'halloween' },
   { name: 'puca', theme: 'halloween' },
+  { name: 'vampire', theme: 'halloween' },
+  { name: 'witch', theme: 'halloween' },
 ];
 
 export const themes: CharacterTheme[] = [
