@@ -184,9 +184,16 @@ function PackCard({ pack }: { pack: Pack }) {
 }
 
 export default function Store() {
-  const { restorePurchases, isLoading } = usePurchase();
+  const { restorePurchases, isLoading, isPurchased } = usePurchase();
   const { t } = useTranslation();
   const [restoreInfoVisible, setRestoreInfoVisible] = useState(false);
+
+  const paidPacks = useMemo(() => PACKS.filter(p => !p.isFree), []);
+  const ownedCount = useMemo(
+    () => paidPacks.filter(p => isPurchased(p.id)).length,
+    [paidPacks, isPurchased]
+  );
+  const allUnlocked = ownedCount === paidPacks.length && paidPacks.length > 0;
 
   const handleRestore = useCallback(async () => {
     setRestoreInfoVisible(false);
@@ -202,7 +209,6 @@ export default function Store() {
     <ScreenLayout
       header={
         <View style={styles.header}>
-          <Text style={styles.headerTitle} pointerEvents="none">{t('Store')}</Text>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={moderateScale(24)} color={colors.orange[200]} />
           </TouchableOpacity>
@@ -220,8 +226,27 @@ export default function Store() {
     >
       <View style={styles.contentWrapper}>
         <View style={styles.titleSection}>
-          <Text style={styles.pageTitle}>{t('Packs')}</Text>
-          <Text style={styles.subtitle}>{t('Expand your game with new categories and characters')}</Text>
+          <Text style={styles.pageTitle}>{t('Store')}</Text>
+          <Text style={styles.subtitle}>
+            {t('Unlock new categories, words and characters to expand your games')}
+          </Text>
+          {paidPacks.length > 0 && (
+            <View style={[styles.ownedChip, allUnlocked && styles.ownedChipComplete]}>
+              <Ionicons
+                name={allUnlocked ? 'checkmark-circle' : 'lock-open-outline'}
+                size={moderateScale(12)}
+                color={allUnlocked ? colors.green[100] : colors.orange[200]}
+              />
+              <Text style={[styles.ownedChipText, allUnlocked && styles.ownedChipTextComplete]}>
+                {allUnlocked
+                  ? t('All packs unlocked')
+                  : t('{{owned}} / {{total}} unlocked', {
+                      owned: ownedCount,
+                      total: paidPacks.length,
+                    })}
+              </Text>
+            </View>
+          )}
         </View>
 
         <ScrollView
@@ -229,7 +254,7 @@ export default function Store() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {PACKS.filter(p => !p.isFree).map(pack => (
+          {paidPacks.map(pack => (
             <PackCard key={pack.id} pack={pack} />
           ))}
         </ScrollView>
@@ -289,16 +314,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: scale(spacing.xs),
-  },
-  headerTitle: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    fontFamily: 'Raleway',
-    fontWeight: 'bold',
-    fontSize: fontSize.md,
-    color: colors.white[100],
   },
   restoreHeaderButton: {
     flexDirection: 'row',
@@ -389,6 +404,33 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.gray[300],
     marginTop: verticalScale(2),
+  },
+  ownedChip: {
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    gap: scale(4),
+    paddingHorizontal: scale(spacing.sm),
+    paddingVertical: verticalScale(spacing.xs),
+    borderRadius: moderateScale(radius.pill),
+    borderWidth: 1,
+    borderColor: colors.orange[200] + '55',
+    backgroundColor: colors.orange[200] + '12',
+    marginTop: verticalScale(spacing.sm),
+  },
+  ownedChipComplete: {
+    borderColor: colors.green[100] + '66',
+    backgroundColor: colors.green[100] + '15',
+  },
+  ownedChipText: {
+    fontFamily: 'Raleway',
+    fontWeight: '700',
+    fontSize: moderateScale(11),
+    color: colors.orange[200],
+    letterSpacing: 0.3,
+  },
+  ownedChipTextComplete: {
+    color: colors.green[100],
   },
   scrollView: {
     flex: 1,
@@ -490,12 +532,14 @@ const styles = StyleSheet.create({
     gap: scale(spacing.sm),
     paddingVertical: verticalScale(spacing.xs),
     paddingRight: scale(spacing.md),
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   backCharItem: {
     backgroundColor: colors.white[100] + '18',
-    borderRadius: moderateScale(radius.pill),
-    padding: scale(4),
+    borderRadius: moderateScale(radius.md),
+    paddingHorizontal: scale(4),
+    paddingTop: scale(4),
+    overflow: 'hidden',
   },
   accountNote: {
     fontFamily: 'Raleway',

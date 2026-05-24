@@ -314,6 +314,9 @@
   "{{count}} secret words": "{{count}} palavras secretas",
   "{{count}} questions based on the theme": "{{count}} perguntas baseadas no tema",
   "{{count}} new characters to choose from": "{{count}} novos personagens para escolher",
+  "Unlock new categories, words and characters to expand your games": "Desbloqueie novas categorias, palavras e personagens para expandir seus jogos",
+  "{{owned}} / {{total}} unlocked": "{{owned}} / {{total}} desbloqueados",
+  "All packs unlocked": "Todos os pacotes desbloqueados",
   "Countries": "Países",
   "Professions": "Profissões"
 }
