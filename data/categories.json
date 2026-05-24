@@ -858,7 +858,7 @@
     }
   },
   "music": {
-    "available": false,
+    "available": true,
     "description": "musicDescription",
     "wordDescriptions": {
       "Michael Jackson": "michaelJacksonDesc",
@@ -1028,7 +1028,7 @@
     }
   },
   "geography": {
-    "available": false,
+    "available": true,
     "description": "geographyDescription",
     "wordDescriptions": {
       "Brazil": "brazilDesc",

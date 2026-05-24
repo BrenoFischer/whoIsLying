@@ -63,14 +63,19 @@ export default function SelectCategory() {
 
   const categoriesArray = Object.keys(categories);
 
+  const isCategoryLocked = (categoryName: string): boolean => {
+    const pack = getPackForCategory(categoryName);
+    return !!pack && !pack.isFree && !isPurchased(pack.id);
+  };
+
   const sortedCategories = useMemo(() =>
     [...categoriesArray].sort((a, b) => {
-      const aAvail = (categories[a as keyof typeof categories] as any)?.available ?? false;
-      const bAvail = (categories[b as keyof typeof categories] as any)?.available ?? false;
-      if (aAvail === bAvail) return 0;
-      return aAvail ? -1 : 1;
+      const aLocked = isCategoryLocked(a);
+      const bLocked = isCategoryLocked(b);
+      if (aLocked === bLocked) return 0;
+      return aLocked ? 1 : -1;
     }),
-    []
+    [isPurchased]
   );
 
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -86,15 +91,7 @@ export default function SelectCategory() {
     router.push('/createGame');
   };
 
-  const isCategoryLocked = (categoryName: string): boolean => {
-    const pack = getPackForCategory(categoryName);
-    return !!pack && !pack.isFree && !isPurchased(pack.id);
-  };
-
   const handleSelectCard = (categoryName: string) => {
-    const categoryData = categories[categoryName as keyof typeof categories] as any;
-    if (!categoryData?.available) return;
-
     if (isCategoryLocked(categoryName)) {
       router.push('/store');
       return;
@@ -113,8 +110,7 @@ export default function SelectCategory() {
 
   const renderCategoryCard = (categoryName: string, index: number) => {
     const categoryData = categories[categoryName as keyof typeof categories] as any;
-    const isAvailable = categoryData?.available ?? true;
-    const isLocked = isAvailable && isCategoryLocked(categoryName);
+    const isLocked = isCategoryLocked(categoryName);
     const categoryColor = CATEGORY_COLORS[categoryName] ?? '#1F2937';
     const content = (categoryData?.content as string[]) ?? [];
     const sampleWords = content.length >= 3
@@ -125,12 +121,10 @@ export default function SelectCategory() {
         ]
       : content.slice(0, 3);
 
-    const showLockUI = !isAvailable || isLocked;
-
     const front = (
-      <View style={[styles.cardFront, { backgroundColor: categoryColor, opacity: showLockUI ? 0.82 : 1 }]}>
-        {showLockUI && <View style={styles.lockedOverlay} />}
-        {showLockUI && (
+      <View style={[styles.cardFront, { backgroundColor: categoryColor, opacity: isLocked ? 0.82 : 1 }]}>
+        {isLocked && <View style={styles.lockedOverlay} />}
+        {isLocked && (
           <View style={styles.lockIconCenter}>
             <View style={styles.lockIconBackground}>
               <Ionicons name="lock-closed" size={moderateScale(28)} color={colors.white[100]} />
@@ -148,11 +142,11 @@ export default function SelectCategory() {
 
     const back = (
       <View style={styles.cardBack}>
-        {showLockUI && (
+        {isLocked && (
           <View style={styles.comingSoonBadge}>
             <Ionicons name="lock-closed" size={moderateScale(9)} color={colors.orange[200]} />
             <Text style={styles.comingSoonText}>
-              {isLocked ? t('Get Pack') : t('Coming soon')}
+              {t('Get Pack')}
             </Text>
           </View>
         )}
