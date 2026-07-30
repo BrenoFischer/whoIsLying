@@ -516,7 +516,7 @@ export const GameContextProvider = ({
       let updatedPlayers = prev.players.map(p => ({
         ...p,
         matchScore: {
-          scoreEvents: [] as { text: string; points: number }[],
+          scoreEvents: [] as Player['matchScore']['scoreEvents'],
           totalScore: 0,
         },
       }));
@@ -526,7 +526,7 @@ export const GameContextProvider = ({
       prev.votes.forEach(vote => {
         const playerThatVoted = vote.playerThatVoted;
         const impostorsUncovered: string[] = [];
-        const eventsForPlayer: { text: string; points: number }[] = [];
+        const eventsForPlayer: Player['matchScore']['scoreEvents'] = [];
         let totalPointsForPlayer = 0;
 
         const voterIsImpostor = prev.lyingPlayers.some(

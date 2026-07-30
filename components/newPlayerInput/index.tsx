@@ -44,6 +44,7 @@ export default function NewPlayerInput({
       theme: currentPlayerTheme,
       character: '',
       score: 0,
+      matchScore: { scoreEvents: [], totalScore: 0 },
     });
     setNewName('');
     inputRef.current?.focus();

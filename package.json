@@ -24,7 +24,7 @@
   "jest": {
     "preset": "jest-expo",
     "setupFilesAfterEnv": [
-      "C:\\Users\\Breno\\whoIsLying\\jest-setup.js"
+      "<rootDir>/jest-setup.js"
     ],
     "testMatch": [
       "**/__tests__/**/*.(js|jsx|ts|tsx)",
@@ -51,7 +51,7 @@
         "statements": 70
       }
     },
-    "moduleNameMapping": {
+    "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1"
     },
     "transformIgnorePatterns": [
