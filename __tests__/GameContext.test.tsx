@@ -181,6 +181,8 @@ describe('GameContext', () => {
           numberOfImpostors: 1,
           setsOfQuestions: 2,
           randomImpostors: false,
+          timedRound: false,
+          roundDuration: 10,
         },
         category: undefined,
         word: undefined,
