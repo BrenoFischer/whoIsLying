@@ -2,22 +2,26 @@
 
 ## Overview
 
-The automated test suite covers the entire business logic layer of the application through two context files — `GameContext` (game state and rules) and `HistoryContext` (player persistence and match recording). Every function exposed by each context has dedicated tests that validate its behaviour in isolation.
+The automated test suite covers the entire business logic layer of the application through three context files — `GameContext` (game state and rules), `HistoryContext` (player persistence and match recording), and `PurchaseContext` (in-app purchase state and persistence, only present on branches with the store feature). Every function exposed by each context has dedicated tests that validate its behaviour in isolation.
 
-**Test files:** `__tests__/GameContext.test.tsx`, `__tests__/HistoryContext.test.tsx`
+**Test files:** `__tests__/GameContext.test.tsx`, `__tests__/HistoryContext.test.tsx`, `__tests__/PurchaseContext.test.tsx`
 **Framework:** Jest 29 + React Native Testing Library
 **Execution:** `npm test`
+
+Note: `GameContext.test.tsx` does not yet cover the `setGameMode`, `setTimedRound`, or `setRoundDuration` setters added for the Game Modes / Timed Rounds features — see `test_plans.md`'s Future Automation Targets.
 
 ---
 
 ## Test Results
 
 ```
-Test Suites: 2 passed, 2 total
-Tests:       80 passed, 80 total
+Test Suites: 3 passed, 3 total
+Tests:       93 passed, 93 total
 Snapshots:   0 total
 Pass rate:   100%
 ```
+
+(80 passed, 80 total across 2 suites on branches without `PurchaseContext`, e.g. `main`.)
 
 ---
 
@@ -47,6 +51,17 @@ The `HistoryContext` manages all player persistence and match recording. It driv
 
 A bug here produces no crash — just silently wrong data in the saved-players list, player stats screen, and match history screen. Automated tests catch these regressions instantly.
 
+### PurchaseContext
+
+The `PurchaseContext` bridges React state to the native In-App Purchase APIs (StoreKit / Google Play Billing). It drives:
+
+- Which packs are treated as owned (free packs always; paid packs only after purchase or restore)
+- Whether a purchase persists to AsyncStorage so ownership survives app restarts
+- Whether `finishTransaction` is called for every successful purchase — skipping it leaves Android retrying a pending purchase forever
+- Whether user-cancelled purchases fail silently instead of showing an error
+
+A bug here either locks out a paying user or, worse, leaves Android stuck retrying a phantom purchase on every launch. Tests mock `expo-iap` entirely so purchase/restore/error flows run in plain Node with no device or real money.
+
 ---
 
 ## Mock Strategy
@@ -70,6 +85,16 @@ A bug here produces no crash — just silently wrong data in the saved-players l
 | `@react-native-async-storage/async-storage` | The context reads and writes on every state change. Mocked to resolve instantly with `null` by default. |
 
 A `seedStorage` helper overrides `AsyncStorage.getItem` per-test to return pre-built `SavedPlayer[]` and `MatchRecord[]` fixtures, allowing tests to start with any desired history state without touching the file system.
+
+### PurchaseContext mocks
+
+| Module | Why mocked |
+|---|---|
+| `expo-modules-core` | Forces the `IAP_AVAILABLE` gate to true so the real (`useIAP`-backed) provider runs in tests, instead of falling back to the Expo-Go defaults. |
+| `expo-iap` | `useIAP` is mocked to return controllable `connected` / `products` / `availablePurchases` state and capture the `onPurchaseSuccess` / `onPurchaseError` callbacks the provider registers, so tests can simulate the store calling back. |
+| `@react-native-async-storage/async-storage` | Same rationale as the other contexts — instant, deterministic reads/writes. |
+
+Rule of thumb (from the file header): simulate what the store would call back to us, then assert how the context reacts — not how `expo-iap` itself behaves.
 
 ---
 
@@ -361,6 +386,59 @@ Called from `endGame.tsx` after every match. The "does not affect other players"
 ```
 
 The cap test starts at exactly 20 entries and adds one more, then asserts the oldest entry is gone. This is the boundary condition where the slice logic activates — testing at exactly MAX + 1 is more precise than testing with an arbitrarily large list.
+
+---
+
+## Test Suite Breakdown — PurchaseContext
+
+### Suite 1 — Ownership on Mount (2 tests)
+
+```
+✓ reports free packs as owned and paid packs as locked on mount
+✓ hydrates paid packs cached in AsyncStorage on mount
+```
+
+Confirms the two sources of "owned": always-free packs (`FREE_PACK_IDS`, no I/O) and previously purchased packs cached under `@purchased_packs`. A regression here either locks out a paying user on relaunch or unlocks paid content for everyone.
+
+### Suite 2 — Store Connection (2 tests)
+
+```
+✓ fetches product details once the store connection is up
+✓ builds a SKU → displayPrice map when the store returns products
+```
+
+### Suite 3 — Purchase Flow (4 tests)
+
+```
+✓ purchasePack issues the request with both apple and google SKU shapes
+✓ purchasePack stays silent when the user cancels the native sheet
+✓ purchasePack rethrows non-cancel errors so callers can show feedback
+✓ on purchase success: marks pack owned, persists it, finishes the transaction
+```
+
+The cancel-vs-rethrow split is the core contract `app/store.tsx` depends on: a cancelled purchase must not surface an error alert, while every other failure must, so the caller can show "Purchase failed — please try again."
+
+### Suite 4 — Purchase Error Logging (2 tests)
+
+```
+✓ cancel errors from the native callback are not logged
+✓ real failures from the native callback ARE logged for debugging
+```
+
+### Suite 5 — Restore (2 tests)
+
+```
+✓ restore flow: availablePurchases from the store hydrate ownership
+✓ restorePurchases() delegates to the native restore implementation
+```
+
+### Suite 6 — Transaction Finalization (1 test)
+
+```
+✓ finishes the transaction even for SKUs we no longer recognise
+```
+
+Belt-and-suspenders protection: `finishTransaction` must be called even for a product ID no longer present in `PACKS`, or Android leaves the purchase stuck "pending" forever on every future launch.
 
 ---
 

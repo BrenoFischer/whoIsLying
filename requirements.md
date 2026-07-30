@@ -30,6 +30,9 @@ The app targets Android (Google Play Store, released) and iOS (Apple App Store, 
 | FR-002.3 | The system shall offer a "Random & Hidden" impostor mode, in which the number of impostors is randomised and not shown to any player. |
 | FR-002.4 | When the configured impostor count exceeds the player-count constraint (`players − 2`), the system shall present a conflict-resolution interface offering an adjusted count or random mode, without blocking game creation. |
 | FR-002.5 | Configuration shall be accessible at any point before the game starts. |
+| FR-002.6 | The system shall offer an optional "Timed rounds" mode, in which each round must be answered within a configurable duration (3–25 seconds, default 10, adjustable in steps of 5). |
+| FR-002.7 | When timed rounds are enabled, the round screen shall show a 3-2-1 prepare countdown followed by a visual countdown ring; forward navigation shall be disabled while the countdown is running. |
+| FR-002.8 | When a timed round expires, any in-progress audio recording shall stop automatically and the screen shall indicate "Time's up!" without blocking the player from continuing. |
 
 ### FR-003: Word and Category Management
 
@@ -129,6 +132,30 @@ The app targets Android (Google Play Store, released) and iOS (Apple App Store, 
 | FR-012.2 | Category word lists and question pools shall have separate translation files. |
 | FR-012.3 | Language selection shall be available from the home screen and persist for the session. |
 
+### FR-013: Game Modes
+
+| ID | Requirement |
+|---|---|
+| FR-013.1 | The system shall offer a dedicated Select Game Mode screen with 5 options: Party, Chaos, Classic, Mimic, and Custom. |
+| FR-013.2 | Selecting a preset mode (Party, Chaos, Classic, Mimic) shall immediately apply its predefined configuration (impostor count, random impostors, sets of questions, timed rounds, round duration). |
+| FR-013.3 | Selecting "Custom" shall skip preset configuration and open the configuration menu directly on the next screen. |
+| FR-013.4 | The "Mimic" mode shall replace verbal questions with physical-acting prompts drawn from a dedicated per-category prompt pool (no low/medium/high exposure weighting). |
+| FR-013.5 | The selected game mode shall be displayed as a label on the category and player-setup screens. |
+
+### FR-014: Store and In-App Purchases
+
+| ID | Requirement |
+|---|---|
+| FR-014.1 | Content shall be organised into packs, each bundling one or more word categories and/or character themes behind a single purchase. |
+| FR-014.2 | One pack ("Base") shall always be free and available to all users without purchase. |
+| FR-014.3 | Paid packs shall be purchasable as non-consumable in-app purchases via Google Play Billing (Android) or StoreKit (iOS). |
+| FR-014.4 | A category belonging to a paid pack the user does not own shall be shown locked (lock icon, reduced opacity) and unselectable; tapping it shall navigate to the Store. |
+| FR-014.5 | The Store screen shall display each paid pack's real, localised price when available from the platform store, falling back to a placeholder price otherwise. |
+| FR-014.6 | Purchased-pack ownership shall be cached locally so it persists across app restarts without a network call. |
+| FR-014.7 | The Store shall offer a "Restore purchases" action that re-syncs ownership from the platform's purchase history, for use after reinstalling or switching devices. |
+| FR-014.8 | User cancellation of a purchase shall fail silently, with no error alert; other purchase failures shall show a retry-oriented alert and leave the pack locked. |
+| FR-014.9 | The app shall run correctly in environments without native IAP support (e.g. Expo Go) by treating all paid packs as locked, without throwing. |
+
 ---
 
 ## Non-Functional Requirements
@@ -188,6 +215,8 @@ interface GameConfig {
   numberOfImpostors: number;   // 1–3
   setsOfQuestions: number;     // 1–3
   randomImpostors: boolean;    // if true, count is randomised and hidden
+  timedRound: boolean;         // if true, each round is answered against a countdown
+  roundDuration: number;       // seconds per round when timedRound is true (3–25, default 10)
 }
 
 type ExposureLevel = 'low' | 'medium' | 'high';
@@ -222,11 +251,29 @@ interface Game {
   votes: Vote[];
   currentMatch: number;
   currentScreen?: string;      // last active route path, for session resume
+  gameMode?: string;           // id of the selected preset ('party' | 'chaos' | 'classic' | 'mimic' | 'custom')
   previousRankings?: {
     playerId: string;
     position: number;          // rank before this match
     previousScore: number;     // score before this match
   }[];
+}
+```
+
+Content is organised into purchasable packs. Each pack bundles one or more word
+categories and/or character themes behind a single purchase.
+
+```typescript
+interface Pack {
+  id: string;
+  productId: string | null;      // store SKU; null for the always-free pack
+  nameKey: string;                // translation key for the pack's display name
+  descriptionKey: string;         // translation key for the short description
+  categories: string[];           // keys matching data/categories.json
+  characterThemes: CharacterTheme[];
+  color: string;                  // hex color for the store card
+  isFree: boolean;
+  previewCharacters: string[];    // character names shown on the store card (max 4)
 }
 ```
 
@@ -236,6 +283,9 @@ interface Game {
 
 ```
 Home Screen
+    │
+    ▼
+Select Game Mode  (setGameMode; presets apply their config, Custom does not)
     │
     ▼
 Select Category  ──────────────────────────────────────────────────────────────┐
@@ -271,6 +321,10 @@ End Game  (animated per-match rankings)
     │
     └── New Game  ──────► createNewGame ──────────────► Home Screen
 ```
+
+The Store screen sits outside this linear flow and can be reached from three places:
+the Home screen button, the sidebar menu (available on any screen), or by tapping a
+locked category on the Select Category screen.
 
 ---
 
@@ -322,3 +376,27 @@ End Game  (animated per-match rankings)
 - Scores accumulate.
 - Configuration persists between matches.
 - The game resumes on the correct screen if the app is backgrounded.
+
+### Epic 4: Game Modes and Customisation
+
+**US-010** — As a host, I want to pick a preset play style so I don't have to configure every option manually.
+- Party, Chaos, Classic, and Mimic each apply a complete configuration in one tap.
+- Selecting Custom opens the configuration menu directly instead of applying a preset.
+
+**US-011** — As a player, I want to answer against the clock so rounds feel more energetic.
+- A 3-2-1 countdown precedes a visual timer ring for the configured duration.
+- Time expiring stops any in-progress recording automatically and does not block the player from continuing.
+
+**US-012** — As a player, I want a mode where I act out clues instead of answering questions verbally.
+- Mimic mode rounds display a physical-acting prompt drawn from the selected category.
+- Mimic mode uses the same pass-device and voting flow as other modes.
+
+### Epic 5: Monetization
+
+**US-013** — As a user, I want to unlock extra categories and characters by purchasing themed packs.
+- Locked categories are visually distinct (lock icon, dimmed) and route to the Store when tapped.
+- The Store shows the real, localised store price when available.
+
+**US-014** — As a user, I want to recover purchases I've already paid for after reinstalling the app.
+- A "Restore purchases" action re-syncs ownership from the platform's purchase history without requiring repurchase.
+- A cancelled or failed purchase leaves the pack locked and shows a retry-oriented alert, without crashing the app.

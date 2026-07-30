@@ -4,7 +4,7 @@
 
 The project follows a layered quality assurance strategy:
 
-1. **Automated unit tests** (Jest + React Native Testing Library) — cover all business logic in `GameContext`. Run on every change.
+1. **Automated unit tests** (Jest + React Native Testing Library) — cover all business logic in `GameContext`, `HistoryContext`, and `PurchaseContext`. Run on every change.
 2. **Manual functional tests** — cover the full user journey across screens. Executed before any release.
 3. **Regression tests** — the automated suite serves as the regression baseline; manual tests are re-executed when screens change.
 
@@ -195,6 +195,53 @@ The testing philosophy is to test **behaviour, not implementation**. Tests asser
 
 ---
 
+## Test Plan 13 — Game Modes
+
+| ID | Test Case | Steps | Expected Result | Priority |
+|---|---|---|---|---|
+| TC-013.1 | Select Party mode | On Select Game Mode, tap Party | numberOfImpostors=3, randomImpostors=false, setsOfQuestions=1, timedRound=true, roundDuration=5 are applied; navigates to Select Category | High |
+| TC-013.2 | Select Chaos mode | Tap Chaos | numberOfImpostors=1, randomImpostors=true, setsOfQuestions=1, timedRound=true, roundDuration=10 are applied | High |
+| TC-013.3 | Select Classic mode | Tap Classic | numberOfImpostors=1, randomImpostors=false, setsOfQuestions=2, timedRound=false are applied | High |
+| TC-013.4 | Select Mimic mode | Tap Mimic | Config is applied; rounds use mime/act-out prompts instead of verbal questions | High |
+| TC-013.5 | Select Custom mode | Tap Custom | No preset config is applied; navigates to Select Category with the config menu open | High |
+| TC-013.6 | Game mode label persists | Select any preset, navigate through Select Category and Create Game | The selected mode's name is shown in the header on both screens | Medium |
+| TC-013.7 | Mimic prompts have no exposure weighting | Play a full Mimic-mode match | Prompts are drawn from a single pool per category, not split into low/medium/high | Medium |
+
+---
+
+## Test Plan 14 — Timed Rounds
+
+| ID | Test Case | Steps | Expected Result | Priority |
+|---|---|---|---|---|
+| TC-014.1 | Enable timed rounds via config menu | Toggle "Timed answering" on | The seconds-per-answer counter becomes interactive (was disabled) | High |
+| TC-014.2 | Round duration bounds | Adjust seconds per answer to the min (3) and max (25) | Decrement/increment buttons disable at each bound | High |
+| TC-014.3 | Start countdown | On a timed round, tap "Start countdown" | A 3-2-1 prepare countdown plays, then a visual timer ring counts down from the configured duration | Critical |
+| TC-014.4 | Stop countdown | During the prepare or counting phase, tap "Stop countdown" | The timer resets; the round returns to its idle state | High |
+| TC-014.5 | Timer expiry stops recording | Let the countdown reach 0 while recording | Recording stops automatically; a "Time's up!" indicator appears | Critical |
+| TC-014.6 | Navigation blocked during countdown | Attempt to advance to the next round while the timer is running | The Next control is disabled | High |
+| TC-014.7 | Untimed rounds unaffected | Play a round with timed rounds disabled | No countdown UI appears; the round behaves as before the feature existed | High |
+
+---
+
+## Test Plan 15 — Store and In-App Purchases
+
+| ID | Test Case | Steps | Expected Result | Priority |
+|---|---|---|---|---|
+| TC-015.1 | Free pack always unlocked | Open Select Category on a fresh install | Base pack categories (foods, animals, sports, movies, music) are selectable with no lock icon | Critical |
+| TC-015.2 | Paid category locked pre-purchase | View a category belonging to an unowned paid pack | Lock icon and dimmed styling are shown; tapping routes to the Store instead of selecting it | Critical |
+| TC-015.3 | Store lists all paid packs | Open the Store screen | Halloween, Countries, and Professions packs are all shown as flip cards | High |
+| TC-015.4 | Real price displayed when available | Open Store with a connected native IAP build | Each pack shows its real, localised price from the platform store | Medium |
+| TC-015.5 | Placeholder price when store unavailable | Open Store in Expo Go or before products load | Each pack shows the $2.99 placeholder price | Medium |
+| TC-015.6 | Successful purchase unlocks pack | Buy a pack and confirm through the platform sheet | Pack flips to "Owned"; its categories become selectable immediately | Critical |
+| TC-015.7 | Cancelled purchase is silent | Tap Buy, then cancel in the platform sheet | No error alert appears; pack remains locked | High |
+| TC-015.8 | Purchase failure shows alert | Simulate a non-cancellation purchase error | A "Purchase failed — please try again" alert appears; pack remains locked | High |
+| TC-015.9 | Ownership persists across restarts | Purchase a pack, force-close and reopen the app | The pack is still shown as Owned without any network call | Critical |
+| TC-015.10 | Restore purchases | On a reinstall or new device, tap "Restore purchases" | Previously purchased packs are re-unlocked; a confirmation alert is shown | Critical |
+| TC-015.11 | Restore with nothing to restore | Tap "Restore purchases" as a user with no prior purchases | A success alert is still shown; no ownership changes occur | Medium |
+| TC-015.12 | Expo Go / non-native environment | Open the app in Expo Go | Paid packs are locked; the app does not crash; free content works normally | High |
+
+---
+
 ## Test Execution Tracking
 
 | Test Case | Status | Notes | Bug ID |
@@ -267,7 +314,10 @@ The testing philosophy is to test **behaviour, not implementation**. Tests asser
 | 10 — Persistence & Resume | 3 | 1 | 2 | 0 |
 | 11 — Internationalisation | 4 | 0 | 4 | 0 |
 | 12 — History & Saved Players | 26 | 6 | 15 | 5 |
-| **Total** | **99** | **19** | **63** | **17** |
+| 13 — Game Modes | 7 | 0 | 5 | 2 |
+| 14 — Timed Rounds | 7 | 2 | 5 | 0 |
+| 15 — Store & In-App Purchases | 12 | 5 | 4 | 3 |
+| **Total** | **125** | **26** | **77** | **22** |
 
 ---
 
@@ -275,14 +325,20 @@ The testing philosophy is to test **behaviour, not implementation**. Tests asser
 
 ### Current Automated Coverage
 
-All game and history logic is covered by the automated test suite:
+Game, history, and purchase logic is covered by the automated test suite:
 
 **`__tests__/GameContext.test.tsx`**
-- 56 unit tests — 100% pass rate
+- 56 unit tests
 - Covers `GameContext` API surface: game configuration, word management, round navigation, player management, game creation, impostor identification, voting, scoring, audio, screen tracking, and state reset functions
+- Does **not** yet cover `setGameMode`, `setTimedRound`, or `setRoundDuration` — these setters shipped with the Game Modes / Timed Rounds features but have no dedicated unit tests. See Future Automation Targets.
 
 **`__tests__/HistoryContext.test.tsx`**
 - Covers `HistoryContext` API surface: hydration from AsyncStorage, persistence, `getSavedPlayerByName`, `deleteSavedPlayer`, `getAutoDeleteCandidates` (room check, fewest-matches ordering, createdAt tie-breaking), `commitAutoSave`, `updateSavedPlayerStats`, and `recordMatch` (prepend order, 20-entry cap)
+
+**`__tests__/PurchaseContext.test.tsx`**
+- 13 unit tests covering both happy and error paths against a mocked `expo-iap`
+- Covers the `IAP_AVAILABLE` gate (Expo Go fallback), purchase success/cancel/error handling, `finishTransaction` being called even for unknown SKUs, AsyncStorage hydration of owned packs, and restore
+- Only present on branches with the store feature merged in (not yet on `main`)
 
 Tests run with `npm test`; coverage report with `npm run test:coverage`
 
@@ -290,6 +346,7 @@ Tests run with `npm test`; coverage report with `npm run test:coverage`
 
 | Target | Tool | Priority |
 |---|---|---|
+| `setGameMode` / `setTimedRound` / `setRoundDuration` unit tests | Jest (extend `GameContext.test.tsx`) | High |
 | Component rendering and interaction | React Native Testing Library | Medium |
 | Screen navigation and state transitions | React Native Testing Library | Medium |
 | End-to-end gameplay flow | Detox | Low |
@@ -300,7 +357,7 @@ Tests run with `npm test`; coverage report with `npm run test:coverage`
 
 ### Release Blockers (must pass 100%)
 - All Critical manual test cases
-- All 56 automated unit tests
+- All automated unit tests (93 total once the store feature is merged: 56 `GameContext` + 24 `HistoryContext` + 13 `PurchaseContext`; 80 on branches without the store feature)
 - No crashes on devices running Android 7.0+
 
 ### Release Goals (must pass 95%)
