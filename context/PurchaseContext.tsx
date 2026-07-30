@@ -30,24 +30,6 @@ const IAP_AVAILABLE = (() => {
   }
 })();
 
-// TODO [IAP DEBUG] — temporary diagnostics for Step 2 of testing. Remove
-// once we've confirmed the bridge works end-to-end on a real Android build.
-(() => {
-  try {
-    const core = require('expo-modules-core');
-    const hasModernAPI = typeof core.requireOptionalNativeModule === 'function';
-    const hasLegacyAPI = core.NativeModulesProxy != null;
-    // eslint-disable-next-line no-console
-    console.log('[IAP DEBUG] IAP_AVAILABLE:', IAP_AVAILABLE,
-      '| modern API:', hasModernAPI,
-      '| legacy API:', hasLegacyAPI,
-      '| expo-modules-core keys:', Object.keys(core).slice(0, 10).join(','));
-  } catch (e: any) {
-    // eslint-disable-next-line no-console
-    console.log('[IAP DEBUG] expo-modules-core require failed:', e?.message);
-  }
-})();
-
 type StoreProduct = { displayPrice: string };
 
 type PurchaseContextValue = {
@@ -153,23 +135,9 @@ function PurchaseContextProviderInner({ children }: { children: React.ReactNode 
 
   // On store connection: fetch product prices + sync owned purchases
   useEffect(() => {
-    // TODO [IAP DEBUG] — remove after Step 2 verification.
-    // eslint-disable-next-line no-console
-    console.log('[IAP DEBUG] connected:', connected);
     if (!connected) return;
     if (PAID_SKUS.length > 0) {
-      // TODO [IAP DEBUG] — remove after Step 2 verification.
-      // eslint-disable-next-line no-console
-      console.log('[IAP DEBUG] requesting fetchProducts for SKUs:', PAID_SKUS);
-      fetchProducts({ skus: PAID_SKUS, type: 'in-app' })
-        .then(() => {
-          // eslint-disable-next-line no-console
-          console.log('[IAP DEBUG] fetchProducts resolved');
-        })
-        .catch((e: any) => {
-          // eslint-disable-next-line no-console
-          console.log('[IAP DEBUG] fetchProducts error:', e?.code, e?.message);
-        });
+      fetchProducts({ skus: PAID_SKUS, type: 'in-app' }).catch(() => {});
     }
     getAvailablePurchases().catch(() => {});
   }, [connected]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -184,9 +152,6 @@ function PurchaseContextProviderInner({ children }: { children: React.ReactNode 
 
   // Map store products → price display map
   useEffect(() => {
-    // TODO [IAP DEBUG] — remove after Step 2 verification.
-    // eslint-disable-next-line no-console
-    console.log('[IAP DEBUG] products update — count:', products.length);
     const map: Record<string, StoreProduct> = {};
     products.forEach((product: any) => {
       map[product.id] = { displayPrice: product.displayPrice };
